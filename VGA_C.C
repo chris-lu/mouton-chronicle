@@ -5,8 +5,8 @@
 /*************************************************************/
 
 #include "vga.h"
-bytef *Video=(bytef*)MK_FP(0xa000,0);     // Adresse Video
-
+unsigned char *Video=(unsigned char *)MK_FP(0xA000,0);     // Adresse Video
+/*
 char co=20;
 char dr=3;
 
@@ -32,7 +32,7 @@ textcolor(4);
 cprintf("GnoMaster");
 textcolor(7);
 }
-
+				  */
 void Bal(void)                    //retour de balayage
 {
 asm{
@@ -47,32 +47,64 @@ jz wait1;
 
 void ModeVGA(void)
 {
+  asm{
+  push ds
+  mov ax,13h
+  int 10h
+  pop ds}
+  /*
   union REGS regs;
 
   regs.x.ax=0x0013;
-  int86(0x10,&regs,&regs);
+  int86(0x10,&regs,&regs); */
 }
 
 void ModeTxt(void)
 {
+  asm{
+  push ds
+  mov ax,3
+  int 10h
+  pop ds
+  }/*
   union REGS regs;
 
   regs.x.ax=0x0003;
-  int86(0x10,&regs,&regs);
+  int86(0x10,&regs,&regs);   */
 }
 
 
 
-void Ink(byte e,byte r,byte v,byte b)
+/*void Ink(byte e,byte r,byte v,byte b)
 {
   outportb(0x3c8,e);
   outportb(0x3c9,r);
   outportb(0x3c9,v);
   outportb(0x3c9,b);
-}
+}     */
 
-void Draw(bytef *src)
+void Draw(bytef *src,short Mod)                     // ATTENTION! MODIFIE!!
 {
+if (Mod)
+asm{
+  push ds
+  les di,Video
+  lds si,src
+  mov cx,16000
+  mov ax,Mod
+  add si,ax
+  shr ax,2
+  mov dx,ax
+  sub cx,ax
+db 66h
+  rep movsw
+  mov cx,dx
+  xor ax,ax
+db 66h
+  rep stosw
+  pop ds
+}
+else
 asm{
   push ds
   les di,Video
@@ -82,6 +114,7 @@ db 66h
   rep movsw
   pop ds
 }
+
 }
 
 void Cpy(bytef *src,bytef *dst)
@@ -148,7 +181,7 @@ psprl2:
 	}
 }
 
-void PutSpr(short x,short y,word l,word h,bytef *scr,bytef *buf)
+/*void PutSpr(short x,short y,word l,word h,bytef *scr,bytef *buf)
 {
   register byte j,l2=l;
   register word i;
@@ -175,7 +208,7 @@ void PutSpr(short x,short y,word l,word h,bytef *scr,bytef *buf)
 	 scr+=320;
   }
 }
-
+  *//*
 void IncBlk(short x,short y,word l,word h,bytef *scr,bytef nb)
 {
 register byte j;
@@ -195,7 +228,7 @@ register word i;
   }
 }
 
-
+		*/
 void GetBlk1(short x,short y,word l,word h,bytef *scr,bytef *buf)
 {
   register byte j;
@@ -212,7 +245,7 @@ void GetBlk1(short x,short y,word l,word h,bytef *scr,bytef *buf)
   }
 }
 
-void GetBlk2(short x,short y,word l,word h,bytef *scr,bytef *buf)
+/*void GetBlk2(short x,short y,word l,word h,bytef *scr,bytef *buf)
 {
   register byte j;
   register word i;
@@ -229,9 +262,9 @@ void GetBlk2(short x,short y,word l,word h,bytef *scr,bytef *buf)
 	 for(i=0;i<l;i++) *(d2++)=*(s2++);
 	 scr+=320;
   }
-}
+}       */
 
-void GetBlk4(short x,short y,word l,word h,bytef *scr,bytef *buf)
+/*void GetBlk4(short x,short y,word l,word h,bytef *scr,bytef *buf)
 {
   register byte j;
   register word i;
@@ -248,9 +281,9 @@ void GetBlk4(short x,short y,word l,word h,bytef *scr,bytef *buf)
 	 for(i=0;i<l;i++) *(d4++)=*(s4++);
 	 scr+=320;
   }
-}
+}      */
 
-void PutBlk1(short x,short y,word l,word h,bytef *scr,bytef *buf)
+/*void PutBlk1(short x,short y,word l,word h,bytef *scr,bytef *buf)
 {
   register byte j;
   register word i;
@@ -265,8 +298,8 @@ void PutBlk1(short x,short y,word l,word h,bytef *scr,bytef *buf)
 	 scr+=320;
   }
 }
-
-void CpyBlk(short xs,short ys,word l,word h,short xd,short yd,bytef *src,bytef *dst)
+		*/
+/*void CpyBlk(short xs,short ys,word l,word h,short xd,short yd,bytef *src,bytef *dst)
 {
   register byte i,j,lg;
   bytef *s;
@@ -293,7 +326,7 @@ void CpyBlk(short xs,short ys,word l,word h,short xd,short yd,bytef *src,bytef *
 	 dst+=320;
   }
 }
-
+					*/
 void Blka(unsigned short xs,unsigned short ys,unsigned short l,unsigned char h,unsigned short xd,unsigned short yd,bytef *src,bytef *dst)
 {
 asm{
@@ -349,7 +382,7 @@ suite:
 
 
 
-
+		 /*
 
 void CpySpr(short xs,short ys,word l,word h,short xd,short yd,bytef *src,bytef *dst)
 {
@@ -390,4 +423,4 @@ void CpyBnd(short ys,word h,short yd,bytef *src,bytef *dst)
 
   for(i=0;i<h;i++) d4[i]=s4[i];
 }
-
+             */

@@ -8,7 +8,7 @@ for(cont=0;cont<200;cont++)
 	{
 	Stars.X[cont]=random(320);
 	Stars.Y[cont]=random(190);
-	Stars.Coul[cont]=random(16)+1;
+	Stars.Coul[cont]=random(15)+1;
 	}
 }
 
@@ -78,38 +78,63 @@ else
 //**********************************************************************************************
 //Initialise l'explosion d'une bombe
 //**********************************************************************************************
-void Init_Explose(unsigned short debx,unsigned short deby,char nb,unsigned char coul)
+void Init_Explose(unsigned short debx,unsigned short deby,unsigned char coul)
 {
 register cont;
 float a,vit;
-Explose[nb].StartX=debx;
-Explose[nb].StartY=deby;
-Explose[nb].Used=200;
-LastExB[nb]=1;
-for(cont=0;cont<100;cont++)
+Explose[CurBomb].StartX=debx;
+Explose[CurBomb].StartY=deby;
+Explose[CurBomb].Used=300;
+LastExB[CurBomb]=1;
+for(cont=0;cont<NBDEB;cont++)
 	{
 	a=(float)(random(3.14*200))/150-0.785;        //3/4 de cerlce pour les debris
 	vit=(float)(random(80)+35)/50;                //vitesse des debris
-	Explose[nb].X[cont]=0;
-	Explose[nb].Y[cont]=0;
-	Explose[nb].DirX[cont]=(cos(a))*vit;
-	Explose[nb].DirY[cont]=(sin(a))*vit;
-	Explose[nb].Coul[cont]=random(8)+coul;
+	Explose[CurBomb].X[cont]=0;
+	Explose[CurBomb].Y[cont]=0;
+	Explose[CurBomb].DirX[cont]=(cos(a))*vit;
+	Explose[CurBomb].DirY[cont]=(sin(a))*vit;
+	Explose[CurBomb].Coul[cont]=random(8)+coul;
 	}
+CurBomb++;                               //change le numero de la bombe
+CurBomb&=3;
 }
 
 
-void Look_Obj(unsigned short sx,unsigned short sy,unsigned short *dx,unsigned short *dy)
+void Look_Obj(short sx,short sy,unsigned short *dx,unsigned short *dy)
 {
-if(sx>TX)
-	sx=TX;
-else if((int)sx<160)
-	sx=160;
-if(sy>200)
-	sy=200;
-else if(	sy<100)
-	sy=100;
+asm{
+push ds
+mov ax,sx
+mov bx,TX
+sub bx,160
+cmp bx,ax
+jl ch1
+mov bx,160
+cmp ax,bx
+jl ch1
+jmp suite
+ch1:
+mov ax,bx
+suite:
+mov sx,ax
+mov ax, sy
+mov bx,200
+cmp bx,ax
+jl ch2
+mov bx,100
+cmp ax,bx
+jl ch2
+jmp fin
+ch2:
+mov ax,bx
+fin:
+mov sy,ax
+pop ds
+}
+//if((sx<TX-160)&&(sx>160))
 *dx=sx-160;
+//if((sy<200)&&(sy>100))
 *dy=300-sy;
 }
 
@@ -121,7 +146,7 @@ void End_Bomb(char nb)
 register cont;
 register unsigned short Xa,Ya;
 LastExB[nb]=0;
-for(cont=0;cont<100;cont++)
+for(cont=0;cont<NBDEB;cont++)
 	{
 	Xa=Explose[nb].X[cont]+Explose[nb].StartX;  //pour simplifier la formule ci dussous
 	Ya=Explose[nb].Y[cont]+Explose[nb].StartY;
@@ -140,10 +165,11 @@ void Bomb_Ex(char nb)
 {
 register cont;
 register unsigned short Xa,Ya;
-Explose[nb].Used--;
-for(cont=0;cont<100;cont++)
+if(Explose[nb].Used)
+	Explose[nb].Used--;
+for(cont=0;cont<NBDEB;cont++)
 	{
-	Explose[nb].DirY[cont]-=0.049;    //Attraction terrestre 9.81/2
+	Explose[nb].DirY[cont]-=Gravite;    //Attraction terrestre 9.81/200
 	Explose[nb].X[cont]+=Explose[nb].DirX[cont];   //deplacement de chaque débris
 	Explose[nb].Y[cont]+=Explose[nb].DirY[cont];
 	Xa=Explose[nb].X[cont]+Explose[nb].StartX;     //simplifie les formules

@@ -1,5 +1,6 @@
 void Install_Clav(void)
 {
+Pointeur=Scan_Code;
 oldit_9=getvect(0x9);
 setvect(0x9,Lire_scan);
 }
@@ -11,29 +12,101 @@ setvect(0x9,oldit_9);
 
 void far interrupt Lire_scan(void)
 {
-register char c;
-c=inportb(0x60);
-if (c<0)
+//register char c;
+//char *poin;
+//c=inportb(0x60);
+asm
+{
+push ds
+les di,Pointeur
+mov dx,60h
+xor ax,ax
+in al,dx
+cmp al,0
+jge suite
+and al,7fh
+mov es:[di],al
+add di,ax
+xor ax,ax
+mov es:[di],ax
+jmp fin
+suite:
+add di,ax
+mov ax,1
+mov es:[di],ax
+fin:
+mov al,20h
+out 20h,al
+pop ds
+}
+/*if (c<0)
 	Scan_Code[Scan_Code[0]=(c&0x7f)]=0;
 else
 	Scan_Code[c]=1;
-
-outportb(0x20,0x20);
+  */
+//outportb(0x20,0x20);
 }
 
 void Lire_Keys(char nb)
 {
 register short cont,temp;
-Lire_scan();
-if(Mouton[nb].Can_Move)
+short x1,y1;
+
+if(Scan_Code[0]!=Last_Key)
 	{
-	if(Scan_Code[0]!=Last_Key)
+	Last_Key=Scan_Code[0]=0;
+	Deb_Tour=0;
+	}
+else if(Scan_Code[59])
 		{
-		Last_Key=Scan_Code[0];
-		Deb_Tour=0;
+		Deb_Tour=1;
+		Last_Key=Scan_Code[0]=59;
 		}
+if(Scan_Code[70])
+		{
+		for(cont=0;cont<18;cont++)
+			Panoplie[0][cont]=1;
+		}
+Lire_scan();
+if (Scan_Code[57]&&(!Bombe.Used))
+		{
+		Last_Key=0;
+		if(Puissance<6.5)
+			{
+			Puissance+=0.08;
+			}
+		else  Scan_Code[57]=0;
+		Tir=1;
+		}
+else if(Tir)
+		{
+		Init_Bomb();
+		Mouton[nb].Bouge=0;
+		Puissance=0;
+		Tir=0;
+		if(!Arme)
+			Rebonds=7;
+		}
+else	if(Scan_Code[60])
+		{
+		y1=300-Mouton[nb].PosY;
+		x1=Mouton[nb].PosX-160;
+		if(x1<0)
+			x1=0;
+		else if(x1>TX)
+			x1=TX;
+		if(y1>300)
+			y1=300;
+		else
+		if(y1<1)
+		  y1=1;
+		SetMouse(x1,y1);
+		}
+if(!Mouton[nb].Bouge)
+	{
 	if (Scan_Code[77])
 		{
+		Fallow=1;
 		Mouton[nb].Sens=1;
 		Mouton[nb].Mouv++;
 		Mouton[nb].Mouv&=15;
@@ -41,12 +114,13 @@ if(Mouton[nb].Can_Move)
 		Mouton[nb].PosX+=0.4;
 		Move_U(nb);
 		if (Mouton[nb].Bloque)
-			Mouton[nb].PosX-=0.5;
+			Mouton[nb].PosX-=0.4;
 		}
 	else
 		Mouton[nb].Cur_Spr=0;
 	if (Scan_Code[75])
 		{
+		Fallow=1;
 		Mouton[nb].Sens=-1;
 		Mouton[nb].Mouv++;
 		Mouton[nb].Mouv&=15;
@@ -54,14 +128,15 @@ if(Mouton[nb].Can_Move)
 		Mouton[nb].PosX-=0.4;
 		Move_U(nb);
 		if (Mouton[nb].Bloque)
-				Mouton[nb].PosX+=0.5;
+				Mouton[nb].PosX+=0.4;
 		}
 	if (Scan_Code[28])
 		{
-		Mouton[nb].Can_Move=0;
+		Mouton[nb].Bouge=1;
 		Mouton[nb].PosY++;
-		Mouton[nb].DirX=.6*Mouton[nb].Sens;               //72
-		Mouton[nb].DirY=2;                                   //80
+		Mouton[nb].DirX=.5*Mouton[nb].Sens;               //72
+		Mouton[nb].DirY=1.5;                                   //80
+		Fallow=1;
 		}
 	if (Scan_Code[80])
 		{
@@ -73,33 +148,29 @@ if(Mouton[nb].Can_Move)
 		if(Vise<253)
 			Vise+=1;
 		}
-	if (Scan_Code[57]&&(!Bombe.Used))
+	if (Scan_Code[74]&&(Last_Key!=-1)&&!Bombe.Used)         //evite une execution successive...(trop rapide) et le changement d'arme en cour de tir
 		{
-		Last_Key=0;
-		if(Puissance<6.5)
-			{
-			Puissance+=0.08;
-			}
-		else  Scan_Code[57]=0;
-			Tir=1;
+		Fallow=1;
+		for(cont=Arme;cont;cont++)
+			if(Stock[CURT][Arme-1])
+				break;
+		if((cont)&&Stock[CURT][Arme-1])
+			Arme--;
+		Last_Key=-1;
+		Scan_Code[0]=255;
 		}
-	if(!Scan_Code[57]&&Tir)
+	if (Scan_Code[78]&&(Last_Key!=-1)&&!Bombe.Used)
 		{
-		Init_Bomb();
-		Mouton[nb].Can_Move=0;
-		Puissance=0;
-		Tir=0;
+		Fallow=1;
+		for(cont=Arme;cont<5;cont++)
+			if(Stock[CURT][Arme+1])
+				break;
+		if((cont<5)&&Stock[CURT][Arme+1])
+			Arme++;
+		Last_Key=-1;
+		Scan_Code[0]=255;
 		}
-	if(Scan_Code[59])
-		{
-		Deb_Tour=!Deb_Tour;
-		while(Scan_Code[59])
-			Lire_scan();
-		Last_Key=Scan_Code[0];
-		}
-	if(Scan_Code[60])
-		{
-		Look_Obj(Mouton[nb].PosX,Mouton[nb].PosY,&x,&y);
-		}
+Ly2=Ly1;
+Lx2=Lx1;
 	}
 }

@@ -1,13 +1,14 @@
 /***************************************************************
 Palette :
 0-16  	:Etoiles        *
-16-32		:premier plan 	 *
+16-24		:premier plan 	 *
+24-32		:????????       *
 32-64		:moutons      	 *
 64-72		:sang           *
 72-136	:2nd plan       *
 136-152	:Lune       	 *
 152-216	:Bonhomme   	 *
-216-244  :Ciel
+216-244  :Ciel           *
 */
 
 void Mk_Snow(unsigned char far *Palette)
@@ -23,7 +24,7 @@ for (cont=Pv[1];cont<Pv[2];cont++)
 }
 
 
-void Mk_Mout_Coul(unsigned char far *Palette)
+/*void Mk_Mout_Coul(unsigned char far *Palette)
 {
 register cont;
 for (cont=48;cont<64;cont++)
@@ -32,7 +33,7 @@ for (cont=48;cont<64;cont++)
 	Palette[cont*3+1]=random(63);
 	Palette[cont*3+2]=random(63);
 	}
-}
+}   */
 
 void Mk_Blood(unsigned char far *Palette)
 {
@@ -140,11 +141,93 @@ pop ds
 
 void CpyPal(unsigned char *Pal1,unsigned char *Pal2)
 {
-register cont;
-for(cont=0;cont<768;cont++)
-	Pal2[cont]=Pal1[cont];
+asm{
+push ds
+lds si,Pal1
+les di,Pal2
+mov cx,192
+db 66h
+rep movsw
+pop ds
+}
 }
 
+void Inc_Pal(unsigned char * Pal)
+{
+asm{
+push ds
+lds si,Pal
+les di,Pal
+mov cx,768
+xor ax,ax
+deb:
+mov al,ds:[si]
+cmp al,63
+jge suite
+inc al
+mov es:[di],al
+suite:
+inc di
+inc si
+dec cx
+or cx,0
+jnz deb
+pop ds
+}
+}
+
+void Dec_Pal(unsigned char * Pal)
+{
+asm{
+push ds
+lds si,Pal
+les di,Pal
+mov cx,768
+xor ax,ax
+deb:
+mov al,ds:[si]
+or al,0
+jz suite
+dec al
+mov es:[di],al
+suite:
+inc di
+inc si
+dec cx
+or cx,0
+jnz deb
+pop ds
+}
+}
+
+void Goto_Pal(unsigned char *Pal2,unsigned char *Pal1)
+{
+asm{
+push ds
+lds si,Pal1
+les di,Pal2
+mov cx,768
+debut:
+mov al,ds:[si]
+mov ah,es:[di]
+cmp al,ah
+je suite
+jg suite1
+dec ah
+mov es:[di],ah
+jmp suite
+suite1:
+inc ah
+mov es:[di],ah
+suite:
+inc di
+inc si
+dec cx
+or cx,0
+jnz debut
+pop ds
+}
+}
 
 void Create_Pal(unsigned char src,unsigned char nb,unsigned char* Pal1,unsigned char dst,unsigned char *Pal2)
 {
@@ -167,32 +250,22 @@ for(cont=0;cont<64000;cont++)
 
 void Init_Pal(bytef *p)
 {
-register cont;
-for (cont=0;cont<16;cont++)  // dégradé de rouge
-{
-p[cont*3]=cont*4;      //rouge
-p[cont*3+1]=0;         //vert
-p[cont*3+2]=0;         //bleu
-}
-for (cont=0;cont<16;cont++)  //dégradé rouge-jaune(orange)
-{
-p[(cont+16)*3]=63;
-p[(cont+16)*3+1]=cont*4;
-p[(cont+16)*3+2]=0;
-}
-for (cont=0;cont<16;cont++)  //dégradé jaune-blanc
-{
-p[(cont+32)*3]=63;
-p[(cont+32)*3+1]=63;
-p[(cont+32)*3+2]=cont*4;
-}
-for (cont=0;cont<32;cont++)  //dégradé jaune-blanc
-{
-p[(cont+48)*3]=63;
-p[(cont+48)*3+1]=63;
-p[(cont+48)*3+2]=63;
-}
-}
+register cont,cont2,cont3;
 
+for (cont=0;cont<4;cont++)  // dégradé de rouge
+{
+for(cont2=0;cont2<16;cont2++)
+{
+for(cont3=0;cont3<3;cont3++)
+{
+if(CoulMul[(cont*3)+cont3]!=-1)
+	p[(cont2+cont*16)*3+cont3]=cont2*CoulMul[(cont*3)+cont3];      //rouge
+else
+	p[(cont2+cont*16)*3+cont3]=63;      //rouge
+
+}
+}
+}
+}
 
 

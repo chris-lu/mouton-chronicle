@@ -1,4 +1,4 @@
-
+/*
   int xms_installed(void);
   void xms_init(void);
 
@@ -8,7 +8,7 @@
   char xms_allocate(int far *handle, unsigned int size);
   void xms_reallocate(int handle, unsigned int newsize);
   void xms_free(int far *handle);
-
+								  */
   typedef struct
 	 {
 		unsigned long length;         /* Length must be a multiple of two */
@@ -26,7 +26,41 @@
 
 static void far *xms_driver = NULL;                /* Pointer to XMS driver */
 
-int xms_installed(void)  //verifie 'installation de la mémoire
+void hma_on(void)
+{
+	 asm {
+		mov  ah, 0x03
+		call [xms_driver]
+		}
+}
+
+void hma_off(void)
+{
+	 asm {
+		mov  ah, 0x04
+		call [xms_driver]
+		}
+}
+
+void hma_free(void)
+{
+	 asm {
+		mov  ah, 0x02
+		call [xms_driver]
+		}
+}
+
+
+void hma_alloc(void)
+{
+	 asm {
+		mov  ah, 0x01
+		mov dx,0xff00
+		call [xms_driver]
+		}
+}
+
+char xms_installed(void)  //verifie 'installation de la mémoire
   {
 	 asm {
 		mov  ax, 0x4300
@@ -54,7 +88,7 @@ void xms_version(unsigned int *v,unsigned int *rev,unsigned int *hma)
 		}
 
 
-void xms_init()
+void xms_init(void)
   {
 	 asm {
 		mov  ax, 0x4310

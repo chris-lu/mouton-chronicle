@@ -9,6 +9,9 @@ register cont;
 		Par[cont][1]=Par[cont+1][1];
 		Par[cont][2]=Par[cont+1][2];
 		}
+	Par[3][0]=0;
+	Par[3][1]=0;
+	Par[3][2]=0;
 	}
 }
 
@@ -18,6 +21,9 @@ unsigned int t;
 void *Poit;
 Poit=Lettre[Nb];
 t=(y<<8)+(y<<6);
+if(x>314)
+	return;
+
 asm{
   push ds
   les di,scr

@@ -21,6 +21,7 @@ unsigned int t;
 void *Poit;
 Poit=Lettre[Nb];
 t=(y<<8)+(y<<6);
+
 asm{
   push ds
   les di,scr
@@ -74,6 +75,8 @@ while(txt[cont]!='\0')
 {
 if((txt[cont]>31)&&(txt[cont]<127))
 	{
+	if(x>315)
+	return;
 	Print_Let(x,y,Page,txt[cont]-32,Coul);
 	x+=Let_Lg[txt[cont]-32]+1;
 
@@ -98,6 +101,8 @@ while(Lng)
 temp=(nb/Exp);
 nb-=temp*Exp;
 {
+if(x>315)
+	return;
 Print_Let(x,y,Page,temp+16,Coul);
 x+=Let_Lg[temp+16]+1;
 }

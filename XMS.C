@@ -26,7 +26,41 @@
 
 static void far *xms_driver = NULL;                /* Pointer to XMS driver */
 
-int xms_installed(void)  //verifie 'installation de la mémoire
+void hma_on(void)
+{
+	 asm {
+		mov  ah, 0x03
+		call [xms_driver]
+		}
+}
+
+void hma_off(void)
+{
+	 asm {
+		mov  ah, 0x04
+		call [xms_driver]
+		}
+}
+
+void hma_free(void)
+{
+	 asm {
+		mov  ah, 0x02
+		call [xms_driver]
+		}
+}
+
+
+void hma_alloc(void)
+{
+	 asm {
+		mov  ah, 0x01
+		mov dx,0xffff
+		call [xms_driver]
+		}
+}
+
+char xms_installed(void)  //verifie 'installation de la mémoire
   {
 	 asm {
 		mov  ax, 0x4300

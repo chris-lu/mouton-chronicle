@@ -1,0 +1,27 @@
+#include <dos.h>
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#include "rtime.c"
+
+void main(void)
+{
+register long cont;
+DebTime();
+for(cont=0;cont<65536;cont++);
+FinTime();
+printf("Temps C : %.2f",temps);
+DebTime();
+asm{
+mov cx,65535
+deb:
+or cx,cx
+jnz deb
+}
+FinTime();
+printf("Temps C : %.2f",temps);
+}
+
+
+
+

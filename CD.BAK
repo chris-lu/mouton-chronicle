@@ -5,7 +5,57 @@ char First;
 int Nombre;
 }CD;
 
+unsigned char Cur_Lect;
 
+struct {
+unsigned char Taille;
+unsigned char SubUnit;
+unsigned char Fonc;
+unsigned short Status;
+unsigned char rien[8];
+unsigned char mediades;
+void *buffer;
+}Block1;
+
+struct {
+unsigned char Taille;
+unsigned char SubUnit;
+unsigned char Fonc;
+unsigned short Status;
+unsigned char rien[8];
+unsigned char adrmode;
+unsigned long deb;
+unsigned long duree;
+}Block2;
+
+
+struct {
+unsigned char sf;
+unsigned char trac;
+unsigned long deb;
+unsigned char i;
+}STrack;
+
+struct {
+unsigned long deb;
+unsigned long taille;
+}Tracks[25];
+
+struct {
+unsigned char sf;
+unsigned char deb;
+unsigned char fin;
+unsigned long total;
+}CDInf;
+
+
+/*struct
+{
+unsigned char SubUnit;
+void far *Point;
+}Info[50];   */
+
+/*
 void Nb_CD(void)
 {
 int temp,temp2;
@@ -21,5 +71,100 @@ pop ds
 }
 CD.Nombre=temp;
 CD.First=temp2;
+}
+  */
+/*void Get_Info(void)
+{
+void far *temp2;
+int temp;
+//temp2=(void far*)(Info[0].SubUnit);
+temp=(int)Info;
+temp2=(unsigned char far *)Info;
+asm{
+push ds
+xor bx,bx
+les di,temp2
+mov bx,temp
+mov ah,15h
+mov al,1h
+int 2fh
+pop ds
+}
+}
+			 */
+
+void Requete(unsigned char nb,void far* buf)
+{
+unsigned short temp,temp1;
+temp=FP_SEG(buf);
+temp1=FP_OFF(buf);
+asm{
+push ds
+xor ch,ch
+mov cl,nb
+mov es,temp
+mov bx,temp1
+//les bx,temp2
+mov ax,1510h
+int 2Fh
+pop ds
+}
+//printf("\nStatus : %d\n",Block1.Status);
+}
+
+unsigned long redtoshg(unsigned long red)
+{
+unsigned char tab[4];
+tab[3]=((red)>>16)&0xffff;
+tab[2]=((red)>>8)&0xffff;
+tab[1]=((red))&0xffff;
+tab[0]=0;
+return((long)tab[3]*4500+(long)tab[2]*75+(long)tab[1])-150;
+}
+
+
+
+void Get_T_Inf(void)
+{
+register cont;
+
+Block1.Fonc=3;
+Block1.Taille=sizeof(CDInf);
+Block1.buffer=&CDInf;
+CDInf.sf=0x0A;
+Requete(Cur_Lect,&Block1);
+
+Block1.Fonc=3;
+Block1.Taille=sizeof(STrack);
+Block1.buffer=&STrack;
+STrack.sf=0x0B;
+for(cont=CDInf.deb;cont<=CDInf.fin;cont++)
+{
+STrack.trac=cont;
+Requete(Cur_Lect,&Block1);
+Tracks[cont].deb=STrack.deb;
+Tracks[cont-1].taille=redtoshg(Tracks[cont].deb)-redtoshg(Tracks[cont-1].deb);
+}
+Tracks[cont-1].taille=redtoshg(CDInf.total)-redtoshg(Tracks[cont-1].deb);
+}
+
+
+
+
+void Play(unsigned char piste)
+{
+Block2.Fonc=0x84;
+Block2.Taille=22;
+Block2.adrmode=0;
+Block2.deb=redtoshg(Tracks[piste].deb);
+Block2.duree=Tracks[piste].taille;
+Requete(Cur_Lect,&Block2);
+}
+
+void Stop(void)
+{
+Block2.Fonc=0x85;
+Block2.Taille=22;
+Requete(Cur_Lect,&Block2);
 }
 

@@ -21,9 +21,8 @@ Pour le ciel :
 
 
 	CIEL = 0 ;Nuit
-	CIEL = 1 ;Jour + Lune
-	CIEL = 2 ;Jour + Soleil
-
+	CIEL = 1 ;Jour(Degrade)
+	
 
 -------------------------------------------------------------------------------------------------
                      Nom des 8 joueurs

@@ -43,31 +43,31 @@ byte LoadPCX(char *path,bytef *scr,byte *pal)
       {
 		  rep=octet-192; //Nombre de r‚p‚tition de l'encre
 		  octet=_buf_pcx[cpt_buf++]; //Lecure du tampon : encre … r‚p‚ter
-        read_buf_pcx(canal,_buf_pcx,&cpt_buf); //Remplit le tampon
+		  read_buf_pcx(canal,_buf_pcx,&cpt_buf); //Remplit le tampon
 
-        for(i=0;i<rep;i++) //R‚p‚tition de l'encre
-        {
-          *(scr++)=octet; //Ecriture de l'encre
-          dim--;
-        }
-      }
-      else          // -> Encre
-      {
-        *(scr++)=octet; //Ecriture de l'encre
-        dim--;
-      }
-    }
+		  for(i=0;i<rep;i++) //R‚p‚tition de l'encre
+		  {
+			 *(scr++)=octet; //Ecriture de l'encre
+			 dim--;
+		  }
+		}
+		else          // -> Encre
+		{
+		  *(scr++)=octet; //Ecriture de l'encre
+		  dim--;
+		}
+	 }
 
-    //Palette
+	 //Palette
 	 lseek(canal,-768L,SEEK_END);
 
-    for(i=0;i<768;i++)
-    {
-      read(canal,&pal[i],1);
-      pal[i]>>=2;
-    }
-    close(canal);
-    return 1;
+	 for(i=0;i<768;i++)
+	 {
+		read(canal,&pal[i],1);
+		pal[i]>>=2;
+	 }
+	 close(canal);
+	 return 1;
   }
   close(canal);
   return 0;
@@ -77,25 +77,25 @@ void write_buf_pcx(int handle,byte *tampon,word *comp)
 {
   if(*comp==BUF_PCX) //Tampon plein ?
   {
-    *comp=0;
-    write(handle,tampon,BUF_PCX);
+	 *comp=0;
+	 write(handle,tampon,BUF_PCX);
   }
 }
 
 
-void GetAllPal(byte *pal)
+/*void GetAllPal(byte *pal)
 {
   register word i;
 
   for(i=0;i<256;i++)
   {
-    outportb(0x3c7,i);
-    *pal=inportb(0x3c9);
-    *(pal+1)=inportb(0x3c9);
-    *(pal+2)=inportb(0x3c9);
-    pal+=3;
+	 outportb(0x3c7,i);
+	 *pal=inportb(0x3c9);
+	 *(pal+1)=inportb(0x3c9);
+	 *(pal+2)=inportb(0x3c9);
+	 pal+=3;
   }
-}
+}         */
 
 
 void SetAllPala(byte *pal)
@@ -125,7 +125,7 @@ pop ds
 }
 
 
-static char signe(short v1,short v2)
+/*static char signe(short v1,short v2)
 {
   if(v1<v2)
     return 1;
@@ -137,7 +137,7 @@ static char signe(short v1,short v2)
 		return 0;
   }
 }
-
+					 */
 void Box(short x,short y,short l,short h,bytef *scr,byte e)
 {
   register word i,off1,off2,off3,off4;
@@ -158,7 +158,7 @@ void Box(short x,short y,short l,short h,bytef *scr,byte e)
   for(i=off2;i<=off4;i+=320) scr[i]=e; //Colonne droite
 }
 
-void FBox(short x,short y,word l,word h,bytef *scr,byte e)
+/*void FBox(short x,short y,word l,word h,bytef *scr,byte e)
 {
   register word i,j,off1,off2;
 
@@ -172,8 +172,8 @@ void FBox(short x,short y,word l,word h,bytef *scr,byte e)
 	 off2+=320;
   }
 }
-
-
+  */
+/*
 void LineV(short x,short l,short x2,short y,bytef *sour,bytef *dest)
 {
 register word i,j=0,off1;
@@ -228,7 +228,7 @@ void Line(short x1,short y1,short x2,short y2,bytef *scr,byte e)
 	 *(scr+(y<<8)+(y<<6)+x)=e;
   }
 }
-
+  *//*
 void Circle(short x,short y,word r,bytef *scr,byte e)
 {
   short xi,yi,di,limite,eta,etap;
@@ -240,30 +240,30 @@ void Circle(short x,short y,word r,bytef *scr,byte e)
 	 scr[(y+yi)*320+(x-xi)]=e;  //3ie cadran
 	 scr[(y+yi)*320+(x+xi)]=e;  //4ie cadran
 
-    if(yi<=0) goto e4;
-    if(di<0) goto e2;
-    if(di>0) goto e3;
-    if(di==0) goto e20;
+	 if(yi<=0) goto e4;
+	 if(di<0) goto e2;
+	 if(di>0) goto e3;
+	 if(di==0) goto e20;
   e2:
 	 eta=2*di+2*yi-1;
-    if(eta<=0) goto e10;
-    if(eta>0) goto e20;
+	 if(eta<=0) goto e10;
+	 if(eta>0) goto e20;
   e3:
 	 etap=2*di-2*xi-1;
-    if(etap<=0) goto e20;
-    if(etap>0) goto e30;
+	 if(etap<=0) goto e20;
+	 if(etap>0) goto e30;
   e10:
-    xi++;
-    di=di+2*xi+1;
+	 xi++;
+	 di=di+2*xi+1;
 	 goto e1;
   e20:
-    xi++;
-    yi--;
-    di=di+2*xi-2*yi+2;
-    goto e1;
+	 xi++;
+	 yi--;
+	 di=di+2*xi-2*yi+2;
+	 goto e1;
   e30:
 	 yi--;
 	 di=di-2*yi+1;
-    goto e1;
+	 goto e1;
   e4:;
-}
+}     */

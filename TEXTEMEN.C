@@ -80,7 +80,7 @@ while(txt[cont]!='\0')
 if((txt[cont]>31)&&(txt[cont]<127))
 	{
 	Print_Let_Menu(x,y,Page,txt[cont]-32,Coul);
-	x+=Let_Lg1[txt[cont]-32]+1;
+	x+=Let_Lg1[txt[cont]-32]+2;
 
 	}
 cont++;
@@ -104,7 +104,7 @@ temp=(nb/Exp);
 nb-=temp*Exp;
 {
 Print_Let_Menu(x,y,Page,temp+16,Coul);
-x+=Let_Lg1[temp+16]+1;
+x+=Let_Lg1[temp+16]+2;
 }
 Lng--;
 Exp/=10;
