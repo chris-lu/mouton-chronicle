@@ -1,7 +1,38 @@
-char fich[6][10]={"p11.pcx","p12.pcx","p13.pcx","p21.pcx","p22.pcx","plan3.pcx"};
+struct{
+unsigned short  X[200];
+unsigned char Y[200];
+unsigned char Coul[200];
+}Stars;
+
+unsigned short x,y;
+
+struct{
+unsigned short StartX;
+unsigned short StartY;
+unsigned char Used;
+float X[100];
+float Y[100];
+float DirX[100];
+float DirY[100];
+unsigned char Coul[100];
+}Explose[3];
+
+unsigned short Y[200];
+char A,B,C;
+char CurBomb=0;
+char LastExB[3]={0,0,0};
+
+char explose=0;
+float dirx=.19;
+float diry=.55;
+float posy=150;
+float posx=100;
+
+char fich[2][10]={"Bg21.pcx","Bg22.pcx"};
 unsigned char far *Plan_1[3];
 unsigned char far *Plan_2[2];
-unsigned char far *Plan_3[1];
 unsigned char far *Page;
-unsigned char far *Pal;
-unsigned char far Trou[28*28];
+unsigned char far *Pal[3];
+unsigned char far Trou[24*24];
+unsigned char far Lune[24*24];
+

@@ -21,9 +21,9 @@ void Mk_Stars(unsigned char far *Palette)
 register cont;
 for (cont=32;cont<64;cont++)
 {
-Palette[cont*3]=cont/2;
-Palette[cont*3+1]=cont/2;
-Palette[cont*3+2]=cont/2;
+Palette[cont*3]=cont;
+Palette[cont*3+1]=cont;
+Palette[cont*3+2]=cont;
 }
 }
 
