@@ -1,0 +1,12 @@
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#include "cd.c"
+
+
+void main(void)
+{
+printf("\n*********************************Test cd*********************************");
+printf("\nLecteurs CD presents : %d",Nb_CD());
+printf("\nPremier lecteur : %c",CD.First+65);
+}

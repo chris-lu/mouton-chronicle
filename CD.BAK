@@ -1,0 +1,25 @@
+struct
+{
+char Copyright[38];
+char First;
+int Nombre;
+}CD;
+
+
+void Nb_CD(void)
+{
+int temp,temp2;
+asm{
+push ds
+xor bx,bx
+mov ah,15h
+mov al,0h
+int 2fh
+mov temp,bx
+mov temp2,cx
+pop ds
+}
+CD.Nombre=temp;
+CD.First=temp2;
+}
+

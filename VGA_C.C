@@ -10,6 +10,10 @@ bytef *Video=(bytef*)MK_FP(0xa000,0);     // Adresse Video
 char co=20;
 char dr=3;
 
+void far interrupt Vide(void)
+{
+}
+
 void far interrupt Coul(void)
 {
 co+=dr;

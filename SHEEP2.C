@@ -1,112 +1,68 @@
+#define ERROR	{ ModeTxt();	printf("error %X XMS",nb);	getch();	exit(0);	}
+#define NBPLAN 4
+#define TX 4*320
 #include <conio.h>
 #include <math.h>
 #include <mouse.c>
 #include <alloc.h>
 #include <time.h>
+#include "sheep.h"
 #include "variable.c"
 #include "Rtime.c"
 #include "vga_c.c"
 #include "vga.c"
 #include "palette.c"
 #include "plans.c"
-//couleurs 2eme plan : 96
+#include "mout.c"
+#include "clavier.c"
+#include "xms.c"
 
 
-unsigned short Y[960];
-char A,B,C;
-
-char explose=0;
-short dirx=12;
-short diry=35;
-unsigned short posy=150<<6;
-unsigned short posx=100<<6;
-
-
+//**********************************************************************************************
+//Initalisation de la memoire : Allocation
+//**********************************************************************************************
 void Init_Mem(void)
 {
 register cont;
-for(cont=0;cont<3;cont++)
+//Allocation mémoire pour le premier plan : 4 Pages de 64 Ko
+for(cont=0;cont<NBPLAN;cont++)
 	if((Plan_1[cont]=(unsigned char far *)farmalloc(64000))==NULL)
 	{
 	printf("\npas assez de memoire conv.!");
 	exit(1);
 	}
+
+//Allocation mémoire pour le second plan : 2 Pages de 64 Ko
 for(cont=0;cont<2;cont++)
 	if((Plan_2[cont]=(unsigned char far *)farmalloc(64000))==NULL)
 	{
 	printf("\npas assez de memoire conv.!");
 	exit(1);
 	}
-/*if((Plan_3[0]=(unsigned char far *)farmalloc(64000))==NULL)
-	{
-	printf("\npas assez de memoire conv.!");
-	exit(1);
-	}*/
+//Allocation mémoire pour la page de travail: 1 Page de 64 Ko
 if((Page=(unsigned char far *)farmalloc(64000))==NULL)
 	{
 	printf("\npas assez de memoire conv.!");
 	exit(1);
 	}
+//Allocation mémoire pour la page de travail: 1 Page de 64 Ko
+for(cont=0;cont<50;cont++)
+	if((Mout_Spr[cont]=(unsigned char far *)farmalloc(256))==NULL)
+	{
+	printf("\npas assez de memoire conv.!");
+	exit(1);
+	}
+//Allocation mémoire pour les pallettes: 3 tableaux de 768 octets chacun
 for(cont=0;cont<3;cont++)
 Pal[cont]=(unsigned char far *)farmalloc(768);
 }
 
 
-void Init_Ter(void)
-{
-register long cont;
-unsigned short haut;
-unsigned short temp;
-unsigned char pos=100;
-randomize();
-A=random(3)+2;
-B=random(12)+10;
-C=random(13)+9;
-
-for (cont=0;cont<960;cont++)
-{
-//Y[cont]=(sin(cont*0.001*A+1))*cos((cont)*0.0009*B+1)+cos((cont)*C*0.002)*0.1;
-//Y[cont]=(random(5)-2)+((sin(cont*0.001*A+1))*cos((cont)*0.0009*B+1)+cos((cont)*C*0.002)*0.1);
-//Y2[cont]=Y[cont];
-//Y[cont]*=Y[cont];
-/*Y[cont]*=89; */
-Y[cont]=(random(5)-2)+((sin((cont/1000)*A+1))*cos((cont/1000)*B+1)+cos((cont/500)*C)/10);
-if((pos+Y[cont]>25)&&(pos+Y[cont]<190))
-pos+=Y[cont];
-
-temp=(200-pos)*320+(cont%320);
-Plan_1[cont/320][temp]=31;
-Plan_1[cont/320][temp+320]=30;
-Plan_1[cont/320][temp+640]=29;
-Plan_1[cont/320][temp+960]=28;
-Plan_1[cont/320][temp+1280]=29;
-Plan_1[cont/320][temp+1600]=30;
-for(haut=pos-6;haut>0;haut--)
-  Plan_1[cont/320][(200-haut)*320+(cont%320)]=31;
-}
-}
-
-void Memorise_Spr(void)
-{
-GetBlk2(25,0,24,24,Page,Trou);
-}
-
-void Get_Lune(void)
-{
-GetBlk2(0,0,24,24,Page,Lune);
-}
-
-void Init_Bomb(void)
-{
-explose=0;
-dirx=(random(40)-20)/2;
-diry=(random(40)+10)/2;
-posy=200<<6;
-posx=(random(320)+320)<<6;
-}
 
 
-void Put_trou(short x,short y,word l,word h,bytef *buf)
+
+
+void Put_Spr(unsigned short x,unsigned short y,word l,word h,bytef *buf)
 {
   register byte j;
   register word i;
@@ -114,98 +70,438 @@ void Put_trou(short x,short y,word l,word h,bytef *buf)
   {
 		for(i=0;i<l;i++)
 	 {
-		if(*buf==1)
-			Plan_1[(x+i)/320][(y*320)+x+i]=0; //Transparence … l'encre 0
-		buf++;
+
+		if(*buf)                 //Encre 1?
+			if(x+i<TX&&(y<200))              //dans l'écran?(inclue x<0  et x>960 car non signé!)
+			Plan_1[(x+i)/320][Y[y]+((x+i)%320)]=*buf; //Transparence … l'encre 0
+		buf++;                      //point suivant
 	 }
-	 y++;
+	 y++;                          //ligne suivante
   }
 }
 
 
+//**********************************************************************************************
+//Initalisation du terrain
+//**********************************************************************************************
+void Init_Ter(void)
+{
+unsigned short Ytemp[TX];        //abscisses de chaque point du terrain
+register long cont;               //compteur
+unsigned short haut;              //compteur
+unsigned short temp;              //Variable teporaire
+unsigned short pos=100;            //Position du debut du terrain
+unsigned char Plat=0;
+unsigned short SprPos[9];
+unsigned char nb=0;
+
+randomize();                      //Initalise le générateur de nombres aléatoires
+pos=random(75)+25;
+A=random(2)+1;                    //Variable tarrain 1
+B=random(12)+10;                  //Variable tarrain 2
+C=random(13)+9;                   //Variable tarrain 3
+D=random(14)+8;                   //Variable tarrain 3
+
+for (cont=0;cont<TX;cont++)
+{
+Ytemp[cont]=(random(5)-2)+((sin(cont*0.001*A+1))*cos((cont)*0.0009*B+1)+cos((cont)*C*0.002)*0.09+sin((cont)*D*0.0015)*0.2); //Equation du terrain
+if((pos+Ytemp[cont]>16)&&(pos+Ytemp[cont]<190)) //limite du terrain
+pos+=Ytemp[cont];                               //position
+if (pos+Ytemp[cont]<110)
+{
+Plat++;
+if(Plat>200)
+{
+SprPos[nb]=cont;
+nb++;
+Plat=0;
+}
+}
+
+Ytemp[cont]=pos;
+}
+for (cont=0;cont<nb;cont++)
+{
+//temp=random(430)+430*cont+50;
+//if(Ytemp[temp]+83<200)
+if(Ytemp[SprPos[cont]]<40)
+Put_Spr(SprPos[cont]-37,60-(Ytemp[SprPos[cont]]),58,160,Sapin);
+else
+Put_Spr(SprPos[cont]-37,127-(Ytemp[SprPos[cont]]),74,83,Bonhomme);
+}
+for (cont=0;cont<TX;cont++)
+{
+temp=Y[200-Ytemp[cont]]+(cont%320);                     //position sur les pages
+Plan_1[cont/320][temp]=31;                      //degradé
+Plan_1[cont/320][temp+320]=30;                  //   "
+Plan_1[cont/320][temp+640]=29;                  //   "
+Plan_1[cont/320][temp+960]=28;                  //   "
+Plan_1[cont/320][temp+1280]=29;                 //   "
+Plan_1[cont/320][temp+1600]=30;                 //   "
+for(haut=Ytemp[cont]-6;haut>0;haut--)
+  Plan_1[cont/320][Y[200-haut]+(cont%320)]=31;  //remplissage du terrain
+}
+}
+
+
+//**********************************************************************************************
+//Memorisation du sprite trou
+//**********************************************************************************************
+void Memorise_Spr(void)
+{
+GetBlk2(25,0,24,24,Page,Trou);
+}
+
+
+
+//**********************************************************************************************
+//Memorisation du sprite Lune
+//**********************************************************************************************
+void Get_Lune(void)
+{
+GetBlk2(0,0,24,24,Page,Lune);
+}
+
+
+//**********************************************************************************************
+//initialisation de la bombe
+//**********************************************************************************************
+void Init_Bomb(void)
+{
+Bombe.Used=1;
+Bombe.Explosion=0;
+Bombe.DirX=CosT[Vise]*Puissance*Mouton[Cur_Joueur].Sens;
+Bombe.DirY=SinT[Vise]*Puissance;
+Bombe.PosY=Mouton[Cur_Joueur].PosY+4;
+Bombe.PosX=Mouton[Cur_Joueur].PosX;
+}
+
+
+//**********************************************************************************************
+//Initalisation du tableau des position des Y
+//**********************************************************************************************
+void Init_Tab(void)
+{
+register short cont;
+for (cont=0;cont<201;cont++)
+	Y[cont]=cont*320;
+for(cont=0;cont<256;cont++)
+	SinT[cont]=sin(0.012271863*cont-1.57079);
+for(cont=0;cont<256;cont++)
+	CosT[cont]=cos(0.012271863*cont-1.57079);
+
+	}
+
+
+//**********************************************************************************************
+//Créer un trou sur les pages
+//**********************************************************************************************
+void Put_trou(unsigned short x,unsigned short y,word l,word h,bytef *buf)
+{
+  register byte j;
+  register word i;
+  for(j=0;j<h;j++)
+  {
+		for(i=0;i<l;i++)
+	 {
+		if(*buf==1)                 //Encre 1?
+			if(x+i<TX&&y<200)              //dans l'écran?(inclue x<0  et x>960 car non signé!)
+			Plan_1[(x+i)/320][Y[y]+((x+i)%320)]=0; //Transparence … l'encre 0
+		buf++;                      //point suivant
+	 }
+	 y++;                          //ligne suivante
+  }
+}
+
+
+
+
+
+
+unsigned char Test_Line(void)
+{
+//unsigned char touche=0;
+float temp;
+float lng;
+float cont;
+short test=0;
+if(Bombe.DirX>0)
+{
+lng=Bombe.PosX;
+temp=(float)Bombe.DirY/Bombe.DirX;
+for(cont=0;cont<Bombe.DirX;cont++)
+	 {
+	// touche=;
+	 //Plan_1[(lng+cont)/320][Y[200-(Mouton[Cur_Joueur].PosY+temp*cont)]+(int)(lng+cont)%320]=160;
+	 if(Plan_1[(lng+cont)/320][Y[200-(Bombe.PosY+cont*temp)]+(int)(lng+cont)%320])
+		{
+		Bombe.PosX=lng+cont;
+		Bombe.PosY+=temp*cont;
+			return(1);
+		}
+	 test+=1;
+	 }
+}
+if(Bombe.DirX<0)
+{
+lng=Bombe.PosX;
+temp=-(float)Bombe.DirY/Bombe.DirX;
+for(cont=0;cont<-Bombe.DirX;cont++)
+	 {
+	// touche=;
+	 //Plan_1[(lng+cont)/320][Y[200-(Mouton[Cur_Joueur].PosY+temp*cont)]+(int)(lng+cont)%320]=160;
+	 if(Plan_1[(lng-cont)/320][Y[200-(Bombe.PosY+cont*temp)]+(int)(lng-cont)%320])
+		{
+		Bombe.PosX=lng-cont;
+		Bombe.PosY+=temp*cont;
+			return(1);
+		}
+	 test+=1;
+	 }
+}
+Bombe.PosY+=Bombe.DirY;
+Bombe.PosX+=Bombe.DirX;
+return(0);
+}
+
+
+
+
+//**********************************************************************************************
+//Déplacement de la bombe et test par rapport au sol
+//**********************************************************************************************
+
 void Move_Bomb(void)
 {
-if(!explose)
+register cont;
+
+if(!Bombe.Explosion)              //la bombe n'explose pas?
 {
-diry-=1;
-posy+=diry;
-posx+=dirx;
+Bombe.DirY-=0.049;                 //Attraction terrestre (9.81 /2)
+Bombe.DirX+=Vent;
 }
-if ((posy>0)&&(posy<12800)&&(posx>0)&&(posx<61440))
-if(Plan_1[(int)(posx>>6)/320][(((int)(200-(posy>>6))*320)+(int)(posx>>6))]||((posy>>6)<1))
+
+if ((Bombe.PosY>0)&&(Bombe.PosY<200)&&(Bombe.PosX>0)&&(Bombe.PosX<TX))    //si la bombe est dans le terrain
+{
+//if(Plan_1[Bombe.PosX/320][Y[200-(Bombe.PosY-Bombe.DirY/2)]+((int)(Bombe.PosX-Bombe.DirX/2)%320)])    //si la bombe touche le sol
+if(Test_Line())    //si la bombe touche le sol
 	{
-	explose=1;
-	Put_trou((posx>>6)-14,200-(posy>>6)-14,24,24,Trou);
+	Vent=(float)(random(100)-50)/2500;
+	Bombe.Explosion=1;                                       //explosion
+	Bombe.Used=0;
+	Put_trou(Bombe.PosX-12,200-Bombe.PosY-12,24,24,Trou);    //sprite sur 3 pages
+	}
+}
+else if ((Bombe.PosX<0)||(Bombe.PosX>TX)||(Bombe.PosY<0))  //si la bombe sort...
+	{
+	Vent=(float)(random(100)-50)/2500;
+	Bombe.Used=0;                                             //...en creer une nouvelle
+	}
+else
+{
+Bombe.PosX+=Bombe.DirX;
+Bombe.PosY+=Bombe.DirY;
+}
+}
+
+void Init_XMS(void)
+{
+unsigned int version,revision,hma;
+unsigned int maxblksize;
+unsigned long memoire;
+if(xms_installed())
+	{
+	printf("Memoire XMS installee");
+	xms_init();
+	xms_version(&version,&revision,&hma);
+	xms_mem_info(&maxblksize,&memoire);
+	printf("\nVersion : %.2f, Revision : %.2f, HMA %d",(float)version/100,(float)revision/100,hma);
+	printf("\nMemoire libre : %d Mo",memoire/1024);
+	/*if (memoire<2048)
+		{
+		clrscr();
+		printf("Pas assez de memoire XMS");
+		getch();
+		exit(1);
+		}             */
+	printf("\n\n");
+	}
+ else
+	{
+	printf("\nERREUR : Memoire XMS non disponible. . .");
+	getch();
+	exit(1);
 	}
 }
 
+
+void Init_Pages(void)
+{
+register cont;
+byte nb;
+for(cont=0;cont<2;cont++)
+{
+if((nb=xms_allocate(&XMS_Page[cont],64))!=0)
+	ERROR;
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+//**********************************************************************************************
+//													PROGRAME PRINCIPALE
+//**********************************************************************************************
 void main(void)
 {
-unsigned long images=0;
-unsigned short cont;
-unsigned short x,y;
-printf("Si ce progrmme fait planter windows(ce qui ne chagera pas vos habitudes)\nou redemarrer votre pc : vous n'avez pas assez de mememoire convetionnelle!\n(Mais normallement, Y'a pas de probèmes!)");
-getch();
-Init_Mem();
-
-for(cont=0;cont<3;cont++)
+unsigned long images=0;                   //nombre d'images enregistrés
+unsigned short cont;                      //compteur
+clrscr();                                 //efface l'écran
+Init_XMS();
+//Init_Pages();
+printf("Mouton Chronicles Version 0.04 Alpha\n\n    *Si ce programme fait planter windows(ce qui ne chagera pas vos habitudes)\n     ou redemarrer votre pc : vous n'avez pas assez de memoire convetionnelle\n     (Mais normallement, Y'a pas de problemes)\n    *Si l'ecran est splite en 2 ou 4, les drivers de la souris ne sont pas \n     installes ou pas reconnus sous Dos!\n\n\t\t\t\t\t\t\t");
+Sign();                                   //Signature
+getch();                                  //Lit une touche
+setvect(0x1c,Vide);                       //enleve l'effet de clignottement
+Init_Mem();                               //Initalise la memoire
+Init_Tab();                               //Initlise le tableau
+for(cont=0;cont<NBPLAN;cont++)                 //effacer les différantes plans
   Clr(Plan_1[cont]);
-
 for(cont=0;cont<2;cont++)
-	LoadPCX(fich[cont],Plan_2[cont],Pal[1]);
-Create_Pal(0,96,Pal[1],64,Pal[0]);
-LoadPCX("BackStar.pcx",Page,Pal[1]);
-Create_Pal(0,31,Pal[1],160,Pal[0]);
-Memorise_Spr();
-Inc_Scr(160,Page);
+	{
+	LoadPCX(fich[cont],Plan_2[cont],Pal[1]);//Charge les images
+	Inc_Scr(48,Plan_2[cont]);                     //rectifie les couleurs
+	}
+Create_Pal(0,64,Pal[1],48,Pal[0]);         //modifie la pallette principale(voir indexe des couleurs de la pallette
+LoadPCX("BackStar.pcx",Page,Pal[1]);       //charger les sprites de fond
+Create_Pal(0,15,Pal[1],32,Pal[0]);        //modifie la pallette principale
+Memorise_Spr();                            //Chaque sprite doit etre chargé indépendament pour pouvoir réctiffier la pallette
+Inc_Scr(32,Page);                         //réctifie les couleurs pour la nouvelle pallette
 Get_Lune();
-
-
-Init_Ter();
-Mk_Snow(Pal[0]);
-Mk_Stars(Pal[0]);
-Inc_Scr(64,Plan_2[0]);
-Inc_Scr(64,Plan_2[1]);
-Gen_Back();
-ModeVGA();
-getch();
+LoadPCX("Snow2.pcx",Page,Pal[1]);       //charger les sprites de fond
+Inc_Scr(144,Page);                     //rectifie les couleurs
+GetBlk2(0,0,74,83,Page,Bonhomme);
+GetBlk2(75,0,58,160,Page,Sapin);
+Create_Pal(0,56,Pal[1],144,Pal[0]);        //modifie la pallette principale
+Init_Ter();                                //Initalise le terrain
+Mk_Snow(Pal[0]);                           //Creer les encres(couleurs) de la neige
+Mk_Stars(Pal[0]);                          //  "    "     "        "    des étoiles
+Gen_Back();                                //initialisation des étoiles
+ModeVGA();                                 //Initaialise le mode VGA 320*200*256
+//getch();
 Pal[0][765]=63;
 Pal[0][766]=63;
 Pal[0][767]=63;
+Mouton[0].DirY=0;    //Attraction terrestre 9.81/2
+Mouton[1].DirY=0;    //Attraction terrestre 9.81/2
 
-SetAllPal(Pal[0]);
-InitMouse();
-ZoneMouse(0,50,639,200);
-//DebTime();
-//Put_trou(100,150,28,28,Plan_1[0],Trou);
-while(!kbhit())
+SetAllPala(Pal[0]);                        //active la pallette...
+CpyPal(Pal[0],Pal[1]);                     //puis la duplique
+InitMouse();                               //initialise la souris...
+ZoneMouse(0,50,TX-320,200);                   //et definie sa zone de déplacement
+for(cont=0;cont<Nb_Joueurs;cont++)
+	Put_Mouton(150+300*cont,cont);
+Install_Clav();                            //modifie l'interruption clavier
+DebTime();                                 //début du chronometre
+//Init_Explose(200,180,0);
+while(!Scan_Code[1])                       //tant que la touche [Esc] n'est pas enfoncée....
 {
-//images++;
-GetMouse(&x,&y);
-//Cpy(Plan_3[0],Page);
-Clr(Page);
-Draw_Back(Page);
-CpyPlan(x>>2,(y>>1)+100,Plan_2,Page);
-CpyPlan(x,y,Plan_1,Page);
-Move_Bomb();
-if(explose)
-	Init_Bomb();
-	else
-if(((posx>>6)>x)&&((posx>>6)<(x+320))&&((posy>>6)>200-y)&&((posy>>6)<400-y))
-	Page[(((int)(400-y-(posy>>6))*320)+(int)((posx>>6)-x))]=255;
-//Bal();
-Draw(Page);
+if(!(Palrot%8))                            //rotation de pallette toutes les 8 images
+	{
+	PalNb=!PalNb;                           //change la pallette active
+	Rot_Pal(1,15,Pal[PalNb],Pal[!PalNb]);  //Rotation des couleurs
+	SetAllPala(Pal[PalNb]);                 //activation de la nouvelle pallette
+	}
+images++;                                  //incrémente le nb d'images
+Palrot++;                                  //    "      le conteur pour la pallette
+GetMouse(&x,&y);                           //lit les coordonnés de la souris
+Clr(Page);                                 //efface la page de travail
+Draw_Back(Page);                           //affiche les étoiles
+CpyPlan(x>>2,(y>>2)+150,Plan_2,Page);      //affiche le second plan
+if(!Wait)
+{
+Lire_Keys(Cur_Joueur);                               //Lits les touche
+if(Bombe.Used)
+{
+Mouton[Cur_Joueur].Can_Move=0;
+Move_Bomb();                               //deplacement de la bombe et test
+if(Bombe.Explosion)                   //la bombe explose?
+	{
+	Wait=200;
+	Mouton[Cur_Joueur].Can_Move=1;
+	Cur_Joueur=!Cur_Joueur;
+	Test_Dom();
+	Init_Explose(Bombe.PosX,Bombe.PosY,CurBomb);//creer l'explosion
+	CurBomb++;                               //change le numero de la bombe
+	CurBomb%=3;
+	Mouton[Cur_Joueur].Can_Move=1;
+	//Init_Bomb();                             //et crée une nouvelle bombe
+	}
+	else                               //sinon
+	if((Bombe.PosX>x)&&(Bombe.PosX<(x+320))&&(Bombe.PosY>200-y)&&(Bombe.PosY<400-y))  //si la bombe est dans l'ecran,...
+		Page[(Y[400-y-Bombe.PosY]+(Bombe.PosX-x))]=255;                                //la dessiner
 }
-//FinTime();
+}
+else Wait--;
+for(cont=0;cont<3;cont++)  //calcul des explosion des bombes(3bombe max sur l'écrans
+	{
+	if(Explose[cont].Used)                   //Bombe utilisée?
+		Bomb_Ex(cont);                        //coninuer l'explosion
+	else if(LastExB[cont])
+		End_Bomb(cont);                       //sinon memorise les eclats dans le premier plan
+	}
+/*if(tremble)
+	{
+	tremble--;
+	move=-move;
+	SetMouse(x-(tremble/move),y+(tremble/move));
+	}
+ */
+
+for(cont=0;cont<Nb_Joueurs;cont++)
+{
+Move_Mouton(cont);
+Draw_Mouton(cont);
+}
+CpyPlan(x,y,Plan_1,Page);                   //Copie le premier plan  //les plan doivent etre déssineé dans l'ordre décoissant pour une superposition
+Print_Barre(5,5,100,10,Puissance/6.5*100,66,0,1);
+if(Vent>0)
+{
+Print_Barre(210,7,50,6,0,66,0,0);
+Print_Barre(265,7,50,6,Vent/0.02*100,66,0,1);
+}
+else
+{
+Print_Barre(210,7,50,6,-Vent/0.02*100,66,0,0);
+Print_Barre(265,7,50,6,0,66,0,1);
+}
+
+Put_Viseur(Cur_Joueur);
+Bal();                                    //attente du Balayage vertical
+Draw(Page);                                 //Affiche la page de travail finale
+for(cont=0;cont<Nb_Joueurs;cont++)
+if((Mouton[cont].PosX<0)||(Mouton[cont].PosX>TX)||(Mouton[cont].PosY<0))
+	Scan_Code[1]=1;
+}
+FinTime();                                  //arrete le chronometre
+Remove_Clav();
 ModeTxt();
-//printf("\nTemps : %.3f sec.",temps);           //Affichage des performances
-printf("\nImages : %d images",images);
+printf("Variables Terrain : A:%d  B:%d  C:%d  D:%d",A,B,C,D);
+printf("\nMemoire Libre :%lu octets",coreleft());
+printf("\n\nTemps : %.3f sec.",temps);         //Affichage des performances
+printf("\nImages : %lu images",images);
 printf("\nImages/Sec. : ");
 textcolor(9);
-//cprintf("%.2f Images/Sec.",images/temps);
-printf("\n");
-printf("A:%d  B:%d  C:%d",A,B,C);
-printf("free mem :%lu",coreleft());
+cprintf("%.2f Images/Sec.",images/temps);
+printf("\n\n\t\t\t\t\t\t\t");
+Sign();
 }
 
 

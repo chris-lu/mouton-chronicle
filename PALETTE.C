@@ -1,18 +1,21 @@
 /***************************************************************
 Palette :
-0-32:premier plan
-32-64:etoiles
-64-160:2nd plan
+0-16:Etoiles
+16-32:premier plan
+32-48:Lune
+48-144:2nd plan
+112-168:Bonhomme
 */
 
 void Mk_Snow(unsigned char far *Palette)
 {
 register cont;
-for (cont=0;cont<32;cont++)
+for (cont=16;cont<32;cont++)
 {
-Palette[cont*3]=cont*7/4;
-Palette[cont*3+1]=cont*7/4;
+Palette[cont*3]=cont*2;
+Palette[cont*3+1]=cont*2;
 Palette[cont*3+2]=cont*2;
+//Palette[cont*3+2]=cont*2;
 }
 }
 
@@ -25,18 +28,18 @@ Palette[cont*3]=(cont+16)/2;
 Palette[cont*3+1]=(cont+16)/2;
 Palette[cont*3+2]=(cont+16)/2;
 } */
-for(cont=0;cont<16;cont++)
+for(cont=0;cont<8;cont++)
 {
-Palette[(32+cont)*3]=(cont)*3;
-Palette[(32+cont)*3+1]=(cont)*3;
-Palette[(32+cont)*3+2]=(cont)*3;
-Palette[(64-cont)*3]=(cont)*3;
-Palette[(64-cont)*3+1]=(cont)*3;
-Palette[(64-cont)*3+2]=(cont)*3;
+Palette[(cont)*3]=(cont)*6;
+Palette[(cont)*3+1]=(cont)*6;
+Palette[(cont)*3+2]=(cont)*6;
+Palette[(16-cont)*3]=(cont)*6;
+Palette[(16-cont)*3+1]=(cont)*6;
+Palette[(16-cont)*3+2]=(cont)*6;
 }
-Palette[48*3]=48;
-Palette[48*3+1]=48;
-Palette[48*3+2]=48;
+Palette[8*3]=48;
+Palette[8*3+1]=48;
+Palette[8*3+2]=48;
 
 }
 
