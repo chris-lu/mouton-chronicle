@@ -5,7 +5,7 @@
 /*************************************************************/
 
 #include "vga.h"
-unsigned char *Video=(unsigned char *)MK_FP(0xA000,0);     // Adresse Video
+unsigned char *Video=(unsigned char*)0xA0000000;     // Adresse Video
 /*
 char co=20;
 char dr=3;

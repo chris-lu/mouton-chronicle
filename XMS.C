@@ -8,24 +8,15 @@
   char xms_allocate(int far *handle, unsigned int size);
   void xms_reallocate(int handle, unsigned int newsize);
   void xms_free(int far *handle);
-								  */
-  typedef struct
-	 {
-		unsigned long length;         /* Length must be a multiple of two */
-		unsigned int  sourcehandle;
-		unsigned long sourceoffset;
-		unsigned int  desthandle;
-		unsigned long destoffset;
-	 } MOVEPARAMS;
-
   void xms_move(MOVEPARAMS far *params);
+								  */
+
 
 
 #include <mem.h>
 //#pragma option -w- // Prevent "Function should return a value" warning
-
-static void far *xms_driver = NULL;                /* Pointer to XMS driver */
-
+#include "xms.h"
+void far *xms_driver = NULL;                /* Pointer to XMS driver */
 void hma_on(void)
 {
 	 asm {
@@ -72,7 +63,7 @@ char xms_installed(void)  //verifie 'installation de la mémoire
 		return 0;
   }
 
-void xms_version(unsigned int *v,unsigned int *rev,unsigned int *hma)
+void xms_version( int *v, int *rev, int *hma)
   {
 	int ve,r,h;
 	 asm {
@@ -108,7 +99,7 @@ void xms_init(void)
   }  */
 
 
-  void xms_mem_info(unsigned int *maxblk,unsigned long *frem)
+  void xms_mem_info( int *maxblk,long *frem)
   {
 	 unsigned int fre=0,block=0;
 	 asm {
@@ -132,7 +123,7 @@ void xms_init(void)
   }   */
 
 
-char xms_allocate(int far *handle, unsigned int size)
+char xms_allocate(int far *handle,  int size)
   {
 	char error=0;
 	unsigned short h;
@@ -157,7 +148,7 @@ char xms_allocate(int far *handle, unsigned int size)
   }
 
 
-void xms_reallocate(int handle, unsigned int newsize)
+void xms_reallocate(int handle,  int newsize)
   {
 	 asm {
 		mov  ah, 0x0F
@@ -196,7 +187,7 @@ void xms_move(MOVEPARAMS far *params)
   }
 
 
-void movepagemem(unsigned char far* page,int far * handle)
+void movepagemem(char far* page,int far * handle)
 {
 MOVEPARAMS  para;
 para.length=64000;

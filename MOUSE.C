@@ -9,8 +9,32 @@ void InitMouse(void)
 {
 	asm
 	{
+	push ds
 	mov ax,0
 	int 33h
+	pop ds
+	}
+}
+
+void ReInitMouse(void)
+{
+	asm
+	{
+	push ds
+	mov ax,21h
+	int 33h
+	pop ds
+	}
+}
+
+void ActiveMouse(void)
+{
+	asm
+	{
+	push ds
+	mov ax,20h
+	int 33h
+	pop ds
 	}
 }
 
@@ -27,8 +51,10 @@ void MouseOFF(void)
 {
 	asm
 	{
+	push ds
 	mov ax,2
 	int 33h
+	pop ds
 	}
 }
 
@@ -42,7 +68,7 @@ void MouseOFF(void)
 }       */
 unsigned short GetMouse(unsigned short *x,unsigned short *y)
 {
-	//register short tmp;
+  //	register short tmp;
 	asm
 	{
 	push ds
@@ -56,7 +82,7 @@ unsigned short GetMouse(unsigned short *x,unsigned short *y)
 	pop ds
 	mov ax,bx              //renvoi toujour le registre AX
 	}
-	//return(tmp);
+  //	return(tmp);
 }
 
 void SetMouse(unsigned short x,unsigned short y)

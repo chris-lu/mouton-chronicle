@@ -93,16 +93,16 @@ void Init_Explose(unsigned short debx,unsigned short deby,unsigned char coul)
 {
 register cont;
 float a,vit;
-Explose[CurBomb].StartX=debx;
-Explose[CurBomb].StartY=deby;
+/*Explose[CurBomb].StartX=debx;
+Explose[CurBomb].StartY=deby;      */
 Explose[CurBomb].Used=300;
 LastExB[CurBomb]=1;
 for(cont=0;cont<NBDEB;cont++)
 	{
 	a=(float)(random(3.14*200))/150-0.785;        //3/4 de cerlce pour les debris
 	vit=(float)(random(80)+35)/50;                //vitesse des debris
-	Explose[CurBomb].X[cont]=0;
-	Explose[CurBomb].Y[cont]=0;
+	Explose[CurBomb].X[cont]=debx;
+	Explose[CurBomb].Y[cont]=deby;
 	Explose[CurBomb].DirX[cont]=(cos(a))*vit;
 	Explose[CurBomb].DirY[cont]=(sin(a))*vit;
 	Explose[CurBomb].Coul[cont]=random(8)+coul;
@@ -130,7 +130,7 @@ mov ax,bx
 suite:
 mov sx,ax
 mov ax, sy
-mov bx,200
+mov bx,250
 cmp bx,ax
 jl ch2
 mov bx,100
@@ -159,8 +159,8 @@ register unsigned short Xa,Ya;
 LastExB[nb]=0;
 for(cont=0;cont<NBDEB;cont++)
 	{
-	Xa=Explose[nb].X[cont]+Explose[nb].StartX;  //pour simplifier la formule ci dussous
-	Ya=Explose[nb].Y[cont]+Explose[nb].StartY;
+	Xa=Explose[nb].X[cont];  //pour simplifier la formule ci dussous
+	Ya=Explose[nb].Y[cont];
 	if((Ya<200)&&(Xa<TX)&&Ya>1)   //si le débris est dans le plan...
 		Plan_1[Xa/320][Y[200-Ya]+(Xa%320)]=Explose[nb].Coul[cont];  //il faut l'afficher
 	}
@@ -183,13 +183,15 @@ for(cont=0;cont<NBDEB;cont++)
 	Explose[nb].DirY[cont]-=Gravite;    //Attraction terrestre 9.81/200
 	Explose[nb].X[cont]+=Explose[nb].DirX[cont];   //deplacement de chaque débris
 	Explose[nb].Y[cont]+=Explose[nb].DirY[cont];
-	Xa=Explose[nb].X[cont]+Explose[nb].StartX;     //simplifie les formules
-	Ya=Explose[nb].Y[cont]+Explose[nb].StartY;
+	Xa=Explose[nb].X[cont];     //simplifie les formules
+	Ya=Explose[nb].Y[cont];
 	if((Ya>400)||(Xa>=TX))                   //hors du plan?
 		{
 		continue;
 		}
-	else 	if (( Plan_1[Xa/320][Y[200-Ya]+(Xa%320)])&&(Ya<200)) //sinon ,si obstacle
+	else
+	{
+	if (( Plan_1[Xa/320][Y[200-Ya]+(Xa%320)])&&(Ya<200)) //sinon ,si obstacle
 		{
 		Explose[nb].X[cont]-=Explose[nb].DirX[cont];    //rebondir
 		Explose[nb].Y[cont]-=Explose[nb].DirY[cont];
@@ -198,6 +200,7 @@ for(cont=0;cont<NBDEB;cont++)
 		}
 	if((Xa>x)&&(Xa<(x+320))&&(Ya>200-y)&&(Ya<400-y))  //si dans l'écran...
 		Page[(Y[400-y-Ya-1]+(Xa-x))]=Explose[nb].Coul[cont];  //...afficher
+	}
 	}
 }
 

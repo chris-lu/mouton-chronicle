@@ -3,7 +3,7 @@ void Ecrire_Jeu_Cfg(void)
 register cont;
 if ((Fichier_Cfg=fopen("Mouton/Mouton.cfg","w"))!=NULL)
 	{
-	fprintf(Fichier_Cfg,JEUCFG,Options.Pts_2_Vie,Options.Nb_Joueurs,Options.Nb_Plans,Options.Fallow,Lect,Options.Melange,Niveau.Cur_Level,Niveau.Nb_Level);
+	fprintf(Fichier_Cfg,JEUCFG,Options.Pts_2_Vie,Options.Nb_Joueurs,Options.Nb_Plans,Options.Fallow,Lect,Options.Melange,Niveau.Cur_Level,0,lang,Niveau.Nb_Level);
 		for (cont=0;cont<Niveau.Nb_Level;cont++)
 			{
 			fprintf(Fichier_Cfg,"# %s\n",Niveau.Level[cont]);
@@ -64,6 +64,11 @@ if ((Fichier_Cfg=fopen("Mouton/Mouton.cfg","r"))!=NULL)
 				fscanf(Fichier_Cfg,"%s",&Niveau.Level[cont]);
 				}
 		}
+		else if (!strcmp(temp,"LANG"))
+		 {
+			while(fgetc(Fichier_Cfg)!='#');
+			fscanf(Fichier_Cfg,"%s",&lang);
+				}
 //		Options.Nb_J_Tot=Options.Nb_Joueurs*Options.Nb_Equipes;
 		}
 	TX=Options.Nb_Plans*320;
@@ -239,7 +244,7 @@ void Lire_Lang(void)
 register cont,cont2;
 char var[255];
 char cha1,cha2;
-sprintf(var,"Mouton/Lang.fr");
+sprintf(var,"Mouton/Lang.%s",lang);
 if ((Fichier_Cfg=fopen(var,"r"))!=NULL)
 	{
 	while (strcmp(var,"END"))
@@ -259,7 +264,23 @@ if ((Fichier_Cfg=fopen(var,"r"))!=NULL)
 
 				while((cha1=fgetc(Fichier_Cfg))!='\n')
 				Paroles[cont][cont2++]=cha1;
-			 //	Paroles[cont][cont2++]='\0';
+			 	Paroles[cont][cont2++]='\0';
+				}
+			}
+	else if (!strcmp(var,"MENU"))
+			{
+			fscanf(Fichier_Cfg,"%d",&cha2);
+			for (cont=0;cont<cha2;cont++)
+				{
+				cont2=0;
+				while(fgetc(Fichier_Cfg)!='#');
+
+				while((cha1=fgetc(Fichier_Cfg))!='\n')
+					{
+					//printf("%c",cha1);
+					Txt[cont+1][cont2++]=cha1;
+		 //		Txt[cont+1][cont2+1]='\0';
+					}
 				}
 			}
 		}

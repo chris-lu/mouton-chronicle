@@ -1,38 +1,39 @@
+Pas termine de traduire............
 -MENU = 24
 
-# Jouer
+#  Play
 #Options
-#Equipes
-#Resulat
-# Sortie
-#Suite
-#Retour
+# Teams
+#Results
+#  Exit
+#Next
+#Previous
 #OK
 #{
 #}
-#Vitalite :
-#Nombre de joueurs :
-#Taille du terrain :
-#Niveau :
-#Equipe %d
-#Nom : %s
-#Mouton %d : %s
-#Selectionnez les equipes
-#L'Equipe %s gagne !
-#Le meilleur mouton : %s
-#Le plus precis : %s
-#Le plus violent : %s
-#Le plus . . . INUTILE : %s
-#        Il n'y a aucun vainqueur!
+#Health :
+#Number of Sheep :
+#Size of play ground :
+#Level :
+#Team %d
+#Name : %s
+#Sheep %d : %s
+#Select your Teams
+#The %s Team wins !
+#The best Sheep : %s
+#Le plus precise : %s
+#The mos violent : %s
+#The most . . .  USELESS : %s
+#            There is no winner!
 
 -T1 = 70
 
 	Quand on tire a cote :
-#La prochaine fois...peut etre...
-#Tant pis...
-#Je l'ai pas eu ??
-#-- Soupir --
-#T'as eu de la chance!
+#The next time...maybe...
+#Too bad...
+#I had it ??
+#(Sigh. . .)
+#You are Lucky!
 
 	Quand on s'écrase lamentablement au sol : 
 #(Sprotch)
@@ -65,8 +66,8 @@
 	Quand on touche un coequipier : 
 #Autant pour moi...
 #Tu est dans mon equipe toi???
-#Desole...
-#Desole chef !
+#Sorry...
+#Sorry chef !
 #Oups....
 
 	Quand on se tire dessus : 
@@ -121,7 +122,7 @@
 	Quand on sort de la zone d'hostilites :
 #Bye Bye...
 #Moi, je me casse....
-#Je dois partir!
+#I must leave!
 #Desole mais je dois vous quiter...
 #J'ai rendez vous chez le veterinaire...
 

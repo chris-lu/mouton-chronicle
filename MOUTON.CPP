@@ -10,12 +10,10 @@
 #include "plans.c"         //Gestion et affichage des differants plans
 #include "moutgest.c"      //Gestion generale des moutons
 #include "texte.c"         //Gestion des texte....
-#include "armes.c"
-#include "xms.c"
 
 void Mem_Error(void)
 {
-printf("\nPas assez de memoire conv. : referez vous au manuel...");
+//printf("\npas assez de memoire conv.!");
 exit(1);
 }
 
@@ -65,6 +63,26 @@ for(cont=0;cont<2;cont++)
 
   */
 
+
+
+
+
+//**********************************************************************************************
+//Initalisation du missile (direction,puissance,etc..)
+//**********************************************************************************************
+void Init_Bomb(void)
+{
+Bombe.Used=1;
+Bombe.Explosion=0;
+Bombe.DirX=CosT[Vise]*Puissance*Mouton[CURJ].Sens;
+Bombe.DirY=SinT[Vise]*Puissance;
+Mouton[CURJ].DirX-=Bombe.DirX/4;
+Mouton[CURJ].DirY-=Bombe.DirY/4;
+
+Bombe.PosY=Mouton[CURJ].PosY+2;
+Bombe.PosX=Mouton[CURJ].PosX+4;
+}
+
 //**********************************************************************************************
 //Initalisation du tableau des position des Y
 //**********************************************************************************************
@@ -78,6 +96,312 @@ for(cont=0;cont<256;cont++)
 for(cont=0;cont<256;cont++)
 	CosT[cont]=cos(0.012271863*cont-1.57079);
 }
+
+
+//**********************************************************************************************
+//Tester la colision du missile et du terrain...
+//**********************************************************************************************
+unsigned char Test_Line(void)
+{
+float temp;
+unsigned char cont;
+char Signe;
+
+if(Bombe.DirX>0)
+	Signe=1;
+else if(Bombe.DirX<0)
+	Signe=-1;
+else
+	Signe=0;
+if(Signe!=0)
+	{
+	temp=(float)Bombe.DirY/Bombe.DirX*Signe;
+	for(cont=0;cont<Bombe.DirX*Signe;cont++)   //Teste pixel par pixel...
+		{
+		if(Plan_1[(Bombe.PosX+cont*Signe)/320][Y[200-(Bombe.PosY+cont*temp)]+(int)(Bombe.PosX+cont*Signe)%320])
+			{
+			Bombe.PosX+=cont*Signe;
+			Bombe.PosY+=temp*cont;
+			return(1);
+			}
+		}
+	}
+	else return(1);
+Bombe.PosY+=Bombe.DirY;
+Bombe.PosX+=Bombe.DirX;
+return(0);
+}
+
+
+
+
+//**********************************************************************************************
+//Déplacement de la bombe et test par rapport au sol
+//**********************************************************************************************
+
+/*void ArmBombe(void)
+{
+register cont;
+if(!Bombe.Explosion)              //la bombe n'explose pas?
+	{
+	Bombe.DirY-=Gravite;                 //Attraction terrestre
+	Bombe.DirX+=Vent;                    //Vent
+	}
+if ((Bombe.PosY>0)&&(Bombe.PosY+abs(Bombe.DirY)<200)&&(Bombe.PosX>0)&&(Bombe.PosX<TX))    //si la bombe est dans le terrain
+	{
+	if(Test_Line())    //si la bombe touche le sol
+		{
+		Tremble=5;
+		Vent=(float)(random(100)-50)/2500;
+		Bombe.Explosion=1;                                       //explosion
+		Bombe.Used=0;
+		Put_trou(Bombe.PosX-(Trou[0].Taille>>1),200-Bombe.PosY-(Trou[0].Taille>>1),Trou[0].Taille,Trou[0].Taille,Trou[0].Spr);    //sprite sur 3 pages
+		Wait=175;
+		Test_Dom(25);
+		Init_Explose(Bombe.PosX,Bombe.PosY,16);//creer l'explosion
+		SetMouse(x,y);
+		}
+	}
+else if (Bombe.PosY+abs(Bombe.DirY)<200)  //si la bombe sort...
+	{
+	Vent=(float)(random(100)-50)/2500;
+	Bombe.Used=0;                                             //...en creer une nouvelle
+	Wait=150;
+	SetMouse(x,y);
+	}
+else
+	{
+	Bombe.PosX+=Bombe.DirX;
+	Bombe.PosY+=Bombe.DirY;
+	}
+if((Bombe.PosX>x)&&(Bombe.PosX<(x+320))&&(Bombe.PosY>200-y)&&(Bombe.PosY<400-y))  //si la bombe est dans l'ecran,...
+	Page[(Y[400-y-Bombe.PosY]+(Bombe.PosX-x))]=255;                                //la dessiner
+}
+		 */
+
+//**********************************************************************************************
+//Arme n°1 et n°3 : le bazooka et super missile.....
+//**********************************************************************************************
+void ArmBombe(void)
+{
+register cont;
+if(!Bombe.Explosion)              //la bombe n'explose pas?
+	{
+	Bombe.DirY-=Gravite;           //Attraction(9.81 /200)
+	Bombe.DirX+=Vent;
+	}
+if ((Bombe.PosY>0)&&(Bombe.PosY+abs(Bombe.DirY)<200)&&(Bombe.PosX>0)&&(Bombe.PosX<TX))    //si la bombe est dans le terrain
+	{
+	if(Test_Line())    //si la bombe touche le sol
+		{
+		Tremble=5;      //Faire trembler l'ecran....
+		Vent=(float)(random(100)-50)/2500;          //ganger la direcrtion du vent
+		Put_trou(Bombe.PosX-(Trou[0].Taille>>1),200-Bombe.PosY-(Trou[0].Taille>>1),Trou[0].Taille,Trou[0].Taille,Trou[0].Spr);    //afficher un trou
+		Test_Dom(25);//tester les dommages sur les mouton....
+		Init_Explose(Bombe.PosX,Bombe.PosY,16);//creer l'explosion
+		if (Rebonds<6)   //Encore des rebond???
+			{
+			Bombe.DirX=(float)random(300)/100-1.5; //changer la direction du missile
+			Bombe.DirY=random(500)/100;
+			Rebonds++;
+			}
+		else
+			{                                //Sinon....
+			Bombe.Explosion=1;               //Le missile vient d'exploser
+			Wait=250;                        //fin du tour....
+			Bombe.Used=0;                    //bobe inutilise
+			Rebonds=0;                       //Plus de rebond
+			SetMouse(x,y);
+			}
+
+		}
+	}
+else if (Bombe.PosY+abs(Bombe.DirY)<200)  //si la bombe sort...
+	{
+	Vent=(float)(random(100)-50)/2500;
+	Bombe.Used=0;                                             //Bobe inutilise
+	Wait=150;                                                 //fin du tour
+	Rebonds=0;                                                //......
+	SetMouse(x,y);
+	}
+else                                                         //Si la bombe est au dessus de l'ecran
+	{                                                         //continuer le deplacement
+	Bombe.PosX+=Bombe.DirX;
+	Bombe.PosY+=Bombe.DirY;
+	}
+if((Bombe.PosX>x)&&(Bombe.PosX<(x+320))&&(Bombe.PosY>200-y)&&(Bombe.PosY<400-y))  //si la bombe est dans l'ecran,...
+	Page[(Y[400-y-Bombe.PosY]+(Bombe.PosX-x))]=255;                                //la dessiner
+}
+
+
+//**********************************************************************************************
+//Arme n°2 : Le Kamikaze.....
+//**********************************************************************************************
+void ArmSuicide(void)
+{
+Mouton[CURJ].Mort=1;               //Deces du mouton...
+Init_Explose(Mouton[CURJ].PosX,Mouton[CURJ].PosY+4,64);//creer l'explosion
+Init_Explose(Mouton[CURJ].PosX,Mouton[CURJ].PosY+4,16);//creer l'explosion
+Flash[0]=10;     //Faire flasher l'ecran
+Put_trou(Bombe.PosX-(Trou[1].Taille>>1),200-Bombe.PosY-(Trou[1].Taille>>1),Trou[1].Taille,Trou[1].Taille,Trou[1].Spr);    //et un piti trou de plus!
+Vent=(float)(random(100)-50)/2500;     //Le cent change
+Wait=175;                              //Fin du tour
+Test_Dom(50);                          //tester les dommages..
+Message(11,0,CURJ);                    //affiche un message categorie 11 (suicides en tout genres)
+Bombe.Used=0;
+SetMouse(x,y);
+}
+
+//**********************************************************************************************
+//Arme n°4 : le super suicide.....
+//**********************************************************************************************
+void ArmSuicide2(void)
+{
+short TmpX,TmpY;
+register cont;
+if(Suicide)         //Le suicide a-t-il commencé????
+	{
+	if(Suicide&1)    //Vire au blanc toutes les 2 images
+		{
+		Goto_Pal(Pal[PalNb],Pal[2]);
+		SetAllPala(Pal[PalNb]);
+		}
+	Bombe.PosX=Mouton[CURJ].PosX;       //met l'explosion au niveau du joueur
+	Bombe.PosY=Mouton[CURJ].PosY;
+	Tremble=(random(175-Suicide))>>4;   //faire trembler l'ecran de + en +
+	if(Suicide==1)                      //derniere phase du suicide?
+		{
+		Mouton[CURJ].Mort=1;             //tuer la bestiole
+		for(cont=0;cont<20;cont++)      //25 explosions dans l'écran
+			{
+			TmpX=(random(150))-75;       //aire d'effet : 150x90 pixels
+			TmpY=(random(90))-45;
+			if((Bombe.PosX+TmpX>0)&&(Bombe.PosX+TmpX<TX)&&(Bombe.PosY+TmpY>0)&&(Bombe.PosY+TmpY<200))   //l'explosion est dans le terrain?
+				{
+				Bombe.PosX+=TmpX;  //decaler l'explosion.
+				Bombe.PosY+=TmpY;
+				Put_trou(Bombe.PosX-(Trou[1].Taille>>1),200-Bombe.PosY-(Trou[1].Taille>>1),Trou[1].Taille,Trou[1].Taille,Trou[1].Spr);    //Un trou
+				Test_Dom(50);  		//50 points de dommages par explosion!!!
+				Bombe.PosX-=TmpX;
+				Bombe.PosY-=TmpY;
+				}
+			else cont--;  //si dehor de l'ecran, recalculer une nouvelle position...
+			}
+		Message(11,0,CURJ);        //Message categorie 11 : suicides
+//		CpyPal(Pal[!PalNb],Pal[PalNb]);
+		Init_Explose(Mouton[CURJ].PosX,Mouton[CURJ].PosY+4,64);//creer l'explosion
+		Vent=(float)(random(100)-50)/2500;   //change la direction du vent
+		Wait=400;                         //Fin du tour
+		Bombe.Used=0;
+		SetMouse(x,y);
+		Chal=350;                         // effet de chaleur (fonction sinus...)
+		}
+	Suicide--;
+	}
+else
+	Suicide=170;                            //debut du suicide : 170 images....
+}
+
+//**********************************************************************************************
+//Arme n°5 : Colere divine.....
+//**********************************************************************************************
+void Eclairs(void)
+{
+register short cont,cont2;
+if(Ecl)         //debut de l'animation?
+	{
+	if(Ecl>350)  //phase 1 : tremblement
+		{
+		if(Ecl>380)   //phase 2 eclair sortant du mouton...
+			for(cont2=0;cont2<4;cont2++)
+				{
+				EclPos=Mouton[CURJ].PosX+3;
+				for(cont=Mouton[CURJ].PosY+3;cont<400;cont++)
+					{
+					EclPos+=(random(3)-1);
+					if((EclPos>x)&&(EclPos<(x+320))&&(cont>200-y)&&(cont<400-y))  //si dans l'écran...
+						Page[(Y[400-y-cont-1]+(EclPos-x))]=60+random(4);  //...afficher
+					}
+				}
+		Tremble=random(2);
+		}
+	else if(Ecl<250&&Ecl>200)  //phase 3 : fin de tremblement
+		Tremble=random(2);
+								//phase 4 : pitite pause...
+	else if(Ecl<200)           //phase finale : destruction totale !!!!
+		{
+		EclPos=random(Options.Nb_Plans*320); //position du haut de l'eclair
+		for(cont=400;cont>0;cont--)          //affiche l'eclair en totalite
+			{
+			EclPos+=(random(3)-1);            //faire vibrer l'eclaire
+			if((EclPos>x)&&(EclPos<(x+320))&&(cont>200-y)&&(cont<400-y))  //si dans l'écran...
+				Page[(Y[400-y-cont-1]+(EclPos-x))]=60+random(4);  //...afficher
+			if(cont<200)                                         //si atteind l'ecran (x<200)
+				{
+				if(Plan_1[EclPos/320][Y[200-cont]+(EclPos%320)])     //Si touche le sol..
+					{
+					Bombe.PosX=EclPos;                                //donner les nouvelles coordonnes de l'explsion..
+					Bombe.PosY=cont;
+					if((Bombe.PosX>0)&&(Bombe.PosX<TX)&&(Bombe.PosY>0)&&(Bombe.PosY<200))
+						Test_Dom(16);         //tester les domages
+					if(!(Ecl&31))            //flash l'ecran toutes les 32 images
+						Flash[0]=2;
+					Tremble=random(3);       //fait trembler l'ecran
+					break;
+					//cont=250;
+					}
+				}
+			}
+		}
+	if(Ecl==1)                     //fin de l'attaque...
+		{
+		Wait=200;
+		Bombe.Used=0;
+		}
+	Ecl--;
+	}
+else Ecl=580;                        //debut de l'attaque valable qu'une fois...
+}
+
+//**********************************************************************************************
+//Medikit....
+//**********************************************************************************************
+void MediKit(void)
+{
+Mouton[CURJ].Pts_Vie=Options.Pts_2_Vie-1; //restaure les points de vie
+Flash[0]=2;                               //fait flasher l'ecran.......
+Wait=200;
+Bombe.Used=0;
+}
+
+
+/*void Tirer(void)
+{
+register cont;
+unsigned short TempX,TempY;
+if ((TempY>0)&&(TempY<200)&&(TempX>0)&&(TempX<TX))    //si la bombe est dans le terrain
+	{
+//if(Plan_1[Bombe.PosX/320][Y[200-(Bombe.PosY-Bombe.DirY/2)]+((int)(Bombe.PosX-Bombe.DirX/2)%320)])    //si la bombe touche le sol
+	if(Test_Line())    //si la bombe touche le sol
+		{
+		Vent=(float)(random(100)-50)/2500;
+		Bombe.Explosion=1;                                       //explosion
+		Bombe.Used=0;
+		Put_trou(Bombe.PosX-12,200-Bombe.PosY-12,24,24,Trou);    //sprite sur 3 pages
+		}
+	}
+else if (Bombe.PosY<200)  //si la bombe sort...
+	{
+	Vent=(float)(random(100)-50)/2500;
+	Bombe.Used=0;                                             //...en creer une nouvelle
+	}
+else
+	{
+	Bombe.PosX+=Bombe.DirX;
+	Bombe.PosY+=Bombe.DirY;
+	}
+}
+  */
 
 
 //**********************************************************************************************
@@ -136,7 +460,7 @@ if(Deb_Tour)     //affichage actif?
 				}
 			}
 	}
-}
+}	
 
 
 
@@ -233,7 +557,6 @@ FadeOut=64;
 FinPart=0;                           	//Lire une piste audio
 Rebonds=0;
 Light=1;
-Wait=0;
 fcloseall();
 while((!FinPart)||FadeOut)                    	//tant que la touche [Esc] n'est pas enfoncée....
 	{
@@ -299,8 +622,6 @@ while((!FinPart)||FadeOut)                    	//tant que la touche [Esc] n'est 
 			Cur_Joueur%=Options.Nb_J_Tot;
 			CURJ=Liste[Cur_Joueur];
 			cont--;
-		  /*	if(cont==0)
-				FinPart=1;       */
 			}
 		CURT=Mouton[CURJ].Equipe;			//memorise l'equipe du mouton..(ce procede permet de gagne un peur de place en memoire...)
 		Arme=0;						//arme du mouton : le bazooka
@@ -341,7 +662,7 @@ while((!FinPart)||FadeOut)                    	//tant que la touche [Esc] n'est 
 	CpyPlan(x/3,(y>>2)+150,Plan_2,Page);      //affiche le second plan
 	if (Bombe.Used)
 		(*Proc[Arme])();			//execute la fonction des armes...
-	if((!Wait)&&(!Mouton[CURJ].Mort))
+	if(!Wait)
 		{
 		if (Arme==0||Arme==2)
 			Put_Viseur(CURJ);			//et place eventuellement un viseur.
@@ -358,7 +679,7 @@ while((!FinPart)||FadeOut)                    	//tant que la touche [Esc] n'est 
 			Mouton[Liste[cont]].Mort=1;	//le mouton est mort..
 			Message(13,0,Liste[cont]);	//afficher un message
 			if(cont!=Cur_Joueur)
-				Mouton[Liste[cont]].Frags++;	//ajouter cette mort au frags du joueur actuel.
+				Mouton[Liste[cont]].Frags++;	//ajouter cette mort au frags du joueur actuel.	
 			}
 		else if(!Mouton[Liste[cont]].Mort)	//si le mouton n'est pas mort...
 			{
@@ -399,30 +720,26 @@ while((!FinPart)||FadeOut)                    	//tant que la touche [Esc] n'est 
 		Chal--;
 		nb1=Chal>>4;					//amplitude des "vagues" de chaleur...
 		Bal();
-		for (cont=0;cont<200;cont++)			//afficher l'effet
+		for (cont=1;cont<200;cont++)			//afficher l'effet
 		cpyh(cont,(nb1*tab3[(nb2+cont)&255])>>5,Page,Video);              //(procedure en assembleur...)
 		nb2++;
 		}
-	else
-		{
+	else{
 		Bal();                                    //attente du Balayage vertical
 		Draw(Page,Tremble*320);			//Affiche la page de travail finale avec tremblement...
 		}
-
-if((Gagnant()!=0)&&(Wait==2)&&!Rebonds&&!Ecl)	//Teste les survivant... (avant le debut du prochain joueur)
+	if(Gagnant()&&!Wait&&!Rebonds&&!Ecl)	//Teste les survivant...
+		FinPart=1;				//et quitte s'il y a un gagnant...
+if(Scan_Code[1])
+	{FinPart=1;}
+if(FinPart)
 	{
-	FinPart=1;         //et quitte s'il y a un gagnant...
+	Dec_Pal(Pal[PalNb]);
+	Dec_Pal(Pal[!PalNb]);
+	SetAllPala(Pal[PalNb]);
+	FadeOut--;
 	}
-	if(Scan_Code[1])
-		{FinPart=1;}
-	if(FinPart)
-		{
-		Dec_Pal(Pal[PalNb]);
-		Dec_Pal(Pal[!PalNb]);
-		SetAllPala(Pal[PalNb]);
-		FadeOut--;
-		}
-	}
+}
 //FinTime();                                  //arrete le chronometre
 
 Remove_Clav();
@@ -737,7 +1054,7 @@ loop1:
 	mov bl,[si-320]                        //point de gauche
 	add ax,bx
 	mov bh,5
-	div bh                             //division par 5
+	div bh                             //division par 4
 	or al,al                             //al = 0? sinon décrémenter(effet de palette)
 	jz suite
 	dec al
@@ -812,7 +1129,6 @@ else
 //**********************************************************************************************
 //Ecran d'options... : si tu arrive a optimiser la place du code, ça serrait tres utile (j'ai pas encore eu le temps de chercher...)
 //**********************************************************************************************
-
 void OptionsScreen(void)
 {
 register cont;
@@ -900,10 +1216,10 @@ char *DebTxt;
 char temp[16][50];
 unsigned short b;
 
-sprintf(temp[0],Txt[15],CurT+1);
-sprintf(temp[1],Txt[16],Eq_Name[CurT]);
+sprintf(temp[0],"Equipe %d",CurT+1);
+sprintf(temp[1],"Nom : %s",Eq_Name[CurT]);
 for(cont=0;cont<4;cont++)
-	sprintf(temp[cont+2],Txt[17],cont+1,Mouton[CurT*8+cont].Nom);
+	sprintf(temp[cont+2],"Mouton %d : %s",cont+1,Mouton[CurT*8+cont].Nom);
 while(GetMouse(&x,&y));
 while(!((Cur_Obj==8)&&b))
 	{
@@ -953,11 +1269,11 @@ while(!((Cur_Obj==8)&&b))
 			}
 		if((Cur_Obj>5)&&(Cur_Obj<11))		//Reafficher les noms...
 			{
-			sprintf(temp[0],Txt[15],CurT+1);
-			sprintf(temp[1],Txt[16],Eq_Name[CurT]);
+			sprintf(temp[0],"Equipe %d",CurT+1);
+			sprintf(temp[1],"Nom : %s",Eq_Name[CurT]);
 			for(cont=0;cont<4;cont++)
-				sprintf(temp[cont+2],Txt[17],cont+1+Debu,Mouton[CurT*8+cont+Debu].Nom);
-			}
+				sprintf(temp[cont+2],"Mouton %d : %s",cont+1+Debu,Mouton[CurT*8+cont+Debu].Nom);
+		 	}
 		}
 	if(!Edit)	//mode edition des noms???
 		Put_Cur();		//non : afficher le curseurs de la souris
@@ -979,10 +1295,10 @@ while(!((Cur_Obj==8)&&b))
 						break;
 				}
 			}
-		sprintf(temp[0],Txt[15],CurT+1);
-		sprintf(temp[1],Txt[16],Eq_Name[CurT]);
+		sprintf(temp[0],"Equipe %d",CurT+1);
+		sprintf(temp[1],"Nom : %s",Eq_Name[CurT]);
 		for(cont=0;cont<4;cont++)
-			sprintf(temp[cont+2],Txt[17],cont+1+Debu,Mouton[CurT*8+cont+Debu].Nom);
+			sprintf(temp[cont+2],"Mouton %d : %s",cont+1+Debu,Mouton[CurT*8+cont+Debu].Nom);
 		}
 	FlamesAsm(Page,Page);
 	Put_Foy();
@@ -1017,7 +1333,7 @@ while(!(((Cur_Obj==8)||(Cur_Obj==7))&&b))
 	if(!b)
 		JustPush=0;
 	Cur_Obj=On_Obj(16);
-	Draw_Obj(75,15,Txt[18],Cur_Obj,32);
+	Draw_Obj(75,15,"Selectionnez les equipes",Cur_Obj,32);
 	for (cont=0;cont<6;cont++)
 		{
 		if(TeamListe[cont+Debut])
@@ -1079,17 +1395,17 @@ register cont;
 
 if(Winner>0)
 	{
-	sprintf(temp[0],Txt[19],Eq_Name[Winner-1]);
-	sprintf(temp[1],Txt[20],Mouton[Stats.Mouton[0]].Nom);
-	sprintf(temp[2],Txt[21],Mouton[Stats.Mouton[1]].Nom);
-	sprintf(temp[3],Txt[22],Mouton[Stats.Mouton[2]].Nom);
-	sprintf(temp[4],Txt[23],Mouton[Stats.Mouton[3]].Nom);
+	sprintf(temp[0],"L'Equipe %s gagne !",Eq_Name[Winner-1]);
+	sprintf(temp[1],"Le meilleur mouton : %s",Mouton[Stats.Mouton[0]].Nom);
+	sprintf(temp[2],"Le plus precis : %s",Mouton[Stats.Mouton[1]].Nom);
+	sprintf(temp[3],"Le plus violent : %s",Mouton[Stats.Mouton[2]].Nom);
+	sprintf(temp[4],"Le plus . . . INUTILE : %s",Mouton[Stats.Mouton[3]].Nom);
 	}
 else
 	{
 	temp[0][0]='\0';
 	temp[1][0]='\0';
-	sprintf(temp[2],Txt[24]);
+	sprintf(temp[2],"        Il n'y a aucun vainqueur!");
 	temp[3][0]='\0';
 	temp[4][0]='\0';
 	}
@@ -1124,16 +1440,11 @@ BurnScreen();
 //**********************************************************************************************
 void main(void)
 {
-//unsigned long images=0;           //nombre d'images enregistrés
-unsigned short cont;                //compteur
+//unsigned long images=0;                   //nombre d'images enregistrés
+unsigned short cont;                      //compteur
 unsigned short b;
 char fin=0;
-int version=0,revision=0,hma=0;
-int maxblksize;
-long freem;
-int xmsdst;
-
-clrscr();                           //efface l'écran
+clrscr();                                 //efface l'écran
 randomize();
 
 for(cont=0;cont<256;cont++)			//initialise le tableau avec les valeurs aleatoires
@@ -1148,45 +1459,26 @@ for(cont=0;cont<256;cont++)			//initialise le tableau avec les valeurs aleatoire
 //printf("\nMemoire Libre :%lu octets\n",coreleft());
 //Init_XMS();		//initialise la memire XMS...
 //Init_Pages();
-Lire_Jeu_Cfg();									//lire configuration du jeu
-Nb_CD();												//Lit les info du cd (premier lecteur...)
+Lire_Jeu_Cfg();		//lire configuration du jeu
+Nb_CD();			//Lit les info du cd (premier lecteur...)
 Cur_Lect=Lect+CD.First;	//selection du lecteur
-Get_T_Inf();										//prendre les info des pistes du cd (longueur, nombre, debut....)
-
-if(xms_installed)
-	{
-	printf("Memoire XMS installee");
-	xms_init();
-	xms_version(&version,&revision,&hma);
-	//xms_mem_info(&maxblksize,&freem);
-	printf("\nVersion : %d, Revision : %d, HMA %d",version,revision,hma);
-	//printf("\nMemoire libre : %d",freem);
-	//printf("\nBlock Max : %d\n",maxblksize);
-	}
- else
-	{
-	printf("Pas de memoire XMS instalee, dommage!\n");
-	}
-
+Get_T_Inf();		//prendre les info des pistes du cd (longueur, nombre, debut....)
 printf("\nRecherche de CD Audio dans le lecteur %c: .....\n",Cur_Lect+65);
 printf("\nMouton Chronicles Version %s Par :\n\tBaudin A. (Bart 57)\n\tJolivalt J.   (dJo)\n\tDri C.  (GnoMaster)\n\n\nSite officiel : www.ifrance.com/MChronicles",VERSION);
-
 getch();                                  //Lit une touche
 Init_Tab();                               //Initlise le tableau
 Init_Mem();                               //Initalise la memoire
-Mouton=farcalloc(96,46);						//memoire pour les strucuress mouton...
-Lire_Joueur_Cfg();								//lire le noms des mouton, des equipes et leurs couleurs
-Lire_Lang();
-									//memorise les phrases
-ModeVGA();											//mode vga
-delay(2000);										//attend que l'ecran ai finit de changer de resolution...
-start();												//ecrans de demarages
-Load_Graph_Menu();								//charger les graphismes
-//setvect(0x1c,Vide);							//enleve l'effet de clignottement
+Mouton=farcalloc(96,46);			//memoire pour les strucuress mouton...
+Lire_Joueur_Cfg();				//lire le noms des mouton, des equipes et leurs couleurs
+Lire_Lang();					//memorise les phrases
+ModeVGA();						//mode vga
+delay(2000);					//attend que l'ecran ai finit de changer de resolution...
+start();						//ecrans de demarages
+Load_Graph_Menu();				//charger les graphismes
+//setvect(0x1c,Vide);                       //enleve l'effet de clignottement
 /*ModeVGA();
 Init_Pal(Pal[2]);
 SetAllPala(Pal[2]);*/
-
 Init_Long();					//positon des objets
 Let=1;
 fcloseall();

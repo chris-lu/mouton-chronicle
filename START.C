@@ -28,9 +28,14 @@ add si,ax
 add di,ax
 mov ax,pos
 add di,ax
-mov cx,320
-sub cx,pos
-//db 66h
+mov ax,320
+sub ax,pos
+mov bx,4
+div bx
+mov cx,ax
+db 66h
+  rep movsw
+mov cx,dx
   rep movsb
 pop ds
 }
@@ -49,9 +54,14 @@ add si,ax
 add di,ax
 mov ax,pos
 add si,ax
-mov cx,320
-sub cx,pos
-//db 66h
+mov ax,320
+sub ax,pos
+mov bx,4
+div bx
+mov cx,ax
+db 66h
+  rep movsw
+mov cx,dx
   rep movsb
 pop ds
 }
@@ -162,7 +172,7 @@ while(kbhit())
 	getch();
 Clr(Plan_2[0]);
 Clr(Plan_2[1]);
-Play(1);
+Play(2);
 while(!kbhit())
 {
 cc++;
@@ -187,12 +197,12 @@ if(phase==0)
 	}
 	else if(phase==6)
 		{
-	  /*	if(!screen)
-			Play(1);    */
+		if(!screen)
+			Play(3);
 		screen++;
 		phase=0;
 		LoadPCX(Fich[screen],Plan_2[1],Pal[1]);
-		delay(1000);
+		delay(1350);
 		if(screen==3)
 				break;
 		}
@@ -211,8 +221,8 @@ nb3+=2;
 Bal();
 Draw(Plan_2[1],0);
 }
-
-
+if(!screen)
+	Play(3);
 Clr(Page);
 Draw(Page,0);
 farfree(Plan_2[0]);

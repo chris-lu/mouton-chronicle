@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <conio.h>
-#define NBF 15
+#define NBF 17
 
-char ListFich[20][13]={"Mouton.c","mouton.h","mouse.c","vga_c.c","vga.c","variables.h","texte.c","textemen.c","palette.c","plans.c","moutgest.c","clavier.c","graph.c","option.c","start.c"};
+char ListFich[25][13]={"Mouton.c","mouton.h","mouse.c","vga_c.c","vga.c","variables.h","texte.c","palette.c","plans.c","moutgest.c","clavier.c","graph.c","option.c","start.c","cd.c","defil.c","armes.c"};
 unsigned long NbC=0;
+unsigned char NbF=0;
+unsigned char NbI=0;
 unsigned short Lignes=0;
 
 FILE *Fichier;
@@ -17,6 +19,7 @@ for (cont=0;cont<NBF;cont++)
 {
 if ((Fichier=fopen(ListFich[cont],"r"))!=NULL)
 	{
+	NbF++;
 	while((ch!=EOF))
 		{
 		ch=fgetc(Fichier);
@@ -25,11 +28,17 @@ if ((Fichier=fopen(ListFich[cont],"r"))!=NULL)
 		NbC++;
 		}
 	ch=0;
+	fclose(Fichier);
 	}
-	else printf("\nFichier [%s] ignore....",ListFich[cont]);
+	else {printf("\nFichier [%s] ignore....",ListFich[cont]);NbI++;}
 }
-printf("\n\nProjet : Mouton Chronicles");
-printf("\nNombre de fichiers : %d",cont);
+printf("\n\n*********************************************************");
+printf("\n*****                 Statistiques                   ****");
+printf("\n*********************************************************");
+printf("\n\nProjet : Mouton Chronicles\n");
+printf("\nNombre de fichiers lus : %d",NbF);
+if(NbI)
+printf("\n\tFichiers ignores : %d",NbI);
 printf("\nNombre de characteres : %lu",NbC);
 printf("\nNombre de lignes : %d",Lignes);
 }

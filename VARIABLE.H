@@ -33,7 +33,7 @@ struct{					//structure des statistiques
 	unsigned char Meilleur;
 	unsigned long Precis;
 	unsigned short Bourrin;
-	char Inutile;
+	short Inutile;
 	unsigned char Mouton[4];
 }Stats;
 
@@ -59,8 +59,6 @@ struct{					//structure pour les 2 trous (petits et grands)
 }Trou[2];
 
 struct{					//Structure pour les explsoions
-	unsigned short StartX;		//Coordonnés de l'explosion : X
-	unsigned short StartY;		//    "       "        "    : Y
 	unsigned short Used;		//Structure Utilisée ?
 	float X[NBDEB];			//Coordonnés de chaque eclat : X
 	float Y[NBDEB];			//     "       "     "       : Y
@@ -167,7 +165,8 @@ char far Let_Lg1[96]={4,2,4,10,7,12,10,2,4,4,0,8,3,5,2,6,8,6,7,7,8,8,8,8,7,8,2,3
 char far Let_Lg[96]={2,1,3,5,5,4,4,2,2,2,3,3,2,3,1,4,3,3,3,3,3,3,3,3,3,3,1,1,2,3,2,3,4,4,4,4,4,4,4,5,4,3,4,4,4,4,5,4,4,5,4,4,4,4,4,4,4,4,4,2,4,2,2,3,4,3,3,3,3,3,3,3,3,1,2,3,2,5,3,3,3,3,2,2,2,3,3,5,3,3,3,3,5,3,4};
 															  //.											  //A                       //N                          //Z        //a             //i                           //x
 //texte du menu...
-char Txt[15][25]={"MOUTON CHRONICLES"," Jouer ","Options","Equipes","Resulat"," Sortie","Suite","Retour","OK","{","}","Vitalite :","Nombre de joueurs :","Taille du terrain :","Niveau :"};
+//char Txt[15][25]={"MOUTON CHRONICLES"," Jouer ","Options","Equipes","Resulat"," Sortie","Suite","Retour","OK","{","}","Vitalite :","Nombre de joueurs :","Taille du terrain :","Niveau :"};
+char Txt[26][30]={"MOUTON CHRONICLES","","","","","","","","","","","","","",""};
 
 struct		//structure pour les menu
 {
@@ -209,7 +208,7 @@ char TeamListe[12];	//Liste des equipes
 
 unsigned short Pos[16*4]={90,20,0,0,   145,60,54,14,  145,80,54,14,   145,100,54,14, 145,120,54,14, 145,140,54,14,   250,155,54,14  ,30,155,54,14  ,150,155,54,14,   300,50,14,14,  300,135 ,14,14,  10,68,250,14, 10,86,280,14, 10,104,280,14,10,122,280,14,10,50,280,14};
 char CURJ;			//Joueur actuel par rapport a son ordre de jeu
-char *Pointeur;      //pointeur pour le clavier;
+char far *Pointeur;      //pointeur pour le clavier;
 char Fallow;		//suivre le mouton
 unsigned short Chal;	//compeur pour les effets de chaleur
 unsigned short Ecl;	//compteurs pour les eclairs
@@ -225,9 +224,11 @@ unsigned char Espace;	//espaces entre 2 elements du decors
 unsigned char NbRot;
 void *LetType[2]={Let_Lg,Let_Lg1};
 unsigned char Let;
+char lang[5]={"fr"};
 
 unsigned short Light=0;
 unsigned char Orage=1;
 unsigned char FadeOut;
 unsigned char FinPart;
+unsigned char NoExit=0;
 

@@ -1,3 +1,4 @@
+#include <dos.h>
 float far temps;
 void far interrupt (*oldit)(void);
 void far interrupt Time(void);

@@ -10,7 +10,7 @@
 #include "mouse.c"
 #include "cd.c"
 
-#define NB 97
+#define NB 95
 
 #define Rayon 28                         //26
 #define Diametre 56
@@ -28,8 +28,7 @@ byte *Y;
 short *X;
 unsigned short YP[200];
 
-char Texte[97][45]={"           MOUTON CHRONICLES","            Version 0.13 Beta","","    Creation et developpement :","Atlantys Team","","    Idee Originale :","Dri Christophe (GnoMaster)","Jolivalt Jonathan (dJo)", "Baudin Aymeric(Bart57)","","    Programmation/Graphismes :"," GnoMaster","", "    Graphismes/Musiques :","dJo","","    Graphismes/Documentation" ,"Bart57","","    Testeurs :","GnoMaster","dJo","Bart57","Guinness","Wax Renaud","Del Frate Sylvain","","Remerciements Suplementaires : ","Mr. Chambon","Mr. Mariate","Bouchraki Khier","Marez Julien","Mercier Julien","Michel Geoffrey","Ney Jonathan","Signo Julien","Wilkosz Alexia",
-"Zannoni Adeline","","Tous les habitants d'IRC :) ","","Etc...(la liste est encore longue)","","","","","","Aucun Mouton n'a ete blesse ou tue","au cour du devellopement de ce jeu.","","Toutes images pouvant faire croire a des","actes de violance envers l'une des","betes du jeu sont fausses!Il sagissait","seulement de figurants deguises en","moutons et non de vrais moutons. . .","","","","","",
+char Texte[95][45]={"           MOUTON CHRONICLES","            Version 0.11b Beta","","    Creation et developpement :","Atlantys Team","","    Idee Originale :","Dri Christophe (GnoMaster)","Jolivalt Jonathan (dJo)", "Baudin Aymeric(Bart57)","","    Programmation/Graphismes :"," GnoMaster","", "    Graphismes/Musiques :","dJo","","    Graphismes/Documentation" ,"Bart57","","    Testeurs :","GnoMaster","dJo","Bart57","Guinness","Wax Renaud","Del Frate Sylvain","","Remerciements Suplementaires : ","Mr. Chambon","Mr. Mariate","Bouchraki Khier","Marez Julien","Meg","Mercier Julien","Michel Geoffrey","Ney Jonathan","Signo Julien","Wilkosz Alexia","Zannoni Adeline","","Etc...(la liste est encore longue)","","","","","","Aucun Mouton n'a ete blesse ou tue","au cour du devellopement de ce jeu.","","Toutes images pouvant faire croire a des","actes de violance envers l'une des","betes du jeu sont fausses!Il sagissait","seulement de figurants deguises en","moutons et non de vrais moutons. . .","","","","","",
 "Nous rendons aussi homage aux","figurants blesses ou tue au cour du ","devellopement de ce jeu et present-","ons nos excuses a leurs familles.","","","","","","","","","","","","","","","","","","","","C'est FINI !!!","","","","","","","Enfin, jusqu'au prochain jeu....."};
 
 unsigned char far *Lettre[96];	//Lettre

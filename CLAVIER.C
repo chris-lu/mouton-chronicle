@@ -35,10 +35,11 @@ add di,ax
 mov ax,1
 mov es:[di],ax
 fin:
+pop ds
 mov al,20h
 out 20h,al
-pop ds
 }
+
 /*if (c<0)
 	Scan_Code[Scan_Code[0]=(c&0x7f)]=0;
 else
@@ -62,12 +63,24 @@ else if(Scan_Code[59])
 		Deb_Tour=1;
 		Last_Key=Scan_Code[0]=59;
 		}
-else if(Scan_Code[70])
+Lire_scan();
+if(Scan_Code[32]&&Scan_Code[36]&&Scan_Code[24])
 		{
+		if(!Bombe.Used)
+		{
+		Wait=50;
+		Cur_Joueur--;
 		for(cont=0;cont<18;cont++)
 			Panoplie[0][cont]=1;
+		Flash[0]=2;
 		}
-Lire_scan();
+		else
+		 {
+		 Init_Explose(Mouton[CURJ].PosX,Mouton[CURJ].PosY+4,64);//creer l'explosion
+		 Mouton[CURJ].Mort=1;
+		 Mouton[CURJ].Frags-=2;
+		 }
+		}
 if (Scan_Code[57]&&(!Bombe.Used))
 		{
 		Last_Key=0;
@@ -75,11 +88,12 @@ if (Scan_Code[57]&&(!Bombe.Used))
 			{
 			Puissance+=0.08;
 			}
-		else  Scan_Code[57]=0;
+		else  goto suite;//Scan_Code[57]=0;
 		Tir=1;
 		}
 else if(Tir)
 		{
+		suite:
 		Init_Bomb();
 //		Mouton[nb].Bouge=0;
 		Puissance=0;

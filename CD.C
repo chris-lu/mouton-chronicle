@@ -2,7 +2,6 @@ struct
 {
 char First;
 int Nombre;
-
 }CD;
 
 unsigned char Cur_Lect;
@@ -40,7 +39,7 @@ unsigned char i;
 struct {
 unsigned long deb;
 unsigned long taille;
-}Tracks[25];
+}Tracks[30];
 
 struct {
 unsigned char sf;
@@ -50,11 +49,12 @@ unsigned long total;
 }CDInf;
 
 unsigned char Buffer[15];//tout peir buffer
-/*struct
+
+struct
 {
 unsigned char SubUnit;
 void far *Point;
-}Info[50];   */
+}Info[50];
 
 
 void Nb_CD(void)
@@ -73,7 +73,8 @@ pop ds
 CD.Nombre=temp;
 CD.First=temp2;
 }
-/*void Get_Info(void)
+
+void Get_Info(void)
 {
 void far *temp2;
 int temp;
@@ -90,8 +91,8 @@ mov al,1h
 int 2fh
 pop ds
 }
-}
-			 */
+}         
+
 
 void Requete(unsigned char nb,void far* buf)
 {
