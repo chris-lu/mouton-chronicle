@@ -1,0 +1,24 @@
+
+
+
+void CpyPlan(unsigned short x,unsigned short y,unsigned char **Plan,unsigned char *Page)
+{
+register p,cont;
+p=x/320;    //attention a l'arrondi!!!
+x%=320;
+if(x&&y)
+{
+/*Blka(x,320-x,0,Plan[p],Page);
+Blka(0,x,320-x,Plan[p+1],Page);
+}
+else
+Blka(0,320,0,Plan[p],Page); */
+Blka(x,0,320-x,y,0,201-y,Plan[p],Page);
+Blka(0,0,x,y,320-x,201-y,Plan[p+1],Page);
+}
+else if(!x&&y)
+Blka(0,0,320,y,0,201-y,Plan[p],Page);
+else
+Blka(0,0,320,y,0,201-y,Plan[p],Page);
+
+}

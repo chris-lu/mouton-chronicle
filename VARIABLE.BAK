@@ -1,0 +1,7 @@
+char fich[6][10]={"p11.pcx","p12.pcx","p13.pcx","p21.pcx","p22.pcx","plan3.pcx"};
+unsigned char far *Plan_1[3];
+unsigned char far *Plan_2[2];
+unsigned char far *Plan_3[1];
+unsigned char far *Page;
+unsigned char far *Pal[3];
+unsigned char far Trou[28*28];
