@@ -1,8 +1,8 @@
-#define ERROR	{ ModeTxt();	printf("error %X XMS",nb);	getch();	exit(0);	}
-#define LEVCFG "-DECORE = %d \n-CIEL = %d\n# 0 0 0 0.000000 0.000000 0.000000 \n-BACK = %d\n#%s\n#%s\n-END"
-#define JEUCFG "-VITALITE = %d\n-JOUEURS = %d \n-PLANS = %d \n-SUIVRE = %d\n-CURNIV = %d \n-NIVEAUX = %d\n"
+//#define ERROR	{ ModeTxt();	printf("error %X XMS",nb);	getch();	exit(0);	}
+//#define LEVCFG "-DECORE = %d \n-CIEL = %d\n# 0 0 0 0.000000 0.000000 0.000000 \n-BACK = %d\n#%s\n#%s\n-END"
+#define JEUCFG "-VITALITE = %d\n-JOUEURS = %d \n-PLANS = %d \n-SUIVRE = %d\n-LECTCD = %d\n-MELANGE = %d\n-CURNIV = %d \n-NIVEAUX = %d\n"
 //#define GRAV  0.049    // 9.81/200
-#define VERSION "0.11 Beta"
+#define VERSION "0.11b Beta"
 
 #include <stdio.h>
 #include <conio.h>
@@ -57,8 +57,8 @@ void StatsScreen(void);
 
 
 void Txt_Down(void);
-void Print_Let(unsigned short x,unsigned char y,unsigned char *scr,unsigned char Nb,unsigned char Coul);
 void Load_Txt(void);
+void Print_Let(unsigned short x,byte y,byte lh,byte ht,byte *scr,byte Nb,byte Coul);
 void Print_Txt(unsigned short x,unsigned char y,char * txt,unsigned char *Page,unsigned char Coul);
 void Print_Nb(unsigned short x,unsigned char y,unsigned short nb,unsigned char *Page,unsigned char Coul);
 void Print_Let_Menu(unsigned short x,unsigned char y,unsigned char *scr,unsigned char Nb,unsigned char Coul);
@@ -139,4 +139,6 @@ void inittab(void);
 void cpyh(unsigned short haut,short pos,unsigned char *page1,unsigned char *page2);
 void cpyv(unsigned short col,short pos,unsigned char *page1,unsigned char *page2);
 void start(void);
+
+void SetMouse(unsigned short x,unsigned short y);
 

@@ -2,9 +2,11 @@ struct
 {
 char First;
 int Nombre;
+
 }CD;
 
 unsigned char Cur_Lect;
+unsigned char Lect;
 
 struct {
 unsigned char Taille;
@@ -47,7 +49,7 @@ unsigned char fin;
 unsigned long total;
 }CDInf;
 
-
+unsigned char Buffer[15];//tout peir buffer
 /*struct
 {
 unsigned char SubUnit;
@@ -147,10 +149,22 @@ Tracks[cont-1].taille=redtoshg(CDInf.total)-redtoshg(Tracks[cont-1].deb);
 }
 
 
+char CD_Changed(void)
+{
+Block1.Fonc=3;
+Block1.Taille=2;
+Block1.buffer=&Buffer[0];
+Buffer[0]=0x09;
+Requete(Cur_Lect,&Block1);
+return(Buffer[1]);
+}
+
 
 
 void Play(unsigned char piste)
 {
+if(CD_Changed()!=1)
+	Get_T_Inf();
 Block2.Fonc=0x84;
 Block2.Taille=22;
 Block2.adrmode=0;
@@ -166,3 +180,14 @@ Block2.Taille=22;
 Requete(Cur_Lect,&Block2);
 }
 
+unsigned char Is_Playing(void)
+{
+if(CD_Changed()!=1)
+	Get_T_Inf();
+Block1.Fonc=3;
+Block1.Taille=11;
+Block1.buffer=&Buffer[0];
+Buffer[0]=0x0F;
+Requete(Cur_Lect,&Block1);
+return(Buffer[1]);
+}

@@ -43,6 +43,7 @@ unsigned short haut;              //compteur
 unsigned short temp;              //Variable teporaire
 unsigned short pos=100;            //Position du debut du terrain
 unsigned char Plat=0,Coul;
+unsigned char MinHt;
 unsigned short SprPos[9];
 char nb=0;
 
@@ -53,15 +54,19 @@ B=random(12)+10;                  //Variable tarrain 2
 C=random(13)+9;                   //Variable tarrain 3
 D=random(14)+8;                   //Variable tarrain 3
 
+for(cont=0;cont<Nb_Spr;cont++)
+	if(MinHt>Deco_Inf[temp].Ht)
+		MinHt=Deco_Inf[temp].Ht;
+
 for (cont=0;cont<TX;cont++)
 	{
 	Ytemp[cont]=(random(5)-2)+((sin(cont*0.001*A+1))*cos((cont)*0.0009*B+1)+cos((cont)*C*0.002)*0.09+sin((cont)*D*0.0015)*0.2); //Equation du terrain
 	if((pos+Ytemp[cont]>16)&&(pos+Ytemp[cont]<190)) //limite du terrain
 		pos+=Ytemp[cont];                               //position
-	if (pos+Ytemp[cont]<110)            //a remplacer avec la hauteur max du decor : ...<200-HtMax
+	if (pos+Ytemp[cont]<200-MinHt)            //a remplacer avec la hauteur max du decor : ...<200-HtMax
 		{
 		Plat++;
-		if(Plat>180)
+		if(Plat>Espace)
 			{
 			SprPos[nb]=cont;   //Placer le decor
 			nb++;
@@ -118,7 +123,7 @@ void Load_Ter(void)
 char temp[255];
 register cont;
 for(cont=0;cont<Nb_Spr;cont++)
-	Deco_Spr[cont]=farmalloc(Deco_Inf[cont].Lg*Deco_Inf[cont].Ht);
+	Deco_Spr[cont]=farmalloc((Deco_Inf[cont].Lg+1)*(Deco_Inf[cont].Ht+1));
 sprintf(temp,"mouton/%s/Decor.pcx",Niveau.Level[Niveau.Cur_Level]);
 LoadPCX(temp,Plan_1[0],Pal[1]);       //charger les sprites de fond
 Inc_Scr(Pv[6],Plan_1[0]);                     //rectifie les couleurs

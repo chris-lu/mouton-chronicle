@@ -81,25 +81,19 @@ if (Scan_Code[57]&&(!Bombe.Used))
 else if(Tir)
 		{
 		Init_Bomb();
-		Mouton[nb].Bouge=0;
+//		Mouton[nb].Bouge=0;
 		Puissance=0;
 		Tir=0;
 		if(!Arme)
 			Rebonds=7;
+		if(Is_Playing()&2)
+			Play(Track);
+		Look_Obj(Mouton[CURJ].PosX+4,Mouton[CURJ].PosY+4,&x,&y);
+		SetMouse(x,y);
 		}
 else	if(Scan_Code[60])
 		{
-		y1=300-Mouton[nb].PosY;
-		x1=Mouton[nb].PosX-160;
-		if(x1<0)
-			x1=0;
-		else if(x1>TX)
-			x1=TX;
-		if(y1>300)
-			y1=300;
-		else
-		if(y1<1)
-		  y1=1;
+		Look_Obj(Mouton[nb].PosX,Mouton[nb].PosY,&x1,&y1);
 		SetMouse(x1,y1);
 		}
 if(!Mouton[nb].Bouge)
@@ -145,12 +139,11 @@ if(!Mouton[nb].Bouge)
 		}
 	if (Scan_Code[72])
 		{
-		if(Vise<253)
+		if(Vise<255)
 			Vise+=1;
 		}
 	if (Scan_Code[74]&&(Last_Key!=-1)&&!Bombe.Used)         //evite une execution successive...(trop rapide) et le changement d'arme en cour de tir
 		{
-		Fallow=1;
 		for(cont=Arme;cont;cont++)
 			if(Stock[CURT][Arme-1])
 				break;
@@ -161,7 +154,6 @@ if(!Mouton[nb].Bouge)
 		}
 	if (Scan_Code[78]&&(Last_Key!=-1)&&!Bombe.Used)
 		{
-		Fallow=1;
 		for(cont=Arme;cont<5;cont++)
 			if(Stock[CURT][Arme+1])
 				break;

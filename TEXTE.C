@@ -15,7 +15,7 @@ register cont;
 	}
 }
 
-void Print_Let(unsigned short x,byte y,byte *scr,byte Nb,byte Coul)
+void Print_Let(unsigned short x,byte y,byte lg,byte ht,byte *scr,byte Nb,byte Coul)
 {
 unsigned int t;
 void *Poit;
@@ -30,9 +30,9 @@ asm{
   add cx,x
   add di,cx
   mov ax,di
-  mov bx,6
+  mov bh,ht
 psprh:
-  mov cx,5
+  mov ch,lg
 psprl:
   mov dl,ds:[si]
   or dl,dl
@@ -42,14 +42,14 @@ psprl:
 psprl2:
   inc si
   inc di
-  dec cx
-  or cx,cx
+  dec ch
+  or ch,ch
   jnz psprl
 
   add ax,320
   mov di,ax
-  dec bx
-  or bx,bx
+  dec bh
+  or bh,bh
   jnz psprh
   pop ds
 	}
@@ -60,11 +60,21 @@ psprl2:
 void Load_Txt(void)
 {
 register cont;
-LoadPCX("Mouton/Font.pcx",Page,Pal[1]);       //charger les sprites de fond
+LoadPCX("Mouton/Font.pcx",Page,Pal[1]);
 for(cont=0;cont<53;cont++)
 	GetBlk1((cont*6)+1,1,5,6,Page,Lettre[cont]);
 for(cont=0;cont<43;cont++)
 	GetBlk1((cont*6)+1,8,5,6,Page,Lettre[cont+53]);
+
+}
+
+void Load_Txt_Menu(void)
+{
+register i,j;
+LoadPCX("Mouton/fontm.pcx",Page,Pal[2]);       //charger les sprites de fond
+for(j=0;j<4;j++)
+	for(i=0;i<24;i++)
+		GetBlk1((i*13)+1,(j*13)+1,12,12,Page,Lettre[j*24+i]);
 
 }
 
@@ -77,9 +87,16 @@ if((txt[cont]>31)&&(txt[cont]<127))
 	{
 	if(x>315)
 	return;
-	Print_Let(x,y,Page,txt[cont]-32,Coul);
-	x+=Let_Lg[txt[cont]-32]+1;
-
+	if(Let)
+		{
+		Print_Let(x,y,12,12,Page,txt[cont]-32,Coul);
+		x+=Let_Lg1[txt[cont]-32]+2;
+		}
+	else
+		{
+		Print_Let(x,y,5,6,Page,txt[cont]-32,Coul);
+		x+=Let_Lg[txt[cont]-32]+1;
+		}
 	}
 cont++;
 }
@@ -103,8 +120,17 @@ nb-=temp*Exp;
 {
 if(x>315)
 	return;
-Print_Let(x,y,Page,temp+16,Coul);
-x+=Let_Lg[temp+16]+1;
+if(Let)
+	{
+	Print_Let(x,y,12,12,Page,temp+16,Coul);
+	x+=Let_Lg1[temp+16]+2;
+	}
+else
+	{
+	Print_Let(x,y,5,6,Page,temp+16,Coul);
+	x+=Let_Lg[temp+16]+1;
+	}
+
 }
 Lng--;
 Exp/=10;

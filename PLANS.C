@@ -55,6 +55,17 @@ pop ds
 Put(270,20,24,24,Page,Lune);
 }
 
+void Draw_White(unsigned char * Page)
+{
+asm{
+  push ds
+  les di,Page
+  mov ax,-1
+  mov cx,32000
+  rep stosw
+  pop ds
+}
+}
 
 //**********************************************************************************************
 //Copie un des plan dans la page selectionné

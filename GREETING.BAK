@@ -1,6 +1,4 @@
-//#include <stdlib.h>
 #include <conio.h>
-//#include <stdio.h>
 #include <dos.h>
 
 unsigned char far *Video=(unsigned char far *)MK_FP(0xB800,0);
@@ -8,7 +6,7 @@ unsigned char far Page[4000];
 unsigned short Cur_Char=0,Cur_Pos=0;
 unsigned char Pal[192],Last[192];
 void far interrupt (*Vide)(void);
-unsigned char Txt[]={"**********************Mutant\r\r\r\r\routon Chronicles Version 0.09 \r\r\r10 Alpha*********************\n\n -Genre : Simulation de combats de moutons\n -Createurs :\n    Dri C.      (GnoMaster)  :  Code /Gfx\n    Jolivalt J.       (dJo)  :  Gfx / Sfx\n    Baudin A.      (Bart57)  :  Gfx/Misc.\n -Date de creation : Dimanche 9 Janvier 1999\r\r\r\r2000 20:54:42      \r\r\r\r\r\r\r\r43      \r\r\r\r\r\r\r\r44\n\n......................................\n\n  Pour plus d'informations, Et bien.   .   .   .   .   .   .   .   Rien!\n\n.         \n.         \n.         \n.                \n"};
+unsigned char Txt[]={"**********************Mutant\r\r\r\r\routon Chronicles Version 0.10 \r\r\r11 Beta**********************\n\n -Genre : Simulation de combats de moutons\n -Createurs :\n    Dri C.      (GnoMaster)  :  Code /Gfx\n    Jolivalt J.       (dJo)  :  Gfx / Sfx\n    Baudin A.      (Bart57)  :  Gfx/Misc.\n -Date de creation : Dimanche 9 Janvier 1999\r\r\r\r2000 20:54:42      \r\r\r\r\r\r\r\r43      \r\r\r\r\r\r\r\r44\n\n......................................\n\n  Pour plus d'informations, vous pouvez consultez la page web officielle du jeu:    mchronicles.ifrance.com ou www.ifrance.com/mchronicles\n\n.         \n.         \n.         \n.\n  Tous nos remerciements a ceux (ou celles) qui nous on aide dans l'aboutissement de ce projet....."};
 void Draw8025(unsigned char far *Pg)
 {
 asm{

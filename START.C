@@ -162,6 +162,7 @@ while(kbhit())
 	getch();
 Clr(Plan_2[0]);
 Clr(Plan_2[1]);
+Play(1);
 while(!kbhit())
 {
 cc++;
@@ -186,6 +187,8 @@ if(phase==0)
 	}
 	else if(phase==6)
 		{
+	  /*	if(!screen)
+			Play(1);    */
 		screen++;
 		phase=0;
 		LoadPCX(Fich[screen],Plan_2[1],Pal[1]);
