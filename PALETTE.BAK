@@ -1,21 +1,36 @@
 /***************************************************************
 Palette :
-0-16:Etoiles
-16-32:premier plan
-32-48:Lune
-48-144:2nd plan
-144-168:Bonhomme
+0-16  	:Etoiles        *
+16-32		:premier plan 	 *
+32-64		:moutons      	 *
+64-72		:sang           *
+72-136	:2nd plan       *
+136-152	:Lune       	 *
+152-208	:Bonhomme   	 *
 */
 
 void Mk_Snow(unsigned char far *Palette)
 {
 register cont;
-for (cont=16;cont<32;cont++)
+for (cont=Pv[1];cont<Pv[2];cont++)
 {
 Palette[cont*3]=cont*2;
 Palette[cont*3+1]=cont*2;
 Palette[cont*3+2]=cont*2;
 //Palette[cont*3+2]=cont*2;
+}
+}
+
+void Mk_Blood(unsigned char far *Palette)
+{
+register cont,temp=31;
+for (cont=Pv[3];cont<Pv[4];cont++)
+{
+Palette[cont*3]=temp;
+Palette[cont*3+1]=20;
+Palette[cont*3+2]=20;
+//Palette[cont*3+2]=cont*2;
+temp+=4;
 }
 }
 

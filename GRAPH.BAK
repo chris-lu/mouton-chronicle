@@ -1,0 +1,147 @@
+void Put_Spr(unsigned short x,unsigned short y,word l,word h,bytef *buf)
+{
+  register byte j;
+  register word i;
+  for(j=0;j<h;j++)
+  {
+		for(i=0;i<l;i++)
+	 {
+
+		if(*buf)                 //Encre 1?
+			if(x+i<TX&&(y<200))              //dans l'écran?(inclue x<0  et x>960 car non signé!)
+			Plan_1[(x+i)/320][Y[y]+((x+i)%320)]=*buf; //Transparence … l'encre 0
+		buf++;                      //point suivant
+	 }
+	 y++;                          //ligne suivante
+  }
+}
+
+void Init_Ter(void)
+{
+unsigned short Ytemp[TX];        //abscisses de chaque point du terrain
+register long cont;               //compteur
+unsigned short haut;              //compteur
+unsigned short temp;              //Variable teporaire
+unsigned short pos=100;            //Position du debut du terrain
+unsigned char Plat=0;
+unsigned short SprPos[9];
+unsigned char nb=0;
+
+randomize();                      //Initalise le générateur de nombres aléatoires
+pos=random(75)+25;
+A=random(2)+1;                    //Variable tarrain 1
+B=random(12)+10;                  //Variable tarrain 2
+C=random(13)+9;                   //Variable tarrain 3
+D=random(14)+8;                   //Variable tarrain 3
+
+for (cont=0;cont<TX;cont++)
+{
+Ytemp[cont]=(random(5)-2)+((sin(cont*0.001*A+1))*cos((cont)*0.0009*B+1)+cos((cont)*C*0.002)*0.09+sin((cont)*D*0.0015)*0.2); //Equation du terrain
+if((pos+Ytemp[cont]>16)&&(pos+Ytemp[cont]<190)) //limite du terrain
+pos+=Ytemp[cont];                               //position
+if (pos+Ytemp[cont]<110)
+{
+Plat++;
+if(Plat>200)
+{
+SprPos[nb]=cont;
+nb++;
+Plat=0;
+}
+}
+
+Ytemp[cont]=pos;
+}
+for (cont=0;cont<nb;cont++)
+{
+//temp=random(430)+430*cont+50;
+//if(Ytemp[temp]+83<200)
+if(Ytemp[SprPos[cont]]<40)
+Put_Spr(SprPos[cont]-37,60-(Ytemp[SprPos[cont]]),58,160,Sapin);
+else
+Put_Spr(SprPos[cont]-37,127-(Ytemp[SprPos[cont]]),74,83,Bonhomme);
+}
+for (cont=0;cont<TX;cont++)
+{
+temp=Y[200-Ytemp[cont]]+(cont%320);                     //position sur les pages
+Plan_1[cont/320][temp]=31;                      //degradé
+Plan_1[cont/320][temp+320]=30;                  //   "
+Plan_1[cont/320][temp+640]=29;                  //   "
+Plan_1[cont/320][temp+960]=28;                  //   "
+Plan_1[cont/320][temp+1280]=29;                 //   "
+Plan_1[cont/320][temp+1600]=30;                 //   "
+for(haut=Ytemp[cont]-6;haut>0;haut--)
+  Plan_1[cont/320][Y[200-haut]+(cont%320)]=31;  //remplissage du terrain
+}
+}
+
+
+void Put_trou(unsigned short x,unsigned short y,word l,word h,bytef *buf)
+{
+  register byte j;
+  register word i;
+  for(j=0;j<h;j++)
+  {
+		for(i=0;i<l;i++)
+	 {
+		if(*buf==1)                 //Encre 1?
+			if(x+i<TX&&y<200)              //dans l'écran?(inclue x<0  et x>960 car non signé!)
+			Plan_1[(x+i)/320][Y[y]+((x+i)%320)]=0; //Transparence … l'encre 0
+		buf++;                      //point suivant
+	 }
+	 y++;                          //ligne suivante
+  }
+}
+
+
+
+
+
+
+
+ void Init_Graph(void)
+{
+register cont,cont2;
+for(cont=0;cont<NBPLAN;cont++)                 //effacer les différantes plans
+  Clr(Plan_1[cont]);
+//*******************************************
+for(cont=0;cont<2;cont++)
+	{
+		LoadPCX(fich[cont],Plan_2[cont],Pal[1]);//Charge les images
+	Inc_Scr(Pv[4],Plan_2[cont]);                     //rectifie les couleurs
+	}
+Create_Pal(0,64,Pal[1],Pv[4],Pal[0]);         //modifie la pallette principale(voir indexe des couleurs de la pallette
+//*******************************************
+LoadPCX("BackStar.pcx",Page,Pal[1]);       //charger les sprites de fond
+Create_Pal(0,15,Pal[1],Pv[5],Pal[0]);        //modifie la pallette principale
+GetBlk2(25,0,24,24,Page,Trou);
+Inc_Scr(Pv[5],Page);                         //réctifie les couleurs pour la nouvelle pallette
+GetBlk2(0,0,24,24,Page,Lune);
+//******************************************
+LoadPCX("moutons.pcx",Page,Pal[1]);       //charger les sprites de fond
+Create_Pal(0,32,Pal[1],Pv[2],Pal[0]);        //modifie la pallette principale
+Inc_Scr(Pv[2],Page);                         //réctifie les couleurs pour la nouvelle pallette
+for(cont2=0;cont2<4;cont2++)
+for(cont=0;cont<8;cont++)
+  GetBlk2(1+9*cont,10*cont2,8,8,Page,Mout_Spr[cont+8*cont2]);
+
+
+//*******************************************
+LoadPCX("Snow2.pcx",Page,Pal[1]);       //charger les sprites de fond
+Inc_Scr(Pv[6],Page);                     //rectifie les couleurs
+GetBlk2(0,0,74,83,Page,Bonhomme);
+GetBlk2(75,0,58,160,Page,Sapin);
+Create_Pal(0,56,Pal[1],Pv[6],Pal[0]);        //modifie la pallette principale
+//*******************************************
+
+Init_Ter();                                //Initalise le terrain
+Mk_Snow(Pal[0]);                           //Creer les encres(couleurs) de la neige
+Mk_Stars(Pal[0]);                          //  "    "     "        "    des étoiles
+Mk_Blood(Pal[0]);
+Gen_Back();                                //initialisation des étoiles
+}
+
+
+
+
+

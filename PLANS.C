@@ -56,7 +56,7 @@ Blka(0,0,320,y,0,200-y,Plan[p],Page);   */
 //**********************************************************************************************
 //Initialise l'explosion d'une bombe
 //**********************************************************************************************
-void Init_Explose(unsigned short debx,unsigned short deby,char nb)
+void Init_Explose(unsigned short debx,unsigned short deby,char nb,unsigned char coul)
 {
 register cont;
 float a,vit;
@@ -72,7 +72,7 @@ Explose[nb].X[cont]=0;
 Explose[nb].Y[cont]=0;
 Explose[nb].DirX[cont]=(cos(a))*vit;
 Explose[nb].DirY[cont]=(sin(a))*vit;
-Explose[nb].Coul[cont]=random(7)+25;
+Explose[nb].Coul[cont]=random(6)+coul;
 }
 }
 

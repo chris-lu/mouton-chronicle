@@ -1,0 +1,57 @@
+void Ecrire_Jeu_Ini(void)
+{
+if ((Fichier_Ini=fopen("Mouton.ini","w"))!=NULL)
+{
+fprintf(Fichier_Ini,"JOUEURS = %d \n",4);
+fprintf(Fichier_Ini,"PLANS = %d \n",4);
+fprintf(Fichier_Ini,"POINTS_2_VIE = %d \n",66);
+Options.Nb_Joueurs=4;
+Options.Nb_Plans=4;
+Options.Pts_2_Vie=66;
+TX=4*320;
+fclose(Fichier_Ini);
+}
+else exit(1);
+}
+
+void Lire_Jeu_Ini(void)
+{
+char temp[256];
+unsigned char ch;
+if ((Fichier_Ini=fopen("Mouton.ini","r"))!=NULL)
+{
+while (strcmp(temp,"END"))
+{
+fscanf(Fichier_Ini,"%s",&temp);
+if(!strcmp(temp,"END"))
+	continue;
+if (!strcmp(temp,"JOUEURS"))
+	{
+	while((fgetc(Fichier_Ini))!='=');
+	fscanf(Fichier_Ini,"%d",&ch);
+	Options.Nb_Joueurs=ch;
+	}
+else if (!strcmp(temp,"PLANS"))
+	{
+	while((fgetc(Fichier_Ini))!='=');
+	fscanf(Fichier_Ini,"%d",&ch);
+	Options.Nb_Plans=ch;
+		}
+else if (!strcmp(temp,"POINTS_2_VIE"))
+	{
+	while((fgetc(Fichier_Ini))!='=');
+	fscanf(Fichier_Ini,"%d",&ch);
+	Options.Pts_2_Vie=ch;
+
+	}
+while(fgetc(Fichier_Ini)!='\n');
+}
+
+TX=Options.Nb_Plans*320;
+fclose(Fichier_Ini);
+}
+else Ecrire_Jeu_Ini();
+}
+
+
+

@@ -30,15 +30,22 @@ if(Mouton[nb].Can_Move)
 if (Scan_Code[77])
 	{
 	Mouton[nb].Sens=1;
+	Mouton[nb].Mouv++;
+	Mouton[nb].Mouv&=15;
+	Mouton[nb].Cur_Spr=Mouton[nb].Mouv/2;
 	Mouton[nb].PosX+=0.4;
 	Move_U(nb);
 	if (Mouton[nb].Bloque)
 		Mouton[nb].PosX-=0.4;
-
 	}
+  else
+	Mouton[nb].Cur_Spr=0;
 if (Scan_Code[75])
 	{
 	Mouton[nb].Sens=-1;
+	Mouton[nb].Mouv++;
+	Mouton[nb].Mouv&=15;
+	Mouton[nb].Cur_Spr=Mouton[nb].Mouv/2;
 	Mouton[nb].PosX-=0.4;
 	Move_U(nb);
 	if (Mouton[nb].Bloque)

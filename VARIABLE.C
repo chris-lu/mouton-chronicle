@@ -1,8 +1,18 @@
 struct{
+unsigned char Pts_2_Vie;
+unsigned char Nb_Joueurs;
+unsigned char Nb_Plans;
+}Options;
+
+struct{
 unsigned short  X[200];           //Coordonnés : X
 unsigned char Y[200];             //    "      : Y
 unsigned char Coul[200];
 }Stars;           //Structure pour la position de etoiles
+
+
+
+
 
 struct{
 unsigned short StartX;             //Coordonnés de l'explosion : X
@@ -13,7 +23,7 @@ float Y[100];                      //     "       "     "       : Y
 float DirX[100];                   //Directions de  chaque eclats
 float DirY[100];                   //
 unsigned char Coul[100];           //Couleur de l'eclat
-}Explose[3];                       //3 Structures explosions
+}Explose[4];                       //3 Structures explosions
 
 struct{
 char Used;
@@ -33,7 +43,11 @@ char LastExB[3]={0,0,0};           //Explosion précédente
 char PalNb=0;                      //Pallette utilisé : accélère les rotation de pallete
 unsigned char Palrot=0;            //Conteur pour les rotation de Pal.
 
-struct{
+struct {
+short Pts_Vie;
+char Cur_Spr;
+char Mouv;
+char Mort;
 char Bloque;
 char Sens;
 char Can_Move;
@@ -41,10 +55,11 @@ float PosX;
 float PosY;
 float DirX;
 float DirY;
-}Mouton[2];
+}*Mouton;
+
 
 char fich[2][10]={"Bg11.pcx","Bg12.pcx"};     //Fichiers pour le second plan
-unsigned char far *Plan_1[NBPLAN];                 //Page pour le premiers plan : 3 parties
+unsigned char far *Plan_1[4];                 //Page pour le premiers plan : 3 parties
 unsigned char far *Plan_2[2];                 //Page pour le second plan : 2 parties
 unsigned char far *Page;                      //Page de tavail
 unsigned char far *Pal[3];                    //Pallettes : 3 différantes pour tout travail sur les pallettes
@@ -52,7 +67,7 @@ unsigned char far Trou[24*24];                //Sprite trou
 unsigned char far Lune[24*24];                //Sprite pour la lune
 unsigned char far Bonhomme[74*83];                //Sprite pour la lune
 unsigned char far Sapin[160*58];                //Sprite pour la lune
-unsigned char far *Mout_Spr[32*32];
+unsigned char far *Mout_Spr[8*8];
 
 void far interrupt (*oldit_9)(void);          //Sauvegarde de l'ancienne interruption clavier
 void far interrupt Lire_scan(void);           //Interruption clavier : reprogrammé pour les scancodes
@@ -62,6 +77,7 @@ unsigned short x,y;                           //Position de la souris
 char far Scan_Code[128];                      //Tableau des scancodes
 
 //short test=0;
+unsigned char Pv[10]={0,16,32,64,72,136,152,208};
 
 short Vise=128;
 float Puissance;
@@ -69,10 +85,15 @@ char Tir=0;
 float Vent=0;
 float Add_Vent=0;
 char Cur_Joueur=0;
-char Nb_Joueurs=2;
 unsigned char Wait=0;
 unsigned char ok;
 
 int far XMS_Page[2];
 
+char Survivants=4;
 
+unsigned short TX;
+
+FILE *Fichier_Ini;
+
+//char Var_Option[3][15]={"JOUEURS","PLANS","POINTS_2_VIE"};

@@ -91,7 +91,7 @@ for(cont=0;cont<100;cont++)
 {
 Xa=Explose[nb].X[cont]+Explose[nb].StartX;  //pour simplifier la formule ci dussous
 Ya=Explose[nb].Y[cont]+Explose[nb].StartY;
-	if((Ya<200)&&(Ya>0)&&(Xa>0)&&(Xa<960))   //si le débris est dans le plan...
+	if((Ya<200)&&(Ya>0)&&(Xa>0)&&(Xa<TX))   //si le débris est dans le plan...
 	Plan_1[Xa/320][Y[200-Ya]+(Xa%320)]=Explose[nb].Coul[cont];  //il faut l'afficher
 }
 }
@@ -114,7 +114,7 @@ for(cont=0;cont<100;cont++)
 	Explose[nb].Y[cont]+=Explose[nb].DirY[cont];
 	Xa=Explose[nb].X[cont]+Explose[nb].StartX;     //simplifie les formules
 	Ya=Explose[nb].Y[cont]+Explose[nb].StartY;
-	if((Ya<=0)&&(Xa)&&(Xa>960))                   //hors du plan?
+	if((Ya<=0)&&(Xa)&&(Xa>TX))                   //hors du plan?
 		{
 		Xa=0;
 		Ya=0;
