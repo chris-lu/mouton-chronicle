@@ -26,18 +26,37 @@ Pour le ciel :
 
 
 -------------------------------------------------------------------------------------------------
-                     Nom des joueurs
+                     Nom des 8 joueurs
 		   _________|________         Couleur de l'équipe
-		  /	   / \       \		     |
-	 	 /        /   \       \              |
-		/        /     \       \             |
-	       /        /       \       \            |
-# Code 4 GnoMaster Christophe Darksheep Mouton ; 0  50 0
-   /    \                                         /  |   \            
-  /      \                                       /   |    \
- /        \                                     /    |     \
-Nom de     \                                   /    Vert    \
-l'équipe    \                                 /              \
-	     \                             Rouge             Bleu
-	Nombre de joueurs 
-	  dans l'équipe
+		  /	   / \       \		       |
+	 	 /        /   \       \                |
+		/        /     \       \               |
+	       /        /       \       \              |
+# Code, GnoMaster,Christophe,Darksheep,Mouton,... , 0  50 0
+   /                                                /  |   \            
+  /                                                /   |    \
+ /                                                /    |     \
+Nom de                                           /    Vert    \
+l'équipe                                        /              \
+	                                     Rouge             Bleu
+--------------------------------------------------------------------------------------------------
+
+Couleurs du Menu :
+
+MENUCOUL = X  ---------Obligatoire et X non significatif....
+# 0 0 4   0 4 -1    4 -1 -1    -1 -1 -1     <------Degrade de bleu      
+
+  \   /    \   /     \   /       \   /     
+   \ /      \ /       \ /         \ / 
+    |        |         |           |
+           incrémentations
+  de la couleurs ... (Rouge Vert Bleu)
+
+-1 signifie couleur maximale (donc -1 -1 -1 -> Couleur blanche...)
+
+
+#4 0 0 -1 4 0 -1 -1 4 -1 -1 -1 <----Degrade rouge
+
+
+
+ 
