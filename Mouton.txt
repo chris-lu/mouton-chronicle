@@ -1,0 +1,8 @@
+Attention !!! Il faut au moins 570 Ko de memoire convetionnelle !!!!
+Si ce n'est pas le cas ajoutez les lignes suivantes au config.sys :
+
+DOS=HIGH,UMB
+DEVICE=C:\WINDOWS\HIMEM.SYS
+DEVICE=C:\WINDOWS\EMM386.EXE /RAM
+
+................
