@@ -438,7 +438,7 @@ void CpyBlk1(short xs,short ys,word l,word h,short xd,short yd,bytef *src,bytef 
 
   }
 }
-void Blka(unsigned short xs,unsigned short ys,unsigned short l,unsigned short h,unsigned short xd,unsigned short yd,bytef *src,bytef *dst)
+void Blka(unsigned short xs,unsigned short ys,unsigned short l,unsigned char h,unsigned short xd,unsigned short yd,bytef *src,bytef *dst)
 {
 asm{
   push ds

@@ -21,12 +21,15 @@ unsigned short Y[200];
 char A,B,C;
 char CurBomb=0;
 char LastExB[3]={0,0,0};
+char tremble=0;
+char move=5;
+unsigned char palrot=0;
 
 char explose=0;
-float dirx=.19;
-float diry=.55;
-float posy=150;
-float posx=100;
+float dirx=.0;           //  float dirx=.19;
+float diry=.85;           //  float diry=.55;
+float posy=150;           //  float posy=150;
+float posx=4;           //  float posx=100;
 
 char fich[2][10]={"Bg21.pcx","Bg22.pcx"};
 unsigned char far *Plan_1[3];
@@ -35,4 +38,10 @@ unsigned char far *Page;
 unsigned char far *Pal[3];
 unsigned char far Trou[24*24];
 unsigned char far Lune[24*24];
+
+void far interrupt (*oldit_9)(void);
+void far interrupt Lire_scan(void);
+char fin=0;
+
+char far Scan_Code[128];
 

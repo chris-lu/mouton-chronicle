@@ -4,8 +4,6 @@
 // FICHIER : VGA.C
 /*************************************************************/
 
-#include "vga.h"
-
 #define BUF_PCX 100     //Taille du tampon (en octet)
 byte _buf_pcx[BUF_PCX]; //Tampon pour LoadPCX() et SavePCX()
 char _fch_pcx[45];      //Chemin des fichier PCX
@@ -99,30 +97,45 @@ void GetAllPal(byte *pal)
   }
 }
 
-void SetAllPal(byte *pal)
-{
-  register word i;
 
-  for(i=0;i<256;i++)
+void SetAllPala(byte *pal)
+{
+asm{
+push ds
+lds si,pal
+xor cl,cl
+
+boucle:
+mov dx,03c8h
+mov al,cl
+out dx,al
+mov dx,03c9h
+mov al,ds:[si]         //evite les boucles : c'est plus lent et il n'y a pas de problemme de longueur de code ici!
+out dx,al
+mov al,ds:[si+1]
+out dx,al
+mov al,ds:[si+2]
+out dx,al
+add si,3
+inc cl
+or cl,cl
+jnz boucle
+pop ds
+}
+}
+
+
+static char signe(short v1,short v2)
+{
+  if(v1<v2)
+    return 1;
+  else
   {
-    outportb(0x3c8,i);
-    outportb(0x3c9,*pal);
-    outportb(0x3c9,*(pal+1));
-	 outportb(0x3c9,*(pal+2));
-    pal+=3;
+	 if(v1>v2)
+		return -1;
+	 else
+		return 0;
   }
-}
-
-byte GetPixel(short x,short y,bytef *scr)
-{
-  scr+=(y<<8)+(y<<6)+x;  //src = src+y*320+x
-  return *scr;
-}
-
-void PutPixel(short x,short y,bytef *scr,byte e)
-{
-  scr+=(y<<8)+(y<<6)+x;
-  *scr=e;
 }
 
 void Box(short x,short y,short l,short h,bytef *scr,byte e)
@@ -154,24 +167,12 @@ void FBox(short x,short y,word l,word h,bytef *scr,byte e)
 
   for(j=0;j<h;j++)
   {
-    for(i=off1;i<off2;i++) scr[i]=e;
+	 for(i=off1;i<off2;i++) scr[i]=e;
 	 off1+=320;
-    off2+=320;
+	 off2+=320;
   }
 }
 
-static char signe(short v1,short v2)
-{
-  if(v1<v2)
-    return 1;
-  else
-  {
-	 if(v1>v2)
-		return -1;
-	 else
-		return 0;
-  }
-}
 
 void LineV(short x,short l,short x2,short y,bytef *sour,bytef *dest)
 {
@@ -244,7 +245,7 @@ void Circle(short x,short y,word r,bytef *scr,byte e)
     if(di>0) goto e3;
     if(di==0) goto e20;
   e2:
-    eta=2*di+2*yi-1;
+	 eta=2*di+2*yi-1;
     if(eta<=0) goto e10;
     if(eta>0) goto e20;
   e3:
@@ -261,8 +262,8 @@ void Circle(short x,short y,word r,bytef *scr,byte e)
     di=di+2*xi-2*yi+2;
     goto e1;
   e30:
-    yi--;
-    di=di-2*yi+1;
+	 yi--;
+	 di=di-2*yi+1;
     goto e1;
   e4:;
 }

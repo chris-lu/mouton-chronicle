@@ -31,11 +31,6 @@ p=x/320;    //attention a l'arrondi!!!
 x%=320;
 if(x&&y)
 {
-/*Blka(x,320-x,0,Plan[p],Page);
-Blka(0,x,320-x,Plan[p+1],Page);
-}
-else
-Blka(0,320,0,Plan[p],Page); */
 Blka(x,0,320-x,y,0,200-y,Plan[p],Page);
 Blka(0,0,x,y,320-x,200-y,Plan[p+1],Page);
 }
@@ -57,7 +52,7 @@ Explose[nb].Used=255;
 LastExB[nb]=1;
 for(cont=0;cont<100;cont++)
 {
-a=(float)(random(3.14*200))/100;
+a=(float)(random(3.14*200))/150-0.785;        //3/4 de cerlce
 vit=(float)(random(80)+30)/50;
 Explose[nb].X[cont]=0;
 Explose[nb].Y[cont]=0;
@@ -76,7 +71,7 @@ for(cont=0;cont<100;cont++)
 {
 Xa=Explose[nb].X[cont]+Explose[nb].StartX;
 Ya=Explose[nb].Y[cont]+Explose[nb].StartY;
-   if((Ya<200)&&(Ya>0)&&(Xa>0)&&(Xa<960))
+	if((Ya<200)&&(Ya>0)&&(Xa>0)&&(Xa<960))
 	Plan_1[Xa/320][Y[200-Ya]+(Xa%320)]=Explose[nb].Coul[cont];
 }
 }
@@ -93,7 +88,12 @@ for(cont=0;cont<100;cont++)
 	Explose[nb].Y[cont]+=Explose[nb].DirY[cont];
 	Xa=Explose[nb].X[cont]+Explose[nb].StartX;
 	Ya=Explose[nb].Y[cont]+Explose[nb].StartY;
-	if ( Plan_1[Xa/320][Y[200-Ya]+(Xa%320)])
+	if((Ya<0)&&(Xa<0)&&(Xa>960))
+		{
+		Xa=0;
+		Ya=0;
+		}
+		else 	if ( Plan_1[Xa/320][Y[200-Ya]+(Xa%320)])
 		{
 		Explose[nb].X[cont]-=Explose[nb].DirX[cont];
 		Explose[nb].Y[cont]-=Explose[nb].DirY[cont];

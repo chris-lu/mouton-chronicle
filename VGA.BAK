@@ -157,5 +157,4 @@ void CpyBnd(short ys,word h,short yd,bytef *src,bytef *dst);
 
 void read_buf_pcx(int handle,byte *tampon,word *comp);
 void write_buf_pcx(int handle,byte *tampon,word *comp);
-static char signe(short v1,short v2);
 #endif //vga_head

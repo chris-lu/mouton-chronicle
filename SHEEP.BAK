@@ -9,10 +9,9 @@
 #include "vga.c"
 #include "palette.c"
 #include "plans.c"
+#include "clavier.c"
+
 //couleurs 2eme plan : 96
-
-
-
 
 void Init_Mem(void)
 {
@@ -98,7 +97,7 @@ for (cont=0;cont<200;cont++)
 }
 
 
-void Put_trou(short x,short y,word l,word h,bytef *buf)
+void Put_trou(unsigned short x,short y,word l,word h,bytef *buf)
 {
   register byte j;
   register word i;
@@ -107,6 +106,7 @@ void Put_trou(short x,short y,word l,word h,bytef *buf)
 		for(i=0;i<l;i++)
 	 {
 		if(*buf==1)
+			if(x+i<960)              //inclue x<0  et x>960 car non signé!
 			Plan_1[(x+i)/320][Y[y]+x+i]=0; //Transparence … l'encre 0
 		buf++;
 	 }
@@ -128,12 +128,13 @@ if ((posy>0)&&(posy<200)&&(posx>0)&&(posx<960))
 if((Plan_1[posx/320][Y[200-posy]+posx])||posy<1)
 	{
 	explose=1;
-	Put_trou(posx-14,200-posy-14,24,24,Trou);
+	Put_trou(posx-14,200-posy-14,24,24,Trou);    //spr sur 3 pages
 	}
 }
 else if ((posx<0)||(posx>960)||(posy<0))
+	{
 	Init_Bomb();
-
+	}
 }
 
 void main(void)
@@ -155,8 +156,6 @@ Create_Pal(0,31,Pal[1],160,Pal[0]);
 Memorise_Spr();
 Inc_Scr(160,Page);
 Get_Lune();
-
-
 Init_Ter();
 Mk_Snow(Pal[0]);
 Mk_Stars(Pal[0]);
@@ -169,21 +168,33 @@ Pal[0][765]=63;
 Pal[0][766]=63;
 Pal[0][767]=63;
 
-SetAllPal(Pal[0]);
+SetAllPala(Pal[0]);
+CpyPal(Pal[0],Pal[1]);
 InitMouse();
 ZoneMouse(0,50,639,200);
+Install_Clav();
 DebTime();
 //Init_Explose(200,180,0);
-while(!kbhit())
+while(!Scan_Code[1])
 {
+Lire_Keys();
+if(!(palrot%8))
+	{
+	tremble=!tremble;
+	Rot_Pal(32,32,Pal[tremble],Pal[!tremble]);
+	SetAllPala(Pal[tremble]);
+	}
 images++;
+palrot++;
 GetMouse(&x,&y);
 Clr(Page);
 Draw_Back(Page);
-CpyPlan(x>>2,(y>>1)+100,Plan_2,Page);
-/*Move_Bomb();
+CpyPlan(x>>1,(y>>1)+100,Plan_2,Page);
+Move_Bomb();                   //PB!!!
 if(explose)
 	{
+	//SetMouse(x+random(10)-5,y+random(10)-5);
+	//tremble=0;
 	Init_Explose(posx,posy,CurBomb);
 	CurBomb++;
 	CurBomb%=3;
@@ -191,7 +202,9 @@ if(explose)
 	}
 	else
 if((posx>x)&&(posx<(x+320))&&(posy>200-y)&&(posy<400-y))
+	{
 	Page[(Y[400-y-posy]+(posx-x))]=255;
+	}
 for(cont=0;cont<3;cont++)
 	{
 	if(Explose[cont].Used)
@@ -199,12 +212,19 @@ for(cont=0;cont<3;cont++)
 	else if(LastExB[cont])
 		End_Bomb(cont);
 	}
-		  */
+/*if(tremble)
+	{
+	tremble--;
+	move=-move;
+	SetMouse(x-(tremble/move),y+(tremble/move));
+	}
+ */
 CpyPlan(x,y,Plan_1,Page);
-//Bal();
+Bal();
 Draw(Page);
 }
 FinTime();
+Remove_Clav();
 ModeTxt();
 printf("\nTemps : %.3f sec.",temps);           //Affichage des performances
 printf("\nImages : %d images",images);
@@ -213,7 +233,7 @@ textcolor(9);
 cprintf("%.2f Images/Sec.",images/temps);
 printf("\n");
 printf("A:%d  B:%d  C:%d",A,B,C);
-printf("free mem :%lu",coreleft());
+printf("\nfree mem :%lu",coreleft());
 }
 
 

@@ -1,0 +1,37 @@
+void Install_Clav(void)
+{
+oldit_9=getvect(0x9);
+setvect(0x9,Lire_scan);
+}
+
+void Remove_Clav(void)
+{
+setvect(0x9,oldit_9);
+}
+
+void far interrupt Lire_scan(void)
+{
+register char c;
+//c=inportb(0x60);
+asm{
+mov dx,060h
+in al,dx
+mov c,al
+}
+
+if (c<0)
+	Scan_Code[Scan_Code[0]=(c&0x7f)]=0;
+	else
+	Scan_Code[c]=1;
+asm{
+mov dx,020h
+mov al,020h
+out dx,al
+}
+//outportb(0x20,0x20);
+}
+
+void Lire_Keys(void)
+{
+Lire_scan();
+}
