@@ -1,4 +1,5 @@
 struct{
+unsigned char Ciel;
 unsigned char Pts_2_Vie;
 unsigned char Nb_Joueurs;
 unsigned char Nb_Plans;
@@ -11,6 +12,11 @@ unsigned char Coul[200];
 }Stars;           //Structure pour la position de etoiles
 
 
+struct{
+float R;
+float V;
+float B;
+}Ciel_Coul;
 
 
 
@@ -23,7 +29,7 @@ float Y[100];                      //     "       "     "       : Y
 float DirX[100];                   //Directions de  chaque eclats
 float DirY[100];                   //
 unsigned char Coul[100];           //Couleur de l'eclat
-}Explose[3];                       //3 Structures explosions
+}Explose[4];                       //3 Structures explosions
 
 struct{
 char Used;
@@ -39,7 +45,7 @@ float SinT[256];
 float CosT[256];
 char A,B,C,D;                        //Variables aleatoires pour la génération des terrain
 char CurBomb=0;                    //Bombe sur l'écran
-char LastExB[3]={0,0,0};           //Explosion précédente
+char LastExB[4]={0,0,0,0};           //Explosion précédente
 char PalNb=0;                      //Pallette utilisé : accélère les rotation de pallete
 unsigned char Palrot=0;            //Conteur pour les rotation de Pal.
 
@@ -57,16 +63,21 @@ float DirX;
 float DirY;
 }*Mouton;
 
+struct{
+char Level[20][8];
+unsigned char Nb_Level;
+unsigned char Cur_Level;
+}Niveau;
 
-char fich[2][10]={"Bg11.pcx","Bg12.pcx"};     //Fichiers pour le second plan
+char Back[2][13]={"Back1.pcx","Back2.pcx"};     //Fichiers pour le second plan
 unsigned char far *Plan_1[4];                 //Page pour le premiers plan : 3 parties
 unsigned char far *Plan_2[2];                 //Page pour le second plan : 2 parties
 unsigned char far *Page;                      //Page de tavail
 unsigned char far *Pal[3];                    //Pallettes : 3 différantes pour tout travail sur les pallettes
 unsigned char far Trou[24*24];                //Sprite trou
 unsigned char far Lune[24*24];                //Sprite pour la lune
-unsigned char far Bonhomme[74*83];                //Sprite pour la lune
-unsigned char far Sapin[160*58];                //Sprite pour la lune
+unsigned char far *Bonhomme;                //Sprite pour la lune  74*83
+unsigned char far *Sapin;                //Sprite pour la lune   160*58
 unsigned char far *Mout_Spr[8*8];
 
 void far interrupt (*oldit_9)(void);          //Sauvegarde de l'ancienne interruption clavier
@@ -94,6 +105,6 @@ char Survivants=4;
 
 unsigned short TX;
 
-FILE *Fichier_Ini;
+FILE *Fichier_Cfg;
 
 //char Var_Option[3][15]={"JOUEURS","PLANS","POINTS_2_VIE"};

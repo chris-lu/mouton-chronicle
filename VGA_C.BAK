@@ -10,6 +10,10 @@ bytef *Video=(bytef*)MK_FP(0xa000,0);     // Adresse Video
 char co=20;
 char dr=3;
 
+void far interrupt Vide(void)
+{
+}
+
 void far interrupt Coul(void)
 {
 co+=dr;
@@ -106,12 +110,11 @@ asm{
 }
 
 
-void Put(short x,byte y,byte l,byte h,byte *scr,byte *spr)
+void Put(unsigned short x,byte y,unsigned short l,byte h,byte *scr,byte *spr)
 {
-unsigned int t,l2,h2;
+unsigned int t,h2,l2;
 h2=(int)h;
 l2=(int)l;
-
 t=(y<<8)+(y<<6);
 asm{
   push ds
@@ -145,6 +148,33 @@ psprl2:
 	}
 }
 
+void PutSpr(short x,short y,word l,word h,bytef *scr,bytef *buf)
+{
+  register byte j,l2=l;
+  register word i;
+  bytef *s1;
+  if(x+l>320)
+	{
+	l2=320-x;
+	l-=l2;
+	}
+	else
+   l=0
+  scr+=(y<<8)+(y<<6)+x;
+
+  for(j=0;j<h;j++)
+  {
+	 s1=scr;
+	 for(i=0;i<l2;i++)
+	 {
+		if(*buf) *s1=*buf; //Transparence … l'encre 0
+		s1++;
+		buf++;
+	 }
+	 buf+=l;
+	 scr+=320;
+  }
+}
 
 void IncBlk(short x,short y,word l,word h,bytef *scr,bytef nb)
 {

@@ -1,14 +1,16 @@
 #define ERROR	{ ModeTxt();	printf("error %X XMS",nb);	getch();	exit(0);	}
+#define LEVCFG "-DECORE = %d \n-CIEL = %d\n# 0 0 0 0.000000 0.000000 0.000000 \n-BACK = %d\n#%s\n#%s\n-END"
+#define JEUCFG "-JOUEURS = %d \n-PLANS = %d \n-POINTS_2_VIE = %d \n-CURNIV = %d \n-END"
 #include <stdio.h>
 #include <conio.h>
 #include <math.h>
-#include <string.h>
 #include <mouse.c>
 #include <alloc.h>
 #include <time.h>
+#include "string.h"
 #include "sheep.h"
 #include "variable.c"
-//#include "Rtime.c"
+#include "Rtime.c"
 #include "vga_c.c"
 #include "vga.c"
 #include "palette.c"
@@ -62,6 +64,9 @@ for(cont=0;cont<50;cont++)
 //Allocation mémoire pour les pallettes: 3 tableaux de 768 octets chacun
 for(cont=0;cont<3;cont++)
 Pal[cont]=(unsigned char far *)farmalloc(768);
+
+Bonhomme=(unsigned char far *)farmalloc(74*83);
+Sapin=(unsigned char far *)farmalloc(160*58);
 }
 
 
@@ -73,8 +78,8 @@ Bombe.Used=1;
 Bombe.Explosion=0;
 Bombe.DirX=CosT[Vise]*Puissance*Mouton[Cur_Joueur].Sens;
 Bombe.DirY=SinT[Vise]*Puissance;
-Bombe.PosY=Mouton[Cur_Joueur].PosY+4;
-Bombe.PosX=Mouton[Cur_Joueur].PosX;
+Bombe.PosY=Mouton[Cur_Joueur].PosY+2;
+Bombe.PosX=Mouton[Cur_Joueur].PosX+4;
 }
 
 
@@ -102,39 +107,33 @@ for(cont=0;cont<256;cont++)
 
 unsigned char Test_Line(void)
 {
-//unsigned char touche=0;
 float temp;
 float lng;
 float cont;
-short test=0;
 if(Bombe.DirX>0)
 {
-lng=Bombe.PosX;
 temp=(float)Bombe.DirY/Bombe.DirX;
 for(cont=0;cont<Bombe.DirX;cont++)
 	 {
-	 if(Plan_1[(lng+cont)/320][Y[200-(Bombe.PosY+cont*temp)]+(int)(lng+cont)%320])
+	 if(Plan_1[(Bombe.PosX+cont)/320][Y[200-(Bombe.PosY+cont*temp)]+(int)(Bombe.PosX+cont)%320])
 		{
-		Bombe.PosX=lng+cont;
+		Bombe.PosX+=cont;
 		Bombe.PosY+=temp*cont;
 			return(1);
 		}
-	 test++;
 	 }
 }
-if(Bombe.DirX<0)
+else if(Bombe.DirX<0)
 {
-lng=Bombe.PosX;
 temp=-(float)Bombe.DirY/Bombe.DirX;
 for(cont=0;cont<-Bombe.DirX;cont++)
 	 {
-	 if(Plan_1[(lng-cont)/320][Y[200-(Bombe.PosY+cont*temp)]+(int)(lng-cont)%320])
+	 if(Plan_1[(Bombe.PosX-cont)/320][Y[200-(Bombe.PosY+cont*temp)]+(int)(Bombe.PosX-cont)%320])
 		{
-		Bombe.PosX=lng-cont;
+		Bombe.PosX-=cont;
 		Bombe.PosY+=temp*cont;
 			return(1);
 		}
-	 test++;
 	 }
 }
 Bombe.PosY+=Bombe.DirY;
@@ -170,7 +169,8 @@ if(Test_Line())    //si la bombe touche le sol
 	Put_trou(Bombe.PosX-12,200-Bombe.PosY-12,24,24,Trou);    //sprite sur 3 pages
 	}
 }
-else if ((Bombe.PosX<0)||(Bombe.PosX>TX)||(Bombe.PosY<0))  //si la bombe sort...
+//else if ((Bombe.PosX<0)||(Bombe.PosX>TX)||(Bombe.PosY<0))  //si la bombe sort...
+else if (Bombe.PosY<200)  //si la bombe sort...
 	{
 	Vent=(float)(random(100)-50)/2500;
 	Bombe.Used=0;                                             //...en creer une nouvelle
@@ -261,10 +261,11 @@ if((nb=xms_allocate(&XMS_Page[cont],64))!=0)
 //**********************************************************************************************
 void main(void)
 {
-//unsigned long images=0;                   //nombre d'images enregistrés
+unsigned long images=0;                   //nombre d'images enregistrés
 unsigned short cont;                      //compteur
 clrscr();                                 //efface l'écran
-Lire_Jeu_Ini();
+Lire_Jeu_Cfg();
+Lire_Level_Cfg(Niveau.Cur_Level);
 //Init_XMS();
 //Init_Pages();
 printf("Mouton Chronicles Version 0.05 Alpha\n\n    *Si ce programme fait planter windows(ce qui ne chagera pas vos habitudes)\n     ou redemarrer votre pc : vous n'avez pas assez de memoire convetionnelle\n     (Mais normallement, Y'a pas de problemes)\n    *Si l'ecran est splite en 2 ou 4, les drivers de la souris ne sont pas \n     installes ou pas reconnus!\n\n\t\t\t\t\t\t\t");
@@ -273,6 +274,8 @@ setvect(0x1c,Vide);                       //enleve l'effet de clignottement
 Init_Mem();                               //Initalise la memoire
 Init_Tab();                               //Initlise le tableau
 Init_Graph();
+free(Bonhomme);
+free(Sapin);
 ModeVGA();                                 //Initaialise le mode VGA 320*200*256
 //getch();
 Pal[0][765]=63;
@@ -292,45 +295,47 @@ for(cont=0;cont<Options.Nb_Joueurs;cont++)
 	Mouton[cont].Pts_Vie=Options.Pts_2_Vie;
 	}
 Install_Clav();                            //modifie l'interruption clavier
-//DebTime();                                 //début du chronometre
+DebTime();                                 //début du chronometre
+Survivants=Options.Nb_Joueurs;
 while(!Scan_Code[1])                       //tant que la touche [Esc] n'est pas enfoncée....
 {
-while(Mouton[Cur_Joueur].Mort)
+while(Mouton[Cur_Joueur].Mort&&Survivants>1)
 {
 Cur_Joueur++;
 Cur_Joueur%=Options.Nb_Joueurs;
 }
-	if(!(Palrot%8))                            //rotation de pallette toutes les 8 images
+	if(!(Palrot&7))                            //rotation de pallette toutes les 8 images
 	{
-	PalNb=!PalNb;                           //change la pallette active
+	PalNb=!PalNb;                           //change la pallette active   (
 	Rot_Pal(1,15,Pal[PalNb],Pal[!PalNb]);  //Rotation des couleurs
 	SetAllPala(Pal[PalNb]);                 //activation de la nouvelle pallette
 	}
-//images++;                                  //incrémente le nb d'images
+images++;                                  //incrémente le nb d'images
 Palrot++;                                  //    "      le conteur pour la pallette
 GetMouse(&x,&y);                           //lit les coordonnés de la souris
 Clr(Page);                                 //efface la page de travail
+if(Options.Ciel)
+Draw_Deg(Page,208);
+else
 Draw_Back(Page);                           //affiche les étoiles
+
 CpyPlan(x>>2,(y>>2)+150,Plan_2,Page);      //affiche le second plan
 if(!Wait)
 {
 Lire_Keys(Cur_Joueur);                               //Lits les touche
 if(Bombe.Used)
 {
-Mouton[Cur_Joueur].Can_Move=0;
+//Mouton[Cur_Joueur].Can_Move=0;
 Move_Bomb();                               //deplacement de la bombe et test
 if(Bombe.Explosion)                   //la bombe explose?
 	{
 	Wait=200;
-	Mouton[Cur_Joueur].Can_Move=1;
-	Cur_Joueur++;
-	Cur_Joueur%=Options.Nb_Joueurs;
 	Test_Dom();
 	Init_Explose(Bombe.PosX,Bombe.PosY,CurBomb,25);//creer l'explosion
+	Cur_Joueur++;
+	Cur_Joueur%=Options.Nb_Joueurs;
 	CurBomb++;                               //change le numero de la bombe
 	CurBomb&=3;
-	Mouton[Cur_Joueur].Can_Move=1;
-	//Init_Bomb();                             //et crée une nouvelle bombe
 	}
 	else                               //sinon
 	if((Bombe.PosX>x)&&(Bombe.PosX<(x+320))&&(Bombe.PosY>200-y)&&(Bombe.PosY<400-y))  //si la bombe est dans l'ecran,...
@@ -346,12 +351,10 @@ for(cont=0;cont<4;cont++)  //calcul des explosion des bombes(3bombe max sur l'éc
 		End_Bomb(cont);                       //sinon memorise les eclats dans le premier plan
 	}
 
-Survivants=0;
 for(cont=0;cont<Options.Nb_Joueurs;cont++)
 {
 if(!Mouton[cont].Mort)
 {
-Survivants+=1;
 Move_Mouton(cont);
 Draw_Mouton(cont);
 }
@@ -374,23 +377,28 @@ Bal();                                    //attente du Balayage vertical
 Draw(Page);                                 //Affiche la page de travail finale
 for(cont=0;cont<Options.Nb_Joueurs;cont++)
 if((Mouton[cont].PosX<0)||(Mouton[cont].PosX>TX)||(Mouton[cont].PosY<0))
+	{
 	Mouton[cont].Mort=1;
+	Survivants--;
+	}
 if((Survivants<2)&&!Wait)
 	Scan_Code[1]=1;
 }
-//FinTime();                                  //arrete le chronometre
+Cur_Joueur=Gagnant();
+FinTime();                                  //arrete le chronometre
 Remove_Clav();
 ModeTxt();
 printf("Variables Terrain : A:%d  B:%d  C:%d  D:%d",A,B,C,D);
-printf("\nMemoire Libre :%lu octets",coreleft());
-/*printf("\n\nTemps : %.3f sec.",temps);         //Affichage des performances
+printf("\nMemoire Libre :%lu octets\n",coreleft());
+printf("\n\nTemps : %.3f sec.",temps);         //Affichage des performances
 printf("\nImages : %lu images",images);
 printf("\nImages/Sec. : ");
 textcolor(9);
-cprintf("%.2f Images/Sec.",images/temps);   */
-if(Survivants<2)
+cprintf("%.2f Images/Sec.",images/temps);
+if(Cur_Joueur>-1)
 	printf("\nLe gagnant est le joueur %d avec %d points de vie!",Cur_Joueur+1,Mouton[Cur_Joueur].Pts_Vie);
   else printf("\nIl n'y a pas de gangant!!!!");
+
 }
 
 

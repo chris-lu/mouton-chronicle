@@ -15,7 +15,7 @@
 #include "vga.c"
 #include "palette.c"
 #include "plans.c"
-#include "mout.c"
+#include "moutgest.c"
 #include "clavier.c"
 #include "graph.c"
 #include "option.c"
@@ -268,7 +268,7 @@ Lire_Jeu_Cfg();
 Lire_Level_Cfg(Niveau.Cur_Level);
 //Init_XMS();
 //Init_Pages();
-printf("Mouton Chronicles Version 0.05 Alpha\n\n    *Si ce programme fait planter windows(ce qui ne chagera pas vos habitudes)\n     ou redemarrer votre pc : vous n'avez pas assez de memoire convetionnelle\n     (Mais normallement, Y'a pas de problemes)\n    *Si l'ecran est splite en 2 ou 4, les drivers de la souris ne sont pas \n     installes ou pas reconnus!\n\n\t\t\t\t\t\t\t");
+printf("Mouton Chronicles Version 0.06 Alpha\n\n    *Si ce programme fait planter windows(ce qui ne chagera pas vos habitudes)\n     ou redemarrer votre pc : vous n'avez pas assez de memoire convetionnelle\n     (Mais normallement, Y'a pas de problemes)\n    *Si l'ecran est splite en 2 ou 4, les drivers de la souris ne sont pas \n     installes ou pas reconnus!\n\n\t\t\t\t\t\t\t");
 getch();                                  //Lit une touche
 setvect(0x1c,Vide);                       //enleve l'effet de clignottement
 Init_Mem();                               //Initalise la memoire

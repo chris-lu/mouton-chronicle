@@ -5,32 +5,33 @@ void Test_Dom(void)
 {
 register cont;
 long temp,temp2,temp3;
-short dommages=0;
-
+short dommages;
 for(cont=0;cont<Options.Nb_Joueurs;cont++)
 {
 if(!Mouton[cont].Mort)
 {
-temp=Mouton[cont].PosX-Bombe.PosX-4;
+temp=Mouton[cont].PosX-Bombe.PosX+4;
 temp2=Mouton[cont].PosY-Bombe.PosY+4;
 temp3=sqrt(temp2*temp2+temp*temp);
+
 if((temp<25&&temp>-25)&&(temp2<25&&temp2>-25))
 	{
 	{
-	dommages=24-temp3;
-	if((Mouton[cont].Pts_Vie-=dommages)<0)
+	dommages=25-temp3;
+	if(dommages<0)
+		dommages=0;
+	if((Mouton[cont].Pts_Vie-=dommages)<1)
 		{
+      Survivants--;
 		Mouton[cont].Mort=1;
 		Init_Explose(Mouton[cont].PosX,Mouton[cont].PosY+4,CurBomb,64);//creer l'explosion
 		CurBomb++;                               //change le numero de la bombe
-		CurBomb%=3;
+		CurBomb&=3;
 		}
 	if(temp)
 	Mouton[cont].DirX=(dommages/2)*(temp/abs(temp));
 	if(temp2)
 	Mouton[cont].DirY=(dommages/5)*(temp2/abs(temp2));
-	if((Mouton[cont].DirY>6)||(Mouton[cont].DirY<-6))
-		Mouton[cont].DirY=0;
 	}
 	}
 }
@@ -44,28 +45,24 @@ if((temp<25&&temp>-25)&&(temp2<25&&temp2>-25))
 
 void Move_U(char nb)
 {
-unsigned short cont=0;
+register unsigned short cont=0;
 Mouton[nb].Bloque=0;
-
 if ((Plan_1[(Mouton[nb].PosX+4)/320][Y[201-Mouton[nb].PosY]+(int)(Mouton[nb].PosX+4)%320])&&(Mouton[nb].PosY<200))
   {
-		  cont=0;
 		  while((Plan_1[(Mouton[nb].PosX+4)/320][Y[201-Mouton[nb].PosY-cont]+(int)(Mouton[nb].PosX+4)%320]))
 				  cont++;
 		  if (cont<4)
 					{
-					Mouton[nb].Bloque=0;
 					Mouton[nb].PosY+=cont;
 					}
 				else
 				Mouton[nb].Bloque=1;
-
-		}
+		  }
 }
 
 void Put_Mouton(unsigned short x,char nb)
 {
-unsigned char cont,temp;
+register unsigned char cont,temp;
 Mouton[nb].PosX=x;
 temp=x/320;
 x%=320;
@@ -73,7 +70,7 @@ cont=1;
 while(!(Plan_1[temp][Y[cont]+x]))
 	cont++;
 Mouton[nb].Can_Move=1;
-Mouton[nb].PosY=200-cont;
+Mouton[nb].PosY=256-cont;
 }
 
 void Draw_Mouton(char nb)
@@ -102,10 +99,7 @@ if(Mouton[nb].DirY>1)
 	Mouton[nb].Cur_Spr=6;
 
 
-
-
-
-if((Xa>x)&&(Xa<(x+320))&&(Ya>200-y)&&(Ya<400-y))  //si dans l'écran...
+if((Xa>x)&&(Xa<(x+312))&&(Ya>200-y)&&(Ya<392-y))  //si dans l'écran...
 	{
 	if(Mouton[nb].Sens==-1)
 	Put(Xa-x,400-y-Ya-6,8,8,Page,Mout_Spr[0+Mouton[nb].Cur_Spr]);
@@ -128,14 +122,18 @@ void Move_Mouton(char nb)
 unsigned short Xa=Mouton[nb].PosX+4;
 unsigned short Ya=Mouton[nb].PosY-1;
 
-
 if (!(Plan_1[Xa/320][Y[200-Ya]+(Xa%320)])||(Mouton[nb].PosY-1>200))
 	{
-	Mouton[nb].Can_Move=0;
+	//Mouton[nb].Can_Move=0;
 	Mouton[nb].DirY-=0.049;    //Attraction terrestre 9.81/2
 	Add_Vent+=Vent/5;         //Masse du mouton : 5
-	Mouton[nb].DirX=0.4*Mouton[nb].Sens+Add_Vent;
-
+	if(Mouton[nb].Can_Move)
+		{
+		Mouton[nb].DirX=0.4*Mouton[nb].Sens+Add_Vent;
+		Mouton[nb].Can_Move=0;
+		}
+	  else
+      Mouton[nb].DirX+=Add_Vent;
 
 	//Mouton[nb].X[cont]-=Mouton[nb].DirX[cont];    //rebondir
   //	Mouton[nb].PosY+=Mouton[nb].DirY;
@@ -143,7 +141,7 @@ if (!(Plan_1[Xa/320][Y[200-Ya]+(Xa%320)])||(Mouton[nb].PosY-1>200))
 	if (Mouton[nb].DirY>0.005)
 		Mouton[nb].DirY[cont]=-Mouton[nb].DirY[cont]/10);  */
 	}
-	 else
+	 else if(!Mouton[nb].Bloque)
 		{
 		Add_Vent=0;
 		Mouton[nb].Can_Move=1;
@@ -153,11 +151,13 @@ if (!(Plan_1[Xa/320][Y[200-Ya]+(Xa%320)])||(Mouton[nb].PosY-1>200))
 Mouton[nb].PosY+=Mouton[nb].DirY;
 Mouton[nb].PosX+=Mouton[nb].DirX;
 Move_U(nb);
-/*if (Mouton[nb].Bloque)
-Mouton[nb].PosX+=Mouton[nb].DirX;    */
-
-
-
+if (Mouton[nb].Bloque)
+{
+Mouton[nb].PosY=Ya+1;
+Mouton[nb].PosX=Xa-4-Mouton[nb].DirX*2;
+Mouton[nb].DirY=0;
+Mouton[nb].DirX=0;
+}
 }
 
 
@@ -165,8 +165,18 @@ void Put_Viseur(char nb)
 {
 short Xa,Ya;
 Xa=Mouton[nb].PosX+CosT[Vise]*10*Mouton[nb].Sens+4;
-Ya=Mouton[nb].PosY+SinT[Vise]*10+3;
+Ya=Mouton[nb].PosY+SinT[Vise]*10+2;
 if((Xa>x)&&(Xa<(x+320))&&(Ya>200-y)&&(Ya<400-y))  //si dans l'écran...
 		Page[(Y[400-y-Ya]+(Xa-x))]=48;  //...afficher
 }
 
+char Gagnant(void)
+{
+register cont;
+if(Survivant>1)
+	return(-1);
+for (cont=0;cont<Options.Nb_Joueurs;cont++)
+	if(!Mouton[cont].Mort)
+		return(cont);
+return(-1);
+}

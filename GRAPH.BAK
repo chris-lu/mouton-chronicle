@@ -18,7 +18,7 @@ void Put_Spr(unsigned short x,unsigned short y,word l,word h,bytef *buf)
 
 void Init_Ter(void)
 {
-unsigned short Ytemp[TX];        //abscisses de chaque point du terrain
+unsigned short Ytemp[1280];        //abscisses de chaque point du terrain
 register long cont;               //compteur
 unsigned short haut;              //compteur
 unsigned short temp;              //Variable teporaire
@@ -102,23 +102,37 @@ void Put_trou(unsigned short x,unsigned short y,word l,word h,bytef *buf)
  void Init_Graph(void)
 {
 register cont,cont2;
-for(cont=0;cont<NBPLAN;cont++)                 //effacer les différantes plans
+char temp[255];
+for(cont=0;cont<Options.Nb_Plans;cont++)                 //effacer les différantes plans
   Clr(Plan_1[cont]);
 //*******************************************
 for(cont=0;cont<2;cont++)
 	{
-		LoadPCX(fich[cont],Plan_2[cont],Pal[1]);//Charge les images
+	sprintf(temp,"Mouton/%s/%s",Niveau.Level[0],Back[cont]);
+	LoadPCX(temp,Plan_2[cont],Pal[1]);//Charge les images
 	Inc_Scr(Pv[4],Plan_2[cont]);                     //rectifie les couleurs
 	}
 Create_Pal(0,64,Pal[1],Pv[4],Pal[0]);         //modifie la pallette principale(voir indexe des couleurs de la pallette
 //*******************************************
-LoadPCX("BackStar.pcx",Page,Pal[1]);       //charger les sprites de fond
+if(Options.Ciel)
+{
+LoadPCX("Mouton/BackSun.pcx",Page,Pal[1]);       //charger les sprites de fond
 Create_Pal(0,15,Pal[1],Pv[5],Pal[0]);        //modifie la pallette principale
 GetBlk2(25,0,24,24,Page,Trou);
 Inc_Scr(Pv[5],Page);                         //réctifie les couleurs pour la nouvelle pallette
 GetBlk2(0,0,24,24,Page,Lune);
+}
+else
+{
+LoadPCX("Mouton/BackStar.pcx",Page,Pal[1]);       //charger les sprites de fond
+Create_Pal(0,15,Pal[1],Pv[5],Pal[0]);        //modifie la pallette principale
+GetBlk2(25,0,24,24,Page,Trou);
+Inc_Scr(Pv[5],Page);                         //réctifie les couleurs pour la nouvelle pallette
+GetBlk2(0,0,24,24,Page,Lune);
+}
+
 //******************************************
-LoadPCX("moutons.pcx",Page,Pal[1]);       //charger les sprites de fond
+LoadPCX("Mouton/moutons.pcx",Page,Pal[1]);       //charger les sprites de fond
 Create_Pal(0,32,Pal[1],Pv[2],Pal[0]);        //modifie la pallette principale
 Inc_Scr(Pv[2],Page);                         //réctifie les couleurs pour la nouvelle pallette
 for(cont2=0;cont2<4;cont2++)
@@ -127,7 +141,8 @@ for(cont=0;cont<8;cont++)
 
 
 //*******************************************
-LoadPCX("Snow2.pcx",Page,Pal[1]);       //charger les sprites de fond
+sprintf(temp,"mouton/%s/Decor.pcx",Niveau.Level[0]);
+LoadPCX(temp,Page,Pal[1]);       //charger les sprites de fond
 Inc_Scr(Pv[6],Page);                     //rectifie les couleurs
 GetBlk2(0,0,74,83,Page,Bonhomme);
 GetBlk2(75,0,58,160,Page,Sapin);
@@ -135,6 +150,7 @@ Create_Pal(0,56,Pal[1],Pv[6],Pal[0]);        //modifie la pallette principale
 //*******************************************
 
 Init_Ter();                                //Initalise le terrain
+Mk_Sky(Pal[0]);                           //Creer les encres(couleurs) de la neige
 Mk_Snow(Pal[0]);                           //Creer les encres(couleurs) de la neige
 Mk_Stars(Pal[0]);                          //  "    "     "        "    des étoiles
 Mk_Blood(Pal[0]);

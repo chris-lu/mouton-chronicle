@@ -31,12 +31,12 @@ if (Scan_Code[77])
 	{
 	Mouton[nb].Sens=1;
 	Mouton[nb].Mouv++;
-	Mouton[nb].Mouv&=31;
-	Mouton[nb].Cur_Spr=Mouton[nb].Mouv/4;
+	Mouton[nb].Mouv&=15;
+	Mouton[nb].Cur_Spr=Mouton[nb].Mouv>>1;
 	Mouton[nb].PosX+=0.4;
 	Move_U(nb);
 	if (Mouton[nb].Bloque)
-		Mouton[nb].PosX-=0.4;
+		Mouton[nb].PosX-=0.5;
 	}
   else
 	Mouton[nb].Cur_Spr=0;
@@ -45,16 +45,16 @@ if (Scan_Code[75])
 	Mouton[nb].Sens=-1;
 	Mouton[nb].Mouv++;
 	Mouton[nb].Mouv&=15;
-	Mouton[nb].Cur_Spr=Mouton[nb].Mouv/2;
+	Mouton[nb].Cur_Spr=Mouton[nb].Mouv>>1;
 	Mouton[nb].PosX-=0.4;
 	Move_U(nb);
 	if (Mouton[nb].Bloque)
-			Mouton[nb].PosX+=0.4;
+			Mouton[nb].PosX+=0.5;
 	}
 if (Scan_Code[28])
 	{
 	Mouton[nb].Can_Move=0;
-	Mouton[nb].PosY+=3;
+	Mouton[nb].PosY++;
 	Mouton[nb].DirX=.6*Mouton[nb].Sens;               //72
 	Mouton[nb].DirY=2;                                   //80
 	}
