@@ -13,14 +13,14 @@
 //#include "Rtime.c"
 #include "vga_c.c"
 #include "vga.c"
-#include "texte.c"
-#include "textemen.c"
 #include "palette.c"
 #include "plans.c"
 #include "moutgest.c"
 #include "clavier.c"
 #include "graph.c"
 #include "option.c"
+#include "texte.c"
+#include "textemen.c"
 
 
 //**********************************************************************************************
@@ -326,25 +326,6 @@ if((nb=xms_allocate(&XMS_Page[cont],64))!=0)
 
 
 
-void Draw_Paroles(void)
-{
-char Txt[255];
-register cont,cont2;
-while((!Par[0][2])&&(Par[1][2]+Par[2][2]+Par[3][2]))
-	Txt_Down();
-for(cont=0;cont<4;cont++)
-	{
-	if(Par[cont][2])
-		{
-		Par[cont][2]--;
-		sprintf(Txt,"%s : %s",Mouton[Par[cont][0]].Nom,Paroles[Par[cont][1]]);
-		Print_Txt(120,cont*7+5,Txt,Page,48+Mouton[Par[cont][0]].Equipe);
-		}
-	}
-}
-
-
-
 
 
 
@@ -514,7 +495,6 @@ while(!Scan_Code[1])                       //tant que la touche [Esc] n'est pas 
 		Print_Barre(62,17,53,6,0,66,0,1);
 		}
 	//Print_Txt(2,192,"Mouton Chronicles",Page,1);
-	Draw_Paroles();
 	Bal();                                    //attente du Balayage vertical
 	Draw(Page);                                 //Affiche la page de travail finale
 	if(Gagnant()&&!Wait)
@@ -539,6 +519,7 @@ if(Cur_Joueur>0)
 	printf("\n\nLe meilleur mouton : %s (%d Frags)\nLe plus precis : %s (%d Frags)\nLe plus violant : %s (%d Frags)\nLe plus...INUTILE : %s ( %d Frags)",Mouton[Stats.Mouton[0]].Nom,Mouton[Stats.Mouton[0]].Frags,Mouton[Stats.Mouton[1]].Nom,Mouton[Stats.Mouton[1]].Frags,Mouton[Stats.Mouton[2]].Nom,Mouton[Stats.Mouton[2]].Frags,Mouton[Stats.Mouton[3]].Nom,Mouton[Stats.Mouton[3]].Frags);
 	}
 else printf("\nIl n'y a pas de gagnant!!!!");
+getch();
 for(cont=0;cont<Options.Nb_Plans;cont++)
   farfree(Plan_1[cont]);
 for(cont=0;cont<2;cont++)

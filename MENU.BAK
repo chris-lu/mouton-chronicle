@@ -1,0 +1,285 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <conio.h>
+#include <alloc.h>
+#include "mouse.c"
+#include "vga.h"
+#include "vga.c"
+#include "vga_c.c"
+#include "textemen.c"
+#include <time.h>
+
+unsigned short x,y,b;
+char Txt[40][20]={" Jouer ","Options","Equipes","Credits"," Sortie"};
+unsigned char temp;
+
+struct
+{
+unsigned short X;
+unsigned char Y;
+unsigned short Lg;
+unsigned char Ht;
+}Obj[40];
+
+void FlamesAsm(bytef *src,bytef* dst)   //brule l'ecran(assembleur)
+{
+asm{
+	push ds                              //sauvegarde ds
+	les di,dst                           //|mémorise les adresses des pages
+	lds si,src                           //|
+	mov ax,51200
+	add di,ax
+	add si,ax
+	mov cx,12480                         //ignore le ligne du bas
+loop1:
+	xor ax,ax                            //|remet a zero ax et bx
+	xor bx,bx                            //|
+	mov al,[si]                          //addition des différents points
+	mov bl,[si+1]                        //point de droite
+	add ax,bx
+	mov bl,[si-1]                        //point de gauche
+	add ax,bx
+	mov bl,[si+320]                      //point du dessous
+	add ax,bx
+	shr ax,2                             //division par 4
+	or al,al                             //al = 0? sinon décrémenter(effet de palette)
+	jz suite
+	dec al
+suite:
+	stosb                                //ecrit la valeur de déstination dans dst
+	inc si                               //point suivant
+	dec cx                               //décrémentation du compteur
+	or cx,cx                            //cx = 0? sinon on recommence
+	jnz loop1
+	pop ds                               //rétablit ds
+	}
+
+
+}
+
+void FlamesAsm2(bytef *src,bytef* dst)   //brule l'ecran(assembleur)
+{
+asm{
+	push ds                              //sauvegarde ds
+	les di,dst                           //|mémorise les adresses des pages
+	lds si,src                           //|
+	mov ax,50880
+	add di,ax
+	add ax,320
+	add si,ax
+	mov cx,12480                         //ignore le ligne du bas
+loop1:
+	xor ax,ax                            //|remet a zero ax et bx
+	xor bx,bx                            //|
+	mov al,[si]                          //addition des différents points
+	mov bl,[si+1]                        //point de droite
+	add ax,bx
+	mov bl,[si-1]                        //point de gauche
+	add ax,bx
+	mov bl,[si+320]                        //point de gauche
+	add ax,bx
+	mov bl,[si-320]                        //point de gauche
+	add ax,bx
+	mov bh,5
+	div bh                             //division par 4
+	or al,al                             //al = 0? sinon décrémenter(effet de palette)
+	jz suite
+	dec al
+suite:
+	stosb                                //ecrit la valeur de déstination dans dst
+	inc si                               //point suivant
+	dec cx                               //décrémentation du compteur
+	or cx,cx                            //cx = 0? sinon on recommence
+	jnz loop1
+	pop ds                               //rétablit ds
+	}
+
+
+}
+
+
+void Clry(bytef *dst)
+{
+asm{
+  push ds
+  les di,dst
+  xor ax,ax
+  mov cx,25600
+  rep stosw
+  pop ds
+}
+}
+
+
+void Init_Pal(bytef *p)
+{
+register cont;
+for (cont=0;cont<16;cont++)  // dégradé de rouge
+{
+p[cont*3]=cont*4;      //rouge
+p[cont*3+1]=0;         //vert
+p[cont*3+2]=0;         //bleu
+}
+for (cont=0;cont<16;cont++)  //dégradé rouge-jaune(orange)
+{
+p[(cont+16)*3]=63;
+p[(cont+16)*3+1]=cont*4;
+p[(cont+16)*3+2]=0;
+}
+for (cont=0;cont<16;cont++)  //dégradé jaune-blanc
+{
+p[(cont+32)*3]=63;
+p[(cont+32)*3+1]=63;
+p[(cont+32)*3+2]=cont*4;
+}
+for (cont=0;cont<32;cont++)  //dégradé jaune-blanc
+{
+p[(cont+48)*3]=63;
+p[(cont+48)*3+1]=63;
+p[(cont+48)*3+2]=63;
+}
+}
+
+void Put_Foy(void)
+{
+register cont,i,j;
+unsigned short Co;
+for(cont=0;cont<320;cont++)
+  {
+  Page[63360+cont]=(Rnd4[temp++]>>3)+(Rnd2[temp]>>3)+15;
+  }
+for(cont=0;cont<3;cont++)
+  {
+  Co=63040+Rnd1[temp++]+30;
+  for(i=0;i<10;i++)
+	  {
+	  Page[Co+i]=55;
+	  Page[Co+320+i]=55;
+	  }
+  }
+for(cont=0;cont<3;cont++)
+  {
+  Co=63040+Rnd2[temp++]+30;
+  for(i=0;i<10;i++)
+	  {
+	  Page[Co+i]=60;
+	  Page[Co+320+i]=60;
+	  }
+  }
+for(cont=0;cont<5;cont++)
+  {
+  Co=63040+Rnd3[temp++]/2+96;
+  for(i=0;i<10;i++)
+	  {
+	  Page[Co+i]=64;
+	  Page[Co+320+i]=64;
+	  }
+  }
+/*for(cont=0;cont<4;cont++)
+  {
+  Co=62400+Rnd[temp++]+30;
+  for(j=0;j<4;j++)
+	for(i=0;i<3;i++)
+	  Page[Co+j*320+i]=40;
+  }  */
+}
+
+
+
+
+char On_Obj(void)
+{
+register cont;
+for(cont=0;cont<20;cont++)
+	{
+	if((x>Obj[cont].X)&&(x<Obj[cont].X+Obj[cont].Lg)&&(y>Obj[cont].Y)&&(y<Obj[cont].Y+Obj[cont].Ht))
+		return(cont);
+	}
+return(-1);
+}
+
+void Init_Long(void)
+{
+register cont;
+for(cont=0;cont<5;cont++)
+	{
+	Obj[cont].X=145;
+	Obj[cont].Y=25*cont+32;
+	Obj[cont].Lg=54;
+	Obj[cont].Ht=14;
+	}
+}
+
+
+void Drawy(bytef *src)
+{
+asm{
+  push ds
+  les di,Video
+  lds si,src
+  mov cx,15840
+db 66h
+  rep movsw
+  pop ds
+}
+}
+
+
+
+void main(void)
+{
+register cont;
+char CurObj;
+randomize();
+for(cont=0;cont<256;cont++)
+	{
+	Rnd1[cont]=random(255);
+	Rnd2[cont]=random(255);
+	Rnd3[cont]=random(255);
+	Rnd4[cont]=random(255);
+}
+
+Page=farmalloc(320*200*sizeof(char));
+Pal=farmalloc(768*sizeof(char));
+for(cont=0;cont<97;cont++)
+	Lettre[cont]=(unsigned char far *)farmalloc(144);
+Load_Txt_Menu();
+ModeVGA();
+Init_Pal(Pal);
+SetAllPala(Pal);
+Init_Long();
+InitMouse();
+MouseOFF();
+ZoneMouse(0,0,320,198);
+while(!kbhit())
+{
+Clry(Page);
+Put_Foy();
+b=GetMouse(&x,&y);
+CurObj=On_Obj();
+for(cont=0;cont<5;cont++)
+	if(cont==CurObj)
+		{
+		Print_Txt_Menu(Obj[cont].X,Obj[cont].Y,Txt[cont],Page,63);
+		}
+	else
+		{
+		Print_Txt_Menu(Obj[cont].X,Obj[cont].Y,Txt[cont],Page,15);
+		}
+if((CurObj!=-1)&&b)
+	{
+	if((CurObj==4))
+	exit(0);
+}
+Page[y*320+x]=64;
+FlamesAsm2(Page,Page);
+Bal();
+Drawy(Page);
+}
+
+getch();
+ModeTxt();
+}
+
+
+

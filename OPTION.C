@@ -1,14 +1,14 @@
 void Ecrire_Jeu_Cfg(void)
 {
 if ((Fichier_Cfg=fopen("Mouton/Mouton.cfg","w"))!=NULL)
-{
-fprintf(Fichier_Cfg,JEUCFG,4,4,40,0);
-Options.Nb_Joueurs=4;
-Options.Nb_Plans=4;
-Options.Pts_2_Vie=66;
-TX=4*320;
-fclose(Fichier_Cfg);
-}
+	{
+	fprintf(Fichier_Cfg,JEUCFG,4,4,40,0);
+	Options.Nb_Joueurs=4;
+	Options.Nb_Plans=4;
+	Options.Pts_2_Vie=66;
+	TX=4*320;
+	fclose(Fichier_Cfg);
+	}
 else exit(1);
 }
 
@@ -18,56 +18,55 @@ register cont;
 char temp[256];
 unsigned char ch;
 if ((Fichier_Cfg=fopen("Mouton/Mouton.cfg","r"))!=NULL)
-{
-while (strcmp(temp,"END"))
-{
-while(fgetc(Fichier_Cfg)!='-');
-fscanf(Fichier_Cfg,"%s",&temp);
-if(!strcmp(temp,"END"))
-	continue;
-while((fgetc(Fichier_Cfg))!='=');
-if (!strcmp(temp,"JOUEURS"))
 	{
-	fscanf(Fichier_Cfg,"%d",&ch);
-	Options.Nb_Joueurs=ch;
+	while (strcmp(temp,"END"))
+		{
+		while(fgetc(Fichier_Cfg)!='-');
+		fscanf(Fichier_Cfg,"%s",&temp);
+		if(!strcmp(temp,"END"))
+			continue;
+		while((fgetc(Fichier_Cfg))!='=');
+		if (!strcmp(temp,"JOUEURS"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);
+			Options.Nb_Joueurs=ch;
+			}
+		else if (!strcmp(temp,"PLANS"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);          //bug lors du passage char>unsigned char
+			Options.Nb_Plans=ch;
+			}
+		else if (!strcmp(temp,"EQUIPES"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);
+			Options.Nb_Equipes=ch;
+			}
+		else if (!strcmp(temp,"VITALITE"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);
+			Options.Pts_2_Vie=ch;
+			}
+		else if (!strcmp(temp,"CURNIV"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);
+			Niveau.Cur_Level=ch;
+			}
+		else if (!strcmp(temp,"NIVEAUX"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);
+			Niveau.Nb_Level=ch;
+			for (cont=0;cont<Niveau.Nb_Level;cont++)
+				{
+				while(fgetc(Fichier_Cfg)!='#');
+				fscanf(Fichier_Cfg,"%s",&Niveau.Level[cont]);
+				}
+			}
+		Options.Nb_J_Tot=Options.Nb_Joueurs*Options.Nb_Equipes;
+		}
+	TX=Options.Nb_Plans*320;
+	fclose(Fichier_Cfg);
+//	printf("\nmouton.cfg charge");
 	}
-else if (!strcmp(temp,"PLANS"))
-	{
-	fscanf(Fichier_Cfg,"%d",&ch);          //bug lors du passage char>unsigned char
-	Options.Nb_Plans=ch;
-	}
-else if (!strcmp(temp,"EQUIPES"))
-	{
-	fscanf(Fichier_Cfg,"%d",&ch);
-	Options.Nb_Equipes=ch;
-	}
-else if (!strcmp(temp,"VITALITE"))
-	{
-	fscanf(Fichier_Cfg,"%d",&ch);
-	Options.Pts_2_Vie=ch;
-	}
-else if (!strcmp(temp,"CURNIV"))
-	{
-		fscanf(Fichier_Cfg,"%d",&ch);
-		Niveau.Cur_Level=ch;
-	}
-	else if (!strcmp(temp,"NIVEAUX"))
-	{
-	fscanf(Fichier_Cfg,"%d",&ch);
-	Niveau.Nb_Level=ch;
-	for (cont=0;cont<Niveau.Nb_Level;cont++)
-	{
-	while(fgetc(Fichier_Cfg)!='#');
-	fscanf(Fichier_Cfg,"%s",&Niveau.Level[cont]);
-	}
-	}
-Options.Nb_J_Tot=Options.Nb_Joueurs*Options.Nb_Equipes;
-}
-
-TX=Options.Nb_Plans*320;
-fclose(Fichier_Cfg);
-printf("\nmouton.cfg charge");
-}
 else Ecrire_Jeu_Cfg();
 }
 
@@ -79,66 +78,64 @@ unsigned char ch;
 
 sprintf(temp,"Mouton/%s/%s.cfg",Niveau.Level[lev],Niveau.Level[lev]);
 if ((Fichier_Cfg=fopen(temp,"r"))!=NULL)
-{
-while (strcmp(temp,"END"))
-{
-while(fgetc(Fichier_Cfg)!='-');
-fscanf(Fichier_Cfg,"%s",&temp);
-if(!strcmp(temp,"END"))
-	continue;
-while((fgetc(Fichier_Cfg))!='=');
-if (!strcmp(temp,"CIEL"))
 	{
-	fscanf(Fichier_Cfg,"%d",&ch);
-	Options.Ciel=ch;
-	if(Options.Ciel)
-	{
-	while(fgetc(Fichier_Cfg)!='#');
-	fscanf(Fichier_Cfg,"%d ",&Ciel_Coul.R_Start);
-	fscanf(Fichier_Cfg,"%d ",&Ciel_Coul.V_Start);
-	fscanf(Fichier_Cfg,"%d ",&Ciel_Coul.B_Start);
-
-	fscanf(Fichier_Cfg,"%f ",&Ciel_Coul.R);
-	fscanf(Fichier_Cfg,"%f ",&Ciel_Coul.V);
-	fscanf(Fichier_Cfg,"%f ",&Ciel_Coul.B);
+	while (strcmp(temp,"END"))
+		{
+		while(fgetc(Fichier_Cfg)!='-');
+		fscanf(Fichier_Cfg,"%s",&temp);
+		if(!strcmp(temp,"END"))
+			continue;
+		while((fgetc(Fichier_Cfg))!='=');
+		if (!strcmp(temp,"CIEL"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);
+			Options.Ciel=ch;
+			if(Options.Ciel)
+				{
+				while(fgetc(Fichier_Cfg)!='#');
+				fscanf(Fichier_Cfg,"%d ",&Ciel_Coul.R_Start);
+				fscanf(Fichier_Cfg,"%d ",&Ciel_Coul.V_Start);
+				fscanf(Fichier_Cfg,"%d ",&Ciel_Coul.B_Start);
+				fscanf(Fichier_Cfg,"%f ",&Ciel_Coul.R);
+				fscanf(Fichier_Cfg,"%f ",&Ciel_Coul.V);
+				fscanf(Fichier_Cfg,"%f ",&Ciel_Coul.B);
+				}
+			}
+		else if (!strcmp(temp,"BACK"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);
+			for (cont=0;cont<ch;cont++)
+				{
+				while(fgetc(Fichier_Cfg)!='#');
+				fscanf(Fichier_Cfg,"%s",&Back[cont]);
+				}
+			}
+		else if (!strcmp(temp,"SOL"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);
+			for (cont=0;cont<ch;cont++)
+				{
+				while(fgetc(Fichier_Cfg)!='#');
+				fscanf(Fichier_Cfg,"%d",&PalTemp[cont*3]);
+				fscanf(Fichier_Cfg,"%d",&PalTemp[cont*3+1]);
+				fscanf(Fichier_Cfg,"%d",&PalTemp[cont*3+2]);
+				}
+			}
+		else if (!strcmp(temp,"DECORE"))
+			{
+			fscanf(Fichier_Cfg,"%d",&Nb_Spr);
+			for (cont=0;cont<Nb_Spr;cont++)
+				{
+				while(fgetc(Fichier_Cfg)!='#');
+				fscanf(Fichier_Cfg,"%d",&Deco_Inf[cont].X);
+				fscanf(Fichier_Cfg,"%d",&Deco_Inf[cont].Y);
+				fscanf(Fichier_Cfg,"%d",&Deco_Inf[cont].Lg);
+				fscanf(Fichier_Cfg,"%d",&Deco_Inf[cont].Ht);
+				}
+			}
+		}
+//	printf("\n%s.cfg charge\n",Niveau.Level[lev]);
 	}
-	}
-else if (!strcmp(temp,"BACK"))
-	{
-	fscanf(Fichier_Cfg,"%d",&ch);
-	for (cont=0;cont<ch;cont++)
-	{
-	while(fgetc(Fichier_Cfg)!='#');
-	fscanf(Fichier_Cfg,"%s",&Back[cont]);
-	}
-	}
-else if (!strcmp(temp,"SOL"))
-	{
-	fscanf(Fichier_Cfg,"%d",&ch);
-	for (cont=0;cont<ch;cont++)
-	{
-	while(fgetc(Fichier_Cfg)!='#');
-	fscanf(Fichier_Cfg,"%d",&PalTemp[cont*3]);
-	fscanf(Fichier_Cfg,"%d",&PalTemp[cont*3+1]);
-	fscanf(Fichier_Cfg,"%d",&PalTemp[cont*3+2]);
-	}
-	}
-else if (!strcmp(temp,"DECORE"))
-	{
-	fscanf(Fichier_Cfg,"%d",&Nb_Spr);
-	for (cont=0;cont<Nb_Spr;cont++)
-	{
-	while(fgetc(Fichier_Cfg)!='#');
-	fscanf(Fichier_Cfg,"%d",&Deco_Inf[cont].X);
-	fscanf(Fichier_Cfg,"%d",&Deco_Inf[cont].Y);
-	fscanf(Fichier_Cfg,"%d",&Deco_Inf[cont].Lg);
-	fscanf(Fichier_Cfg,"%d",&Deco_Inf[cont].Ht);
-	}
-	}
-
-}
-printf("\n%s.cfg charge\n",Niveau.Level[lev]);
-}
 else exit(1);
 }
 
@@ -153,43 +150,42 @@ void Lire_Joueur_Cfg(void)
 register cont,cont2;
 char temp[256];
 unsigned char ch,ch2;
-
 sprintf(temp,"Mouton/Equipes.cfg");
 if ((Fichier_Cfg=fopen(temp,"r"))!=NULL)
-{
-while (strcmp(temp,"END"))
-{
-while(fgetc(Fichier_Cfg)!='-');
-fscanf(Fichier_Cfg,"%s",&temp);
-if(!strcmp(temp,"END"))
-	continue;
-while((fgetc(Fichier_Cfg))!='=');
-if (!strcmp(temp,"EQUIPES"))
 	{
-	fscanf(Fichier_Cfg,"%d",&ch);
-if(ch<Options.Nb_Equipes)
-		Options.Nb_Equipes=ch;
-	for (cont=0;cont<Options.Nb_Equipes;cont++)
-	{
-	while(fgetc(Fichier_Cfg)!='#');
-	fscanf(Fichier_Cfg,"%s",&Eq_Name[cont]);
-	fscanf(Fichier_Cfg,"%d",&ch2);
-	if(ch2<Options.Nb_Joueurs)
-		Options.Nb_Joueurs=ch2;
-	for(cont2=0;cont2<Options.Nb_Joueurs;cont2++)
+	while (strcmp(temp,"END"))
 		{
-		fscanf(Fichier_Cfg,"%s",&Mouton[cont*Options.Nb_Joueurs+cont2].Nom);
-		Mouton[cont*Options.Nb_Joueurs+cont2].Equipe=cont;
+		while(fgetc(Fichier_Cfg)!='-');
+		fscanf(Fichier_Cfg,"%s",&temp);
+		if(!strcmp(temp,"END"))
+			continue;
+		while((fgetc(Fichier_Cfg))!='=');
+		if (!strcmp(temp,"EQUIPES"))
+			{
+			fscanf(Fichier_Cfg,"%d",&ch);
+			if(ch<Options.Nb_Equipes)
+				Options.Nb_Equipes=ch;
+			for (cont=0;cont<Options.Nb_Equipes;cont++)
+				{
+				while(fgetc(Fichier_Cfg)!='#');
+				fscanf(Fichier_Cfg,"%s",&Eq_Name[cont]);
+				fscanf(Fichier_Cfg,"%d",&ch2);
+				if(ch2<Options.Nb_Joueurs)
+					Options.Nb_Joueurs=ch2;
+				for(cont2=0;cont2<Options.Nb_Joueurs;cont2++)
+					{
+					fscanf(Fichier_Cfg,"%s",&Mouton[cont*Options.Nb_Joueurs+cont2].Nom);
+					Mouton[cont*Options.Nb_Joueurs+cont2].Equipe=cont;
+					}
+				while(fgetc(Fichier_Cfg)!=';');
+				fscanf(Fichier_Cfg,"%d",&Team_Coul[cont*3]);
+				fscanf(Fichier_Cfg,"%d",&Team_Coul[cont*3+1]);
+				fscanf(Fichier_Cfg,"%d",&Team_Coul[cont*3+2]);
+				}
+			}
 		}
-	while(fgetc(Fichier_Cfg)!=';');
-		fscanf(Fichier_Cfg,"%d",&Team_Coul[cont*3]);
-		fscanf(Fichier_Cfg,"%d",&Team_Coul[cont*3+1]);
-		fscanf(Fichier_Cfg,"%d",&Team_Coul[cont*3+2]);
+	Options.Nb_J_Tot=Options.Nb_Joueurs*Options.Nb_Equipes;
 	}
-	}
-}
-Options.Nb_J_Tot=Options.Nb_Joueurs*Options.Nb_Equipes;
-}
 else exit(1);
 }
 

@@ -1,3 +1,19 @@
+void Txt_Down(void)
+{
+register cont;
+	{
+	Cur_Par--;
+	for(cont=0;cont<3;cont++)
+		{
+		Par[cont][0]=Par[cont+1][0];
+		Par[cont][1]=Par[cont+1][1];
+		Par[cont][2]=Par[cont+1][2];
+		}
+	Par[3][0]=0;
+	Par[3][1]=0;
+	Par[3][2]=0;
+	}
+}
 
 void Print_Let(unsigned short x,byte y,byte *scr,byte Nb,byte Coul)
 {

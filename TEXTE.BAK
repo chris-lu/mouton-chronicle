@@ -1,13 +1,22 @@
+void Txt_Down(void)
+{
+register cont;
+	{
+	Cur_Par--;
+	for(cont=0;cont<3;cont++)
+		{
+		Par[cont][0]=Par[cont+1][0];
+		Par[cont][1]=Par[cont+1][1];
+		Par[cont][2]=Par[cont+1][2];
+		}
+	}
+}
 
 void Print_Let(unsigned short x,byte y,byte *scr,byte Nb,byte Coul)
 {
 unsigned int t;
 void *Poit;
 Poit=Lettre[Nb];
-asm cmp x,320
-asm jle suite
-asm ret
-asm suite:
 t=(y<<8)+(y<<6);
 asm{
   push ds

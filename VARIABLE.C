@@ -6,6 +6,9 @@ char CurBomb=0;                    //Bombe sur l'écran
 char LastExB[4]={0,0,0,0};           //Explosion précédente
 char PalNb=0;                      //Pallette utilisé : accélère les rotation de pallete
 unsigned char Palrot=0;            //Conteur pour les rotation de Pal.
+char Paroles[20][30]={" ","Zut!!!","Loupe.....","J'suis vraiment nul....","Ou elle est???","ARGHHHHHHH!!!!!","Non pas .....","Splatch...","OOOOoooo....","Ouch.","Aille!","Ca brule...","??????"};
+unsigned short Par[4][3];
+unsigned char Cur_Par;
 
 struct{
 unsigned char Ciel;
@@ -137,6 +140,21 @@ unsigned short TX;
 FILE *Fichier_Cfg;
 char Eq_Name[16][12];
 
-
+unsigned char Rnd1[256];
+unsigned char Rnd2[256];
+unsigned char Rnd3[256];
+unsigned char Rnd4[256];
+char far Let_Lg1[97]={4,2,4,10,7,12,10,2,4,4,0,8,3,5,2,6,8,6,7,7,8,8,8,8,7,8,2,3,7,6,7,7,12,10,8,8,8,7,7,9,9,3,6,9,7,11,10,9,8,9,8,7,8,10,10,12,10,9,8,5,6,5,7,7,2,7,7,6,7,7,5,8,8,2,4,7,3,11,7,7,8,7,6,5,5,7,7,9,7,7,7,7,4,1,4,6};
 char far Let_Lg[96]={4,1,3,5,5,4,4,2,2,2,3,3,2,3,1,4,3,3,3,3,3,3,3,3,3,3,1,1,2,3,2,3,4,4,4,4,4,4,4,5,4,3,4,4,4,4,5,4,4,5,4,4,4,4,4,4,4,4,4,2,4,2,2,3,2,3,3,3,3,3,3,3,3,1,2,3,2,5,3,3,3,3,2,2,2,3,3,5,3,3,3,3,1,3,4};
-														     //.											  //A                       //N                     //Z        //a             //i                           //x
+															  //.											  //A                       //N                     //Z        //a             //i                           //x
+char Txt[40][20]={" Jouer ","Options","Equipes","Credits"," Sortie"};
+struct
+{
+unsigned short X;
+unsigned char Y;
+unsigned short Lg;
+unsigned char Ht;
+}Obj[40];
+
+unsigned char temp;
+

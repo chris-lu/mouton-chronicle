@@ -14,12 +14,12 @@ void Mk_Snow(unsigned char far *Palette)
 {
 register cont;
 for (cont=Pv[1];cont<Pv[2];cont++)
-{
-Palette[cont*3]=cont*2;
-Palette[cont*3+1]=cont*2;
-Palette[cont*3+2]=cont*2;
-//Palette[cont*3+2]=cont*2;
-}
+	{
+	Palette[cont*3]=cont*2;
+	Palette[cont*3+1]=cont*2;
+	Palette[cont*3+2]=cont*2;
+	//Palette[cont*3+2]=cont*2;
+	}
 }
 
 
@@ -27,52 +27,48 @@ void Mk_Mout_Coul(unsigned char far *Palette)
 {
 register cont;
 for (cont=48;cont<64;cont++)
-{
-Palette[cont*3]=random(63);
-Palette[cont*3+1]=random(63);
-Palette[cont*3+2]=random(63);
-}
+	{
+	Palette[cont*3]=random(63);
+	Palette[cont*3+1]=random(63);
+	Palette[cont*3+2]=random(63);
+	}
 }
 
 void Mk_Blood(unsigned char far *Palette)
 {
 register cont,temp=31;
 for (cont=Pv[3];cont<Pv[4];cont++)
-{
-Palette[cont*3]=temp;
-Palette[cont*3+1]=0;
-Palette[cont*3+2]=0;
-//Palette[cont*3+2]=cont*2;
-temp+=4;
-}
+	{
+	Palette[cont*3]=temp;
+	Palette[cont*3+1]=0;
+	Palette[cont*3+2]=0;
+	//Palette[cont*3+2]=cont*2;
+	temp+=4;
+	}
 }
 
 void Mk_Sky(unsigned char far *Palette)
 {
 register cont;
 float temp;
-
 temp=Ciel_Coul.R_Start;
 for (cont=216;cont<244;cont++)
-{
-Palette[cont*3]=temp;
-temp+=Ciel_Coul.R;
-}
-
+	{
+	Palette[cont*3]=temp;
+	temp+=Ciel_Coul.R;
+	}
 temp=Ciel_Coul.V_Start;
 for (cont=216;cont<244;cont++)
-{
-Palette[cont*3+1]=temp;
-temp+=Ciel_Coul.V;
-}
-
+	{
+	Palette[cont*3+1]=temp;
+	temp+=Ciel_Coul.V;
+	}
 temp=Ciel_Coul.B_Start;
 for (cont=216;cont<244;cont++)
-{
-Palette[cont*3+2]=temp;
-temp+=Ciel_Coul.B;
-}
-
+	{
+	Palette[cont*3+2]=temp;
+	temp+=Ciel_Coul.B;
+	}
 }
 
 
@@ -80,20 +76,20 @@ void Mk_Stars(unsigned char far *Palette)
 {
 register cont;
 /*for (cont=32;cont<48;cont++)
-{
-Palette[cont*3]=(cont+16)/2;
-Palette[cont*3+1]=(cont+16)/2;
-Palette[cont*3+2]=(cont+16)/2;
-} */
+	{
+	Palette[cont*3]=(cont+16)/2;
+	Palette[cont*3+1]=(cont+16)/2;
+	Palette[cont*3+2]=(cont+16)/2;
+	} */
 for(cont=0;cont<8;cont++)
-{
-Palette[(cont)*3]=(cont)*6;
-Palette[(cont)*3+1]=(cont)*6;
-Palette[(cont)*3+2]=(cont)*6;
-Palette[(16-cont)*3]=(cont)*6;
-Palette[(16-cont)*3+1]=(cont)*6;
-Palette[(16-cont)*3+2]=(cont)*6;
-}
+	{
+	Palette[(cont)*3]=(cont)*6;
+	Palette[(cont)*3+1]=(cont)*6;
+	Palette[(cont)*3+2]=(cont)*6;
+	Palette[(16-cont)*3]=(cont)*6;
+	Palette[(16-cont)*3+1]=(cont)*6;
+	Palette[(16-cont)*3+2]=(cont)*6;
+	}
 Palette[8*3]=48;
 Palette[8*3+1]=48;
 Palette[8*3+2]=48;
@@ -146,7 +142,7 @@ void CpyPal(unsigned char *Pal1,unsigned char *Pal2)
 {
 register cont;
 for(cont=0;cont<768;cont++)
-Pal2[cont]=Pal1[cont];
+	Pal2[cont]=Pal1[cont];
 }
 
 
@@ -154,11 +150,11 @@ void Create_Pal(unsigned char src,unsigned char nb,unsigned char* Pal1,unsigned 
 {
 register cont;
 for (cont=0;cont<nb;cont++)
-{
-Pal2[(cont+dst)*3]=Pal1[(cont+src)*3];
-Pal2[(cont+dst)*3+1]=Pal1[(cont+src)*3+1];
-Pal2[(cont+dst)*3+2]= Pal1[(cont+src)*3+2];
-}
+	{
+	Pal2[(cont+dst)*3]=Pal1[(cont+src)*3];
+	Pal2[(cont+dst)*3+1]=Pal1[(cont+src)*3+1];
+	Pal2[(cont+dst)*3+2]= Pal1[(cont+src)*3+2];
+	}
 }
 
 void Inc_Scr(unsigned char nb,unsigned char far *Scr)
@@ -166,7 +162,37 @@ void Inc_Scr(unsigned char nb,unsigned char far *Scr)
 unsigned long cont;
 for(cont=0;cont<64000;cont++)
 	if(Scr[cont])
-	Scr[cont]+=nb;
+		Scr[cont]+=nb;
 }
+
+void Init_Pal(bytef *p)
+{
+register cont;
+for (cont=0;cont<16;cont++)  // dégradé de rouge
+{
+p[cont*3]=cont*4;      //rouge
+p[cont*3+1]=0;         //vert
+p[cont*3+2]=0;         //bleu
+}
+for (cont=0;cont<16;cont++)  //dégradé rouge-jaune(orange)
+{
+p[(cont+16)*3]=63;
+p[(cont+16)*3+1]=cont*4;
+p[(cont+16)*3+2]=0;
+}
+for (cont=0;cont<16;cont++)  //dégradé jaune-blanc
+{
+p[(cont+32)*3]=63;
+p[(cont+32)*3+1]=63;
+p[(cont+32)*3+2]=cont*4;
+}
+for (cont=0;cont<32;cont++)  //dégradé jaune-blanc
+{
+p[(cont+48)*3]=63;
+p[(cont+48)*3+1]=63;
+p[(cont+48)*3+2]=63;
+}
+}
+
 
 

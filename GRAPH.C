@@ -1,20 +1,23 @@
 void Put_Spr(unsigned short x,unsigned short y,word l,word h,bytef *buf)
 {
-  register byte j;
-  register word i;
-  for(j=0;j<h;j++)
-  {
-		for(i=0;i<l;i++)
-	 {
-
+register byte j;
+register word i;
+for(j=0;j<h;j++)
+	{
+	for(i=0;i<l;i++)
+		{
 		if(*buf)                 //Encre 1?
 			if(x+i<TX&&(y<200))              //dans l'écran?(inclue x<0  et x>960 car non signé!)
-			Plan_1[(x+i)/320][Y[y]+((x+i)%320)]=*buf; //Transparence … l'encre 0
+				Plan_1[(x+i)/320][Y[y]+((x+i)%320)]=*buf; //Transparence … l'encre 0
 		buf++;                      //point suivant
 	 }
 	 y++;                          //ligne suivante
   }
 }
+
+
+
+
 
 void Init_Ter(void)
 {
@@ -25,7 +28,7 @@ unsigned short temp;              //Variable teporaire
 unsigned short pos=100;            //Position du debut du terrain
 unsigned char Plat=0;
 unsigned short SprPos[9];
-unsigned char nb=0;
+char nb=0;
 
 randomize();                      //Initalise le générateur de nombres aléatoires
 pos=random(75)+25;
@@ -35,64 +38,76 @@ C=random(13)+9;                   //Variable tarrain 3
 D=random(14)+8;                   //Variable tarrain 3
 
 for (cont=0;cont<TX;cont++)
-{
-Ytemp[cont]=(random(5)-2)+((sin(cont*0.001*A+1))*cos((cont)*0.0009*B+1)+cos((cont)*C*0.002)*0.09+sin((cont)*D*0.0015)*0.2); //Equation du terrain
-if((pos+Ytemp[cont]>16)&&(pos+Ytemp[cont]<190)) //limite du terrain
-pos+=Ytemp[cont];                               //position
-if (pos+Ytemp[cont]<110)
-{
-Plat++;
-if(Plat>200)
-{
-SprPos[nb]=cont;
-nb++;
-Plat=0;
-}
-}
+	{
+	Ytemp[cont]=(random(5)-2)+((sin(cont*0.001*A+1))*cos((cont)*0.0009*B+1)+cos((cont)*C*0.002)*0.09+sin((cont)*D*0.0015)*0.2); //Equation du terrain
+	if((pos+Ytemp[cont]>16)&&(pos+Ytemp[cont]<190)) //limite du terrain
+		pos+=Ytemp[cont];                               //position
+	if (pos+Ytemp[cont]<110)
+		{
+		Plat++;
+		if(Plat>200)
+			{
+			SprPos[nb]=cont;
+			nb++;
+			Plat=0;
+			}
+		}
+	Ytemp[cont]=pos;
+	}
 
-Ytemp[cont]=pos;
-}
-for (cont=0;cont<nb;cont++)
-{
-//temp=random(430)+430*cont+50;
+	//temp=random(430)+430*cont+50;
 //if(Ytemp[temp]+83<200)
+/*for (cont=0;cont<nb;cont++)
+{
 if(Ytemp[SprPos[cont]]<200-Deco_Inf[2].Ht)
 Put_Spr(SprPos[cont]-37,60-(Ytemp[SprPos[cont]]),Deco_Inf[2].Lg,Deco_Inf[2].Ht,Deco_Spr[2]);
 else if(Ytemp[SprPos[cont]]<210-Deco_Inf[1].Ht)
 Put_Spr(SprPos[cont]-37,110-(Ytemp[SprPos[cont]]),Deco_Inf[1].Lg,Deco_Inf[2].Ht,Deco_Spr[1]);
 else
 Put_Spr(SprPos[cont]-37,127-(Ytemp[SprPos[cont]]),Deco_Inf[0].Lg,Deco_Inf[0].Ht,Deco_Spr[0]);
-}
+} */
+
+for (cont=0;cont<nb;cont++)
+	{
+	temp=Nb_Spr-1;
+	debut:
+	if(Ytemp[SprPos[cont]]<220-Deco_Inf[temp].Ht)
+		Put_Spr(SprPos[cont]-Deco_Inf[temp].Lg/2,220-Deco_Inf[temp].Ht-(Ytemp[SprPos[cont]]),Deco_Inf[temp].Lg,Deco_Inf[temp].Ht,Deco_Spr[temp]);
+	else if((temp--)>0)
+		goto debut;
+	}
+
+
 for (cont=0;cont<TX;cont++)
-{
-temp=Y[200-Ytemp[cont]]+(cont%320);                     //position sur les pages
-Plan_1[cont/320][temp]=17;                      //degradé
-Plan_1[cont/320][temp+320]=18;                  //   "
-Plan_1[cont/320][temp+640]=19;                  //   "
-Plan_1[cont/320][temp+960]=20;                  //   "
-Plan_1[cont/320][temp+1280]=21;                 //   "
-Plan_1[cont/320][temp+1600]=22;                 //   "
-for(haut=Ytemp[cont]-6;haut>0;haut--)
-  Plan_1[cont/320][Y[200-haut]+(cont%320)]=23+random(2);  //remplissage du terrain
-}
+	{
+	temp=Y[200-Ytemp[cont]]+(cont%320);                     //position sur les pages
+	Plan_1[cont/320][temp]=17;                      //degradé
+	Plan_1[cont/320][temp+320]=18;                  //   "
+	Plan_1[cont/320][temp+640]=19;                  //   "
+	Plan_1[cont/320][temp+960]=20;                  //   "
+	Plan_1[cont/320][temp+1280]=21;                 //   "
+	Plan_1[cont/320][temp+1600]=22;                 //   "
+	for(haut=Ytemp[cont]-6;haut>0;haut--)
+		Plan_1[cont/320][Y[200-haut]+(cont%320)]=23+random(2);  //remplissage du terrain
+	}
 }
 
 
 void Put_trou(unsigned short x,unsigned short y,word l,word h,bytef *buf)
 {
-  register byte j;
-  register word i;
-  for(j=0;j<h;j++)
-  {
-		for(i=0;i<l;i++)
-	 {
+register byte j;
+register word i;
+for(j=0;j<h;j++)
+	{
+	for(i=0;i<l;i++)
+		{
 		if(*buf==1)                 //Encre 1?
 			if(x+i<TX&&y<200)              //dans l'écran?(inclue x<0  et x>960 car non signé!)
-			Plan_1[(x+i)/320][Y[y]+((x+i)%320)]=0; //Transparence … l'encre 0
+				Plan_1[(x+i)/320][Y[y]+((x+i)%320)]=0; //Transparence … l'encre 0
 		buf++;                      //point suivant
-	 }
+		}
 	 y++;                          //ligne suivante
-  }
+	 }
 }
 
 
@@ -108,7 +123,7 @@ sprintf(temp,"mouton/%s/Decor.pcx",Niveau.Level[Niveau.Cur_Level]);
 LoadPCX(temp,Plan_1[0],Pal[1]);       //charger les sprites de fond
 Inc_Scr(Pv[6],Plan_1[0]);                     //rectifie les couleurs
 for(cont=0;cont<Nb_Spr;cont++)
-GetBlk2(Deco_Inf[cont].X,Deco_Inf[cont].Y,Deco_Inf[cont].Lg,Deco_Inf[cont].Ht,Plan_1[0],Deco_Spr[cont]);
+	GetBlk2(Deco_Inf[cont].X,Deco_Inf[cont].Y,Deco_Inf[cont].Lg,Deco_Inf[cont].Ht,Plan_1[0],Deco_Spr[cont]);
 Create_Pal(0,64,Pal[1],Pv[6],Pal[0]);        //modifie la pallette principale
 for(cont=0;cont<Options.Nb_Plans;cont++)              //effacer les différantes plans
 	Clr(Plan_1[cont]);
@@ -119,7 +134,7 @@ for(cont=0;cont<Nb_Spr;cont++)
 
 
 
- void Init_Graph(void)
+void Init_Graph(void)
 {
 register cont,cont2;
 char temp[255];
@@ -133,29 +148,29 @@ for(cont=0;cont<2;cont++)
 Create_Pal(0,64,Pal[1],Pv[4],Pal[0]);         //modifie la pallette principale(voir indexe des couleurs de la pallette
 //*******************************************
 if(!Options.Ciel||(Options.Ciel==1))
-{
-LoadPCX("Mouton/BackStar.pcx",Page,Pal[1]);       //charger les sprites de fond
-Create_Pal(0,15,Pal[1],Pv[5],Pal[0]);        //modifie la pallette principale
-GetBlk2(25,0,24,24,Page,Trou);
-Inc_Scr(Pv[5],Page);                         //réctifie les couleurs pour la nouvelle pallette
-GetBlk2(0,0,24,24,Page,Lune);
-}
+	{
+	LoadPCX("Mouton/BackStar.pcx",Page,Pal[1]);       //charger les sprites de fond
+	Create_Pal(0,15,Pal[1],Pv[5],Pal[0]);        //modifie la pallette principale
+	GetBlk2(25,0,24,24,Page,Trou);
+	Inc_Scr(Pv[5],Page);                         //réctifie les couleurs pour la nouvelle pallette
+	GetBlk2(0,0,24,24,Page,Lune);
+	}
 else  if(Options.Ciel==2)
-{
-LoadPCX("Mouton/BackSun.pcx",Page,Pal[1]);       //charger les sprites de fond
-Create_Pal(0,15,Pal[1],Pv[5],Pal[0]);        //modifie la pallette principale
-GetBlk2(25,0,24,24,Page,Trou);
-Inc_Scr(Pv[5],Page);                         //réctifie les couleurs pour la nouvelle pallette
-GetBlk2(0,0,24,24,Page,Lune);
-}
+	{
+	LoadPCX("Mouton/BackSun.pcx",Page,Pal[1]);       //charger les sprites de fond
+	Create_Pal(0,15,Pal[1],Pv[5],Pal[0]);        //modifie la pallette principale
+	GetBlk2(25,0,24,24,Page,Trou);
+	Inc_Scr(Pv[5],Page);                         //réctifie les couleurs pour la nouvelle pallette
+	GetBlk2(0,0,24,24,Page,Lune);
+	}
 
 //******************************************
 LoadPCX("Mouton/moutons.pcx",Page,Pal[1]);       //charger les sprites de fond
 Create_Pal(0,32,Pal[1],Pv[2],Pal[0]);        //modifie la pallette principale
 Inc_Scr(Pv[2],Page);                         //réctifie les couleurs pour la nouvelle pallette
 for(cont2=0;cont2<4;cont2++)
-for(cont=0;cont<8;cont++)
-  GetBlk2(1+9*cont,10*cont2,8,8,Page,Mout_Spr[cont+8*cont2]);
+	for(cont=0;cont<8;cont++)
+		GetBlk2(1+9*cont,10*cont2,8,8,Page,Mout_Spr[cont+8*cont2]);
 
 
 //*******************************************
