@@ -1,9 +1,30 @@
+unsigned short Y[201];             //Tableau de position des abscisses sur l'écran : Pos=320*Y
+float SinT[256];
+float CosT[256];
+char A,B,C,D;                        //Variables aleatoires pour la génération des terrain
+char CurBomb=0;                    //Bombe sur l'écran
+char LastExB[4]={0,0,0,0};           //Explosion précédente
+char PalNb=0;                      //Pallette utilisé : accélère les rotation de pallete
+unsigned char Palrot=0;            //Conteur pour les rotation de Pal.
+
 struct{
 unsigned char Ciel;
-unsigned char Pts_2_Vie;
+short Pts_2_Vie;
+unsigned char Nb_Equipes;
 unsigned char Nb_Joueurs;
+unsigned char Nb_J_Tot;
 unsigned char Nb_Plans;
 }Options;
+
+
+struct{
+short Violant;
+unsigned long Precis;
+unsigned short Bourrin;
+short Inutile;
+unsigned char Mouton[4];
+}Stats;
+
 
 struct{
 unsigned short  X[200];           //Coordonnés : X
@@ -13,6 +34,9 @@ unsigned char Coul[200];
 
 
 struct{
+unsigned char R_Start;
+unsigned char V_Start;
+unsigned char B_Start;
 float R;
 float V;
 float B;
@@ -40,17 +64,12 @@ float PosX;           //Coordonnés de la bombe
 float PosY;           //      "      "  "   "
 }Bombe;               //Stucture pour la bombe
 
-unsigned short Y[201];             //Tableau de position des abscisses sur l'écran : Pos=320*Y
-float SinT[256];
-float CosT[256];
-char A,B,C,D;                        //Variables aleatoires pour la génération des terrain
-char CurBomb=0;                    //Bombe sur l'écran
-char LastExB[4]={0,0,0,0};           //Explosion précédente
-char PalNb=0;                      //Pallette utilisé : accélère les rotation de pallete
-unsigned char Palrot=0;            //Conteur pour les rotation de Pal.
 
 struct {
 short Pts_Vie;
+unsigned char Equipe;
+char Frags;
+char Nom[12];
 char Cur_Spr;
 char Mouv;
 char Mort;
@@ -69,15 +88,24 @@ unsigned char Nb_Level;
 unsigned char Cur_Level;
 }Niveau;
 
+struct{
+unsigned short X;
+unsigned short Y;
+unsigned short Lg;
+unsigned short Ht;
+}Deco_Inf[8];
+
 char Back[2][13]={"Back1.pcx","Back2.pcx"};     //Fichiers pour le second plan
 unsigned char far *Plan_1[4];                 //Page pour le premiers plan : 3 parties
 unsigned char far *Plan_2[2];                 //Page pour le second plan : 2 parties
+unsigned char far *Deco_Spr[8];
 unsigned char far *Page;                      //Page de tavail
+unsigned char far PalTemp[24];                    //Pallettes : 3 différantes pour tout travail sur les pallettes
+unsigned char far Team_Coul[49];                    //Pallettes : 3 différantes pour tout travail sur les pallettes
 unsigned char far *Pal[3];                    //Pallettes : 3 différantes pour tout travail sur les pallettes
+unsigned char far *Lettre[96];                //Lettre (5x5)
 unsigned char far Trou[24*24];                //Sprite trou
 unsigned char far Lune[24*24];                //Sprite pour la lune
-unsigned char far *Bonhomme;                //Sprite pour la lune  74*83
-unsigned char far *Sapin;                //Sprite pour la lune   160*58
 unsigned char far *Mout_Spr[8*8];
 
 void far interrupt (*oldit_9)(void);          //Sauvegarde de l'ancienne interruption clavier
@@ -88,7 +116,7 @@ unsigned short x,y;                           //Position de la souris
 char far Scan_Code[128];                      //Tableau des scancodes
 
 //short test=0;
-unsigned char Pv[10]={0,16,32,64,72,136,152,208};
+unsigned char Pv[10]={0,16,32,64,72,136,152,216};
 
 short Vise=128;
 float Puissance;
@@ -98,13 +126,17 @@ float Add_Vent=0;
 char Cur_Joueur=0;
 unsigned char Wait=0;
 unsigned char ok;
-
+unsigned char Nb_Spr;
+unsigned char Deb_Tour=1;
 int far XMS_Page[2];
-
-char Survivants=4;
+char Last_Key;
+char Survivants;
 
 unsigned short TX;
 
 FILE *Fichier_Cfg;
+char Eq_Name[16][12];
 
-//char Var_Option[3][15]={"JOUEURS","PLANS","POINTS_2_VIE"};
+
+char far Let_Lg[96]={4,1,3,5,5,4,4,2,2,2,3,3,2,3,1,4,3,3,3,3,3,3,3,3,3,3,1,1,2,3,2,3,4,4,4,4,4,4,4,5,4,3,4,4,4,4,5,4,4,5,4,4,4,4,4,4,4,4,4,2,4,2,2,3,2,3,3,3,3,3,3,3,3,1,2,3,2,5,3,3,3,3,2,2,2,3,3,5,3,3,3,3,1,3,4};
+														     //.											  //A                       //N                     //Z        //a             //i                           //x

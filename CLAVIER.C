@@ -27,6 +27,11 @@ register short cont,temp,x;
 Lire_scan();
 if(Mouton[nb].Can_Move)
 {
+if(Scan_Code[0]!=Last_Key)
+	{
+	Last_Key=Scan_Code[0];
+	Deb_Tour=0;
+	}
 if (Scan_Code[77])
 	{
 	Mouton[nb].Sens=1;
@@ -61,15 +66,16 @@ if (Scan_Code[28])
 if (Scan_Code[80])
 	{
 	if(Vise>0)
-	Vise-=2;
+	Vise-=1;
 	}
 if (Scan_Code[72])
 	{
 	if(Vise<253)
-	Vise+=2;
+	Vise+=1;
 	}
 if (Scan_Code[57]&&(!Bombe.Used))
 	{
+	Last_Key=0;
 	if(Puissance<6.5)
 	{
 		Puissance+=0.08;
@@ -80,8 +86,18 @@ if (Scan_Code[57]&&(!Bombe.Used))
 if(!Scan_Code[57]&&Tir)
 	{
 	Init_Bomb();
+	Mouton[nb].Can_Move=0;
 	Puissance=0;
 	Tir=0;
 	}
+if(Scan_Code[59])
+	{
+	Deb_Tour=!Deb_Tour;
+	while(Scan_Code[59])
+	  Lire_scan();
+	Last_Key=Scan_Code[0];
+	}
+
+
 	}
 }

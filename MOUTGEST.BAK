@@ -6,7 +6,7 @@ void Test_Dom(void)
 register cont;
 long temp,temp2,temp3;
 unsigned short stat1,stat2;
-unsigned long stat3,stat4;
+long stat3,stat4;
 short dommages;
 for(cont=0;cont<Options.Nb_J_Tot;cont++)
 {
@@ -27,13 +27,13 @@ if((temp<25&&temp>-25)&&(temp2<25&&temp2>-25))
 	stat1=Mouton[Cur_Joueur].PosX-Bombe.PosX+4;
 	stat2=Mouton[Cur_Joueur].PosY-Bombe.PosY+4;
 	stat4=sqrt(stat2*stat2+stat1*stat1);
-	stat3=(unsigned long)stat4*dommages;
+	stat3=stat4*dommages;
 	if (stat3>Stats.Precis)
 		{
 		Stats.Precis=stat3;
 		Stats.Mouton[1]=Cur_Joueur;
 		}
-	stat3=stat4*25/dommages;
+	stat3=stat4/dommages;
 	if (stat3<Stats.Bourrin)
 		{
 		Stats.Bourrin=stat3;

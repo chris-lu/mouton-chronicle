@@ -52,6 +52,7 @@ jnz loop1
 pop es
 pop ds
 }
+Put(270,20,24,24,Page,Lune);
 }
 
 
@@ -94,7 +95,7 @@ Explose[nb].X[cont]=0;
 Explose[nb].Y[cont]=0;
 Explose[nb].DirX[cont]=(cos(a))*vit;
 Explose[nb].DirY[cont]=(sin(a))*vit;
-Explose[nb].Coul[cont]=random(6)+coul;
+Explose[nb].Coul[cont]=random(8)+coul;
 }
 }
 
@@ -113,7 +114,7 @@ for(cont=0;cont<100;cont++)
 {
 Xa=Explose[nb].X[cont]+Explose[nb].StartX;  //pour simplifier la formule ci dussous
 Ya=Explose[nb].Y[cont]+Explose[nb].StartY;
-	if((Ya<200)&&(Xa<TX))   //si le débris est dans le plan...
+	if((Ya<200)&&(Xa<TX)&&Ya>1)   //si le débris est dans le plan...
 	Plan_1[Xa/320][Y[200-Ya]+(Xa%320)]=Explose[nb].Coul[cont];  //il faut l'afficher
 }
 }
@@ -145,7 +146,7 @@ for(cont=0;cont<100;cont++)
 		Explose[nb].X[cont]-=Explose[nb].DirX[cont];    //rebondir
 		Explose[nb].Y[cont]-=Explose[nb].DirY[cont];
 		Explose[nb].DirX[cont]=-Explose[nb].DirX[cont]/2;
-		Explose[nb].DirY[cont]=-Explose[nb].DirY[cont]/(Explose[nb].Coul[cont]/3);
+		Explose[nb].DirY[cont]=-Explose[nb].DirY[cont]/(Explose[nb].Coul[cont]);
 		}
 	if((Xa>x)&&(Xa<(x+320))&&(Ya>200-y)&&(Ya<400-y))  //si dans l'écran...
 		Page[(Y[400-y-Ya-1]+(Xa-x))]=Explose[nb].Coul[cont];  //...afficher

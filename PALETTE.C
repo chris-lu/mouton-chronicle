@@ -6,8 +6,8 @@ Palette :
 64-72		:sang           *
 72-136	:2nd plan       *
 136-152	:Lune       	 *
-152-208	:Bonhomme   	 *
-208-228  :Ciel
+152-216	:Bonhomme   	 *
+216-244  :Ciel
 */
 
 void Mk_Snow(unsigned char far *Palette)
@@ -19,6 +19,18 @@ Palette[cont*3]=cont*2;
 Palette[cont*3+1]=cont*2;
 Palette[cont*3+2]=cont*2;
 //Palette[cont*3+2]=cont*2;
+}
+}
+
+
+void Mk_Mout_Coul(unsigned char far *Palette)
+{
+register cont;
+for (cont=48;cont<64;cont++)
+{
+Palette[cont*3]=random(63);
+Palette[cont*3+1]=random(63);
+Palette[cont*3+2]=random(63);
 }
 }
 
@@ -41,21 +53,21 @@ register cont;
 float temp;
 
 temp=Ciel_Coul.R_Start;
-for (cont=208;cont<228;cont++)
+for (cont=216;cont<244;cont++)
 {
 Palette[cont*3]=temp;
 temp+=Ciel_Coul.R;
 }
 
 temp=Ciel_Coul.V_Start;
-for (cont=208;cont<228;cont++)
+for (cont=216;cont<244;cont++)
 {
 Palette[cont*3+1]=temp;
 temp+=Ciel_Coul.V;
 }
 
 temp=Ciel_Coul.B_Start;
-for (cont=208;cont<228;cont++)
+for (cont=216;cont<244;cont++)
 {
 Palette[cont*3+2]=temp;
 temp+=Ciel_Coul.B;
