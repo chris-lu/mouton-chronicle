@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Programmations</title>
+</head>
+
+<body bgcolor="#000000" text="#008000">
+
+<p><font face="Comic Sans MS">Ce jeu a ete devellope en <u>C</u>
+et en <u>assembleur</u> pour environnement DOS a l'aide de
+Borland 4.52.</font></p>
+
+<p><font face="Comic Sans MS">La programmations a ete faite par
+etapes successives avec un ajout pemanents d'elements nouveaux. </font></p>
+
+<p><font face="Comic Sans MS">Le principal probleme sous
+l'environnement DOS est la memoire ( Limite a 640 Ko (10 pages de
+64Ko) qui est souvent deja en partie utilisee par d'autres
+programmes) car celui-ci travail en <u>Mode reel</u>. Le but a
+donc ete de faire un jeu beau, amusant, et interessant, tout ceci
+<u>utilisant moins de 580 Ko</u> de memoire.. Plusieurs solutions
+aurait pus etres utilises pour resoudre ce probleme :</font></p>
+
+<ul>
+    <li><font face="Comic Sans MS">Tout d'abord, La memoire
+        paginee ou encore la memoire etendue. Cependant l'acces a
+        cette memoire est relativement lent par rapport a la
+        memoire convetionnelle. Cette solutions a donc ete mise
+        de cote.</font></li>
+    <li><font face="Comic Sans MS">Optimisation de code a l'aide
+        de l'assembleur : Plus rapide, plus petit mais plus
+        difficile. (Solution retenue).</font></li>
+    <li><font face="Comic Sans MS">Les Dos-Extenders ( Comme
+        DOS4GW.exe pour le compilateur Watcom C++) permet la
+        traduction d'un programme developper en mode reel en un
+        programme exploitant les capacites du mode protege(4 Go
+        de memoire adressable) sans aucune modifications dans le
+        code du programme original. Or aucun Dos-Extander pour
+        Borland n'a ete trouve (ou ne fonctionne) a ce jour.</font></li>
+    <li><font face="Comic Sans MS">Limiter les graphismes ou le
+        code ( donc les possibilites du jeu ). Cette solutions
+        n'est ni avantageuse pour nous, ni pour vous !</font></li>
+    <li><font face="Comic Sans MS">Programmer tout simplement en
+        mode protege! Oui mais non.... Car les variantes du mode
+        protege (poiteurs, fonctions, etc...) me sont inconues et
+        l'apprantissage de la programmation graphique peut se
+        reveler tres longue....</font></li>
+</ul>
+
+<p><font face="Comic Sans MS">La programmation sous dos necessite
+aussi une<u> reprogrammation complete des element de base</u>
+(deja programmes sous windows par exemple...) comme le lecteur de
+CD Audio, le clavier, l'affichage, etc.....</font></p>
+
+<p><font face="Comic Sans MS">Une tres grande partie des
+procedures a ete programmee personnellement. La minorite restante
+a ete retravaillee pour les besoins du programme( compatibilite
+et rapidite). AUCUNE PROCDURE </font><font size="1"
+face="Comic Sans MS">(ou peut etre une seule (???) )</font><font
+face="Comic Sans MS"> OU FONCTION N'A ETE REPRISE ENTIEREMENT.</font></p>
+
+<p><font face="Comic Sans MS">Les bases du langage C++ ont ete
+aprisent pour la creation de l'autorun.</font></p>
+
+<p><font face="Comic Sans MS">Le reste des problemes ont ete
+moins importants ( mais cependant tres nombreux ) et ont pu etre
+resolus avec un peu d'imagination, de reflexion et de
+documentation (Livre : Programmation systeme PC ).</font></p>
+
+<p><font face="Comic Sans MS">Le jeu a ete programme de façon a
+ce qu'il soit le plus intuitif possible avec la possibilite de
+cree facilement ses propres niveaux, etc...</font></p>
+
+<p>&nbsp;</p>
+
+<p><font face="Comic Sans MS"><em>Quelques chiffres :</em></font></p>
+
+<ul>
+    <li><font face="Comic Sans MS"><em>7 pages graphiques maximum
+        de 64000 octets pour l'affichage (438 Ko)</em></font></li>
+    <li><font face="Comic Sans MS"><em>Fichier executable
+        contenant les variables et le code (109 Ko)</em></font></li>
+    <li><font face="Comic Sans MS"><em>Memoire restante utilises
+        pour les diverses donnees : &lt; 23 Ko</em></font></li>
+    <li><font face="Comic Sans MS"><em>Memoire totale : &lt; 580
+        Ko</em></font></li>
+</ul>
+
+<ul>
+    <li><font face="Comic Sans MS"><em>Lignes de code &gt; 5200</em></font></li>
+    <li><font face="Comic Sans MS"><em>Nombre de caracteres &gt;
+        128 000</em></font></li>
+    <li><font face="Comic Sans MS"><em>Temps de travail total
+        &gt; 80 H</em></font></li>
+</ul>
+
+<p><em></em>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>mouton sans titre</title>
+<style>
+<!--
+ 	 	A{text-decoration:none}	
+		A:hover {text-decoration:none;color = #00EAAA}
+-->
+</STYLE>
+</head>
+
+<body bgcolor="#000000" text="#008000" link="#0000FF"
+vlink="#0000FF" alink="#00FF80" topmargin="0" leftmargin="0">
+
+<p align="center"><a name="Personnalisation"><font size="6"
+face="Comic Sans MS"><em>Personnalisation</em></font></a></p>
+<div align="left">
+
+<table border="1" cellpadding="0" cellspacing="0">
+    <tr>
+        <td><div align="left"><table border="0" cellpadding="0"
+        cellspacing="0">
+            <tr>
+                <td align="center"><p align="center"><font
+                color="#0000FF" face="Comic Sans MS"><marquee
+                width="31">&lt; &lt; &lt;</marquee></font><font
+                face="Comic Sans MS"> </font></p>
+                </td>
+                <td align="center"><a href="jeu.htm"><font
+                face="Comic Sans MS">Precedent </font></a></td>
+                <td align="center"><font color="#0000FF"
+                face="Comic Sans MS"><marquee width="31">&lt; &lt; &lt;</marquee></font></td>
+            </tr>
+        </table>
+        </div></td>
+    </tr>
+</table>
+</div>
+
+<p align="left"><font size="3" face="Comic Sans MS">Il vous est
+permis de modifier plusieurs options du jeu ou de cree vos
+propres niveaux... </font></p>
+
+<p align="left"><font size="3" face="Comic Sans MS">Un editeur de
+niveaux sera peut etre diffuser si quelqu'un en fait la demande. </font><font
+size="1" face="Comic Sans MS">(GnoMaster :&quot;j'ai pas envie
+d'en creer un pour rien et surtout pour personne!&quot; )</font></p>
+
+<ul>
+    <li><p align="left"><a href="#I) Introduction generale"><font
+        size="3" face="Comic Sans MS"><em>I) Introduction
+        generale</em></font></a></p>
+    </li>
+    <li><p align="left"><a
+        href="#II) Modification des parametres du jeu."><font
+        size="3" face="Comic Sans MS"><em>II) Modification des
+        parametres du jeu</em></font></a></p>
+    </li>
+    <li><p align="left"><a href="#III) Creation de niveaux"><font
+        size="3" face="Comic Sans MS"><em>III) Creation de
+        niveaux</em></font></a></p>
+    </li>
+    <li><p align="left"><a href="#IV) Particularite des fichiers"><font
+        size="3" face="Comic Sans MS"><em>IV) Particularite des
+        fichiers</em></font></a></p>
+    </li>
+</ul>
+
+<p align="left">&nbsp;</p>
+
+<p align="left"><a href="#Personnalisation"
+name="I) Introduction generale"><font size="4"
+face="Comic Sans MS"><em>I) </em><em><u>Introduction generale</u></em></font></a></p>
+
+<p align="left"><font size="3" face="Comic Sans MS">Voici la
+forme generale de la declaration des options : </font></p>
+
+<p align="left">&nbsp;</p>
+
+<p align="left"><font face="Comic Sans MS">-Si une option ne
+modifie qu'une valeur simple (nombre simple, oui(1) ou non(0),
+cette option sera sous la forme :</font></p>
+<div align="center"><center>
+
+<table border="1" cellpadding="0" cellspacing="0">
+    <tr>
+        <td><font face="Comic Sans MS"><samp>-BLABLA = X </samp></font></td>
+    </tr>
+</table>
+</center></div>
+
+<p align="left"><font face="Comic Sans MS">ou &quot;BLABLA&quot;
+sera le nom de l'option(en majuscule!) et &quot;X&quot; la valeur
+de cette option...</font></p>
+
+<p align="left"><font face="Comic Sans MS">-Si une option doit
+renvoyer des valeurs complexes (virgule flottante, valeurs
+multiples, phrases, etc..)</font></p>
+
+<p align="left"><font face="Comic Sans MS">cette option sera sour
+la forme (sauf exception qui serons precisées...) :</font></p>
+<div align="center"><center>
+
+<table border="1" cellpadding="0" cellspacing="0">
+    <tr>
+        <td><font face="Comic Sans MS"><samp>-BLABLA = X </samp></font><p><font
+        face="Comic Sans MS"><samp># 11111 22222 33333 44444 5 6
+        etc....</samp></font></p>
+        <p><font face="Comic Sans MS"><samp># 111' 2222' 3333'
+        ........................</samp></font></p>
+        </td>
+    </tr>
+</table>
+</center></div>
+
+<p align="left"><font face="Comic Sans MS">ou &quot;BLABLA&quot;
+sera le nom de l'option(en majuscule!), &quot;X&quot; le nombre
+de lignes precedees par # a analyser et &quot;11111&quot;
+&quot;2222&quot; les valeurs de l'option (le type de ces valeurs
+sera precise en temps voulu...)</font></p>
+
+<p align="left"><font face="Comic Sans MS">-Tout fichier doit se
+terminer par</font></p>
+<div align="center"><center>
+
+<table border="1" cellpadding="0" cellspacing="0">
+    <tr>
+        <td><font face="Comic Sans MS"><samp>-END</samp></font></td>
+    </tr>
+</table>
+</center></div>
+
+<p align="left">&nbsp;</p>
+
+<p align="left"><a href="#Personnalisation"
+name="II) Modification des parametres du jeu."><font size="4"
+face="Comic Sans MS"><em>II) </em><em><u>Modification des
+parametres du jeu.</u></em></font></a><font size="4"
+face="Comic Sans MS"><u> </u></font></p>
+
+<p align="left"><font size="3" face="Comic Sans MS">Ces
+parametres se trouvent dans les fichiers <em>&quot;lang.fr&quot; </em>et<em>
+&quot;mouton.cfg&quot;.</em></font></p>
+
+<p align="left"><font size="3" face="Comic Sans MS"><em>&quot;Mouton.cfg&quot;
+:</em></font></p>
+<div align="center"><center>
+
+<table border="1" cellpadding="0" cellspacing="0">
+    <tr>
+        <td>-VITALITE</td>
+        <td><font face="Comic Sans MS">Nombre de points de vie de
+        chaque mouton</font></td>
+    </tr>
+    <tr>
+        <td>-JOUEURS</td>
+        <td><font face="Comic Sans MS">Nombre de joueurs dans
+        chaque equipe</font></td>
+    </tr>
+    <tr>
+        <td>-PLANS</td>
+        <td><font face="Comic Sans MS">Largeur de la zone de
+        combat</font></td>
+    </tr>
+    <tr>
+        <td>-SUIVRE</td>
+        <td><font face="Comic Sans MS">Suivre le mouton ?</font></td>
+    </tr>
+    <tr>
+        <td>-LECTCD</td>
+        <td><font face="Comic Sans MS">Specifie le lecteur CD
+        utilise (0 = 1er lecteur CD, 1 = 2nd lecteur CD, etc...</font></td>
+    </tr>
+    <tr>
+        <td>-MELANGE</td>
+        <td><font face="Comic Sans MS">Doit melanger les equipes
+        ?</font></td>
+    </tr>
+    <tr>
+        <td>-CURNIV</td>
+        <td><font face="Comic Sans MS">Niveau actuel</font></td>
+    </tr>
+    <tr>
+        <td>-NIVEAUX</td>
+        <td><font face="Comic Sans MS">Nombre de niveaux suivi de
+        leurs noms precedes par # (voir creation de niveaux)</font></td>
+    </tr>
+    <tr>
+        <td>-MENUCOUL</td>
+        <td><font face="Comic Sans MS">Couleur du menu : Chaque
+        nombre represente l'incrementation successive de chaque
+        couleur (rouge, vert, bleu). vous devez entrer 4 groupes
+        de 3 valeurs....</font><p><font face="Comic Sans MS">ex :
+        0 0 4 augmentra de 4 la couleur bleu pour chaque couleur
+        differente (-1 signifie couleur maximale donc -1 -1 -1 =
+        Blanc...)</font></p>
+        </td>
+    </tr>
+</table>
+</center></div>
+
+<p><font face="Comic Sans MS"><em>&quot;Lang.fr&quot;:</em></font></p>
+<div align="center"><center>
+
+<table border="1" cellpadding="0" cellspacing="0">
+    <tr>
+        <td>-T1</td>
+        <td><font face="Comic Sans MS">Nombre de phrases dites
+        par les moutons : NE DOIT PAS ETRE CHANGE!</font><p><font
+        face="Comic Sans MS">Il existe 5 types de phrases de
+        chaque type et chacune est precedee de #</font></p>
+        </td>
+    </tr>
+</table>
+</center></div>
+
+<p><a href="#Personnalisation" name="III) Creation de niveaux"><font
+size="4" face="Comic Sans MS"><em>III) </em><em><u>Creation de
+niveaux</u></em></font></a></p>
+
+<p><font size="3" face="Comic Sans MS">Voici la demarche pour
+cree un niveau : </font></p>
+
+<ol>
+    <li><font size="3" face="Comic Sans MS">Copiez le contenu du
+        dossier &quot;Nouveau&quot; (place dans le repertoire
+        d'installation) vers un autre dossier portant le nom du
+        nouveau niveau (ex : &quot;Titanic&quot;) (le nom doit
+        etre inferieur a 8 characteres);</font></li>
+    <li><font size="3" face="Comic Sans MS">Augmentez de 1
+        l'option NIVEAUX du fichier &quot;mouton.cfg&quot; et
+        ajoutez a la suite : #Nomduniveau (moins de 8
+        characteres) </font><div align="center"><center><table
+        border="2" cellpadding="0" cellspacing="0">
+            <tr>
+                <td><font face="Comic Sans MS"><samp>-</samp></font><font
+                size="3" face="Comic Sans MS"><samp>NIVEAU =X</samp></font><p><font
+                size="3" face="Comic Sans MS"><samp>#Titanic</samp></font></p>
+                </td>
+            </tr>
+        </table>
+        </center></div></li>
+    <li><font size="3" face="Comic Sans MS">Renommez
+        &quot;nouveau.cfg&quot; en &quot;nomduniveau.cfg&quot;
+        (exemple Titanic.cfg)</font></li>
+    <li><font size="3" face="Comic Sans MS">Modifiez les option
+        de ce dernier fichier comme suit :</font></li>
+</ol>
+<div align="center"><center>
+
+<table border="2" cellpadding="0" cellspacing="0">
+    <tr>
+        <td><font face="Comic Sans MS">SOL</font></td>
+        <td><font face="Comic Sans MS">Couleurs du sol (8 au
+        total) : r v b correspond aux valeurs respectives en
+        rouve vert et bleu de chaque couleur.</font></td>
+    </tr>
+    <tr>
+        <td><font face="Comic Sans MS">DECORE</font></td>
+        <td><font face="Comic Sans MS">Nombre de sprites de
+        Decor. Les valeurs qui suivent cette option correspondent
+        respectivement a la position en X,en Y, la longueur et la
+        hauteur de chaque sprite contenu dans le fichier
+        &quot;decor.pcx&quot;</font></td>
+    </tr>
+    <tr>
+        <td><font face="Comic Sans MS">CIEL</font></td>
+        <td><font face="Comic Sans MS">Aspect du ciel :</font><p><font
+        face="Comic Sans MS">#Backxxxxx.pcx : astre visible dans
+        le ciel. Ces fichiers sont contenus dans le repertoire du
+        jeu.</font></p>
+        <p><font face="Comic Sans MS">=0 : Ciel etoile</font></p>
+        <p><font face="Comic Sans MS">=1 : Degrade de couleurs :
+        &quot;#r v b ...&quot; : valeurs en rouge vert et bleu.
+        &quot;... Incr incv incb&quot; : valeur d'incrementation
+        de chaque couleurs (nombre a virgule flotante)</font></p>
+        </td>
+    </tr>
+    <tr>
+        <td><font face="Comic Sans MS">BACK</font></td>
+        <td><font face="Comic Sans MS">Nom des deux fichiers de
+        fond (ex : #Titanic1.pcx et #Titanic2.pcx)</font></td>
+    </tr>
+    <tr>
+        <td><font face="Comic Sans MS">GRAVIE</font></td>
+        <td><font face="Comic Sans MS">Gravite du terrain
+        (gravite reelle divisee par 200) (virgule flottante)</font></td>
+    </tr>
+    <tr>
+        <td><font face="Comic Sans MS">TRACK</font></td>
+        <td><font face="Comic Sans MS">Piste audio correspondant
+        a ce terrain</font></td>
+    </tr>
+    <tr>
+        <td><font face="Comic Sans MS">ORAGE</font></td>
+        <td><font face="Comic Sans MS">Eclairs en arriere plan ?</font></td>
+    </tr>
+    <tr>
+        <td><font face="Comic Sans MS">ESPACE</font></td>
+        <td><font face="Comic Sans MS">Espacement de chaque
+        elements du decor.</font></td>
+    </tr>
+</table>
+</center></div>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p align="left"><a href="#Personnalisation"
+name="IV) Particularite des fichiers"><font size="4"
+face="Comic Sans MS"><em>IV) </em><em><u>Particularite des
+fichiers</u></em></font></a></p>
+
+<ul>
+    <li><p align="left"><font size="3" face="Comic Sans MS">Tous
+        les fichiers du jeux doivent etre inferieurs a 8
+        caractere (sans l'extension; ex :
+        &quot;fichiers.ext&quot;)</font></p>
+    </li>
+    <li><p align="left"><font size="3" face="Comic Sans MS">Chaque
+        fichier graphique doit etre au format &quot;PCX&quot; et
+        limite a 64 couleurs par fichier (les fichier de second
+        plan doivent avoir les memes couleurs sinon....Surprise
+        !)</font></p>
+    </li>
+    <li><p align="left"><font size="3" face="Comic Sans MS">N'oubliez
+        pas de terminer tous les fichier par &quot;-END&quot; !</font></p>
+    </li>
+    <li><p align="left"><font size="3" face="Comic Sans MS">FAITES
+        ATTENTION AUX INFORMATIONS QUE VOUS ENTREZ OU MODIFIEZ!
+        Toutes erreurs dans les fichier de configuration pourra
+        provoquer un Plantage du programme ! ! !</font></p>
+    </li>
+</ul>
+
+<p align="left">&nbsp;</p>
+
+<p align="left">&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+</body>
+</html>

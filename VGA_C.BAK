@@ -1,0 +1,426 @@
+/*************************************************************/
+// TITRE   : BIBLIOTHEQUE GRAPHIQUE VGA STANDARD (SOURCES C)
+// AUTEUR  : SIRACUSA WALTER/wiSdom
+// FICHIER : VGA_C.C
+/*************************************************************/
+
+#include "vga.h"
+unsigned char *Video=0xA0000000;     // Adresse Video
+/*
+char co=20;
+char dr=3;
+
+void far interrupt Vide(void)
+{
+}
+
+void far interrupt Coul(void)
+{
+co+=dr;
+if (co>60||co<20)
+	dr=-dr;
+outportb(0x3c8,4);
+outportb(0x3c9,co);
+outportb(0x3c9,co/4);
+outportb(0x3c9,co/4);
+}
+
+void Sign(void)
+{
+setvect(0x1c,Coul);
+textcolor(4);
+cprintf("GnoMaster");
+textcolor(7);
+}
+				  */
+void Bal(void)                    //retour de balayage
+{
+asm{
+mov dx,0x3DA;
+wait1:
+in al,dx;
+test al,8;
+jz wait1;
+}
+}
+
+
+void ModeVGA(void)
+{
+  asm{
+  push ds
+  mov ax,13h
+  int 10h
+  pop ds}
+  /*
+  union REGS regs;
+
+  regs.x.ax=0x0013;
+  int86(0x10,&regs,&regs); */
+}
+
+void ModeTxt(void)
+{
+  asm{
+  push ds
+  mov ax,3
+  int 10h
+  pop ds
+  }/*
+  union REGS regs;
+
+  regs.x.ax=0x0003;
+  int86(0x10,&regs,&regs);   */
+}
+
+
+
+/*void Ink(byte e,byte r,byte v,byte b)
+{
+  outportb(0x3c8,e);
+  outportb(0x3c9,r);
+  outportb(0x3c9,v);
+  outportb(0x3c9,b);
+}     */
+
+void Draw(bytef *src,short Mod)                     // ATTENTION! MODIFIE!!
+{
+if (Mod)
+asm{
+  push ds
+  les di,Video
+  lds si,src
+  mov cx,16000
+  mov ax,Mod
+  add si,ax
+  shr ax,2
+  mov dx,ax
+  sub cx,ax
+db 66h
+  rep movsw
+  mov cx,dx
+  xor ax,ax
+db 66h
+  rep stosw
+  pop ds
+}
+else
+asm{
+  push ds
+  les di,Video
+  lds si,src
+  mov cx,16000
+db 66h
+  rep movsw
+  pop ds
+}
+
+}
+
+void Cpy(bytef *src,bytef *dst)
+{
+asm{
+  push ds
+  les di,dst
+  lds si,src
+  mov cx,16000
+db 66h
+  rep movsw
+  pop ds
+}
+}
+
+void Clr(bytef *dst)
+{
+asm{
+  push ds
+  les di,dst
+  xor ax,ax
+  mov cx,32000
+  rep stosw
+  pop ds
+}
+}
+
+
+void Put(unsigned short x,byte y,unsigned short l,byte h,byte *scr,byte *spr)
+{
+unsigned int t,h2,l2;
+h2=(int)h;
+l2=(int)l;
+t=(y<<8)+(y<<6);
+asm{
+  push ds
+  les di,scr
+  lds si,spr
+  mov cx,t
+  add cx,x
+  add di,cx
+  mov ax,di
+  mov bx,h2
+psprh:
+  mov cx,l2
+psprl:
+  mov dl,ds:[si]
+  or dl,dl
+  jz psprl2
+  mov es:[di],dl
+psprl2:
+  inc si
+  inc di
+  dec cx
+  or cx,cx
+  jnz psprl
+
+  add ax,320
+  mov di,ax
+  dec bx
+  or bx,bx
+  jnz psprh
+  pop ds
+	}
+}
+
+/*void PutSpr(short x,short y,word l,word h,bytef *scr,bytef *buf)
+{
+  register byte j,l2=l;
+  register word i;
+  bytef *s1;
+  if(x+l>320)
+	{
+	l2=320-x;
+	l-=l2;
+	}
+	else
+	l=0;
+  scr+=(y<<8)+(y<<6)+x;
+
+  for(j=0;j<h;j++)
+  {
+	 s1=scr;
+	 for(i=0;i<l2;i++)
+	 {
+		if(*buf) *s1=*buf; //Transparence … l'encre 0
+		s1++;
+		buf++;
+	 }
+	 buf+=l;
+	 scr+=320;
+  }
+}
+  *//*
+void IncBlk(short x,short y,word l,word h,bytef *scr,bytef nb)
+{
+register byte j;
+register word i;
+
+  scr+=(y<<8)+(y<<6)+x;
+  for(j=0;j<h;j++)
+  {
+	 for(i=0;i<l;i++)
+		{
+		scr++;
+		if ((*scr!=0))
+		*scr=nb+*scr;
+		}
+	 scr-=l;
+	 scr+=320;
+  }
+}
+
+		*/
+void GetBlk1(short x,short y,word l,word h,bytef *scr,bytef *buf)
+{
+  register byte j;
+  register word i;
+  bytef *s1;
+
+  scr+=(y<<8)+(y<<6)+x;
+
+  for(j=0;j<h;j++)
+  {
+	 s1=scr;
+	 for(i=0;i<l;i++) *(buf++)=*(s1++);
+	 scr+=320;
+  }
+}
+
+/*void GetBlk2(short x,short y,word l,word h,bytef *scr,bytef *buf)
+{
+  register byte j;
+  register word i;
+  wordf *s2;
+  wordf *d2;
+
+  scr+=(y<<8)+(y<<6)+x;
+  l=l>>1;
+  d2=(wordf *)buf;
+
+  for(j=0;j<h;j++)
+  {
+	 s2=(wordf *)scr;
+	 for(i=0;i<l;i++) *(d2++)=*(s2++);
+	 scr+=320;
+  }
+}       */
+
+/*void GetBlk4(short x,short y,word l,word h,bytef *scr,bytef *buf)
+{
+  register byte j;
+  register word i;
+  dwordf *s4;
+  dwordf *d4;
+
+  scr+=(y<<8)+(y<<6)+x;
+  l=l>>2;
+  d4=(dwordf *)buf;
+
+  for(j=0;j<h;j++)
+  {
+	 s4=(dwordf *)scr;
+	 for(i=0;i<l;i++) *(d4++)=*(s4++);
+	 scr+=320;
+  }
+}      */
+
+/*void PutBlk1(short x,short y,word l,word h,bytef *scr,bytef *buf)
+{
+  register byte j;
+  register word i;
+  bytef *s1;
+
+  scr+=(y<<8)+(y<<6)+x;
+
+  for(j=0;j<h;j++)
+  {
+	 s1=scr;
+	 for(i=0;i<l;i++) *(s1++)=*(buf++);
+	 scr+=320;
+  }
+}
+		*/
+/*void CpyBlk(short xs,short ys,word l,word h,short xd,short yd,bytef *src,bytef *dst)
+{
+  register byte i,j,lg;
+  bytef *s;
+  bytef *d;
+  dwordf *s4;
+  dwordf *d4;
+
+  src+=(ys<<8)+(ys<<6)+xs;
+  dst+=(yd<<8)+(yd<<6)+xd;
+  lg=l&3;   //lg = l%4
+  l=l>>2;
+
+  for(j=0;j<h;j++)
+  {
+	 s4=(dwordf *)src;
+	 d4=(dwordf *)dst;
+	 for(i=0;i<l;i++) *(d4++)=*(s4++);
+
+	 s=(bytef *)s4;
+	 d=(bytef *)d4;
+	 for(i=0;i<lg;i++) *(d++)=*(s++);
+
+	 src+=320;
+	 dst+=320;
+  }
+}
+					*/
+void Blka(unsigned short xs,unsigned short ys,unsigned short l,unsigned char h,unsigned short xd,unsigned short yd,bytef *src,bytef *dst)
+{
+asm{
+  push ds
+
+  les di,dst
+  lds si,src
+
+  mov ax,ys
+  mov bx,320
+  mul bx
+  add ax,xs
+  add si,ax
+
+  mov ax,yd
+  mov bx,320
+  mul bx
+  add ax,xd
+  add di,ax
+
+  mov ax,si
+  mov bx,di
+
+  mov dh,h
+
+debut:
+  mov cx,l
+copie:
+  mov dl,ds:[si]
+  or dl,dl
+  jz suite
+  mov es:[di],dl
+suite:
+  inc si
+  inc di
+  dec cx
+  or cx,cx
+  jnz copie
+
+  add ax,320
+  mov si,ax
+  add bx,320
+  mov di,bx
+
+  dec dh
+  or dh,dh
+  jnz debut
+  pop ds
+
+  }
+}
+
+
+
+
+		 /*
+
+void CpySpr(short xs,short ys,word l,word h,short xd,short yd,bytef *src,bytef *dst)
+{
+  register byte i,j;
+  bytef *s;
+  bytef *d;
+
+  src+=(ys<<8)+(ys<<6)+xs;
+  dst+=(yd<<8)+(yd<<6)+xd;
+
+  for(j=0;j<h;j++)
+  {
+    s=src;
+    d=dst;
+	 for(i=0;i<l;i++)
+    {
+		if(*s) *d=*s; //Transparence … l'encre 0
+		d++;
+		s++;
+	 }
+	 src+=320;
+	 dst+=320;
+  }
+}
+
+void CpyBnd(short ys,word h,short yd,bytef *src,bytef *dst)
+{
+  register word i;
+  dwordf *s4;
+  dwordf *d4;
+
+  src+=(ys<<8)+(ys<<6);
+  dst+=(yd<<8)+(yd<<6);
+
+  s4=(dwordf *)src;
+  d4=(dwordf *)dst;
+  h=(h<<6)+(h<<4); //h = (h*320) / 4
+
+  for(i=0;i<h;i++) d4[i]=s4[i];
+}
+             */

@@ -1,0 +1,14 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 00345H 00346H _TEXT              CODE
+ 00346H 0056AH 00225H _DATA              DATA
+ 0056CH 0056CH 00000H _BSS               BSS
+ 0056CH 006EFH 00184H _COMDEF_           BSS
+ 006F0H 0168FH 00FA0H _COMDEF_AA_        FAR_BSS
+
+Error: Undefined symbol _GETCH in module GREETING.C
+Error: Undefined symbol __SETCURSORTYPE in module GREETING.C
+Error: Undefined symbol _GOTOXY in module GREETING.C
+Fatal: Cannot generate COM file : segment-relocatable items present in module GREETING.C
+
