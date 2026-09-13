@@ -16,8 +16,13 @@ void far interrupt Lire_scan(void)
 //char *poin;
 //c=inportb(0x60);
 _asm {
-push ds
-les di,Pointeur
+/* ES:DI = adresse lointaine de Scan_Code, en immediat (relocalise par l'editeur
+   de liens). Independant de DS/SS : une interruption clavier peut survenir avec
+   n'importe quel DS/SS (Open Watcom laisse DS flotter), donc on ne lit plus
+   Pointeur via DS comme le faisait le code Borland. */
+mov di,offset Scan_Code
+mov ax,seg Scan_Code
+mov es,ax
 mov dx,60h
 xor ax,ax
 in al,dx
@@ -34,7 +39,6 @@ add di,ax
 mov ax,1
 mov es:[di],ax
 fin:
-pop ds
 mov al,20h
 out 20h,al
 }
