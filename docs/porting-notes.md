@@ -14,11 +14,11 @@ assembly or the build flags.
 * `src/compat.h` maps the Borland-only library calls to Open Watcom.
 * Three Borland behaviours had to be reproduced: signed `char`, DS always on
   the data segment, and a `random()` macro that accepts a float.
-* Six latent bugs in the 2001 code were fixed; they only worked under Borland
-  by luck of memory layout.
-* Verified in DOSBox-X: intro, main menu, Options and Teams screens, and a
-  round on the Frissons level. Not verified: keyboard control during play,
-  CD audio, the Borland build itself.
+* Seven latent bugs in the 2001 code were fixed; they only worked under
+  Borland by luck of memory layout.
+* Verified in DOSBox-X: intro, menu, Options/Teams screens, and a round with
+  the sheep walking back and forth without the memory corruption that used to
+  crash it. Not verified: CD audio, the Borland build itself.
 
 ## 2. Compiler options
 
@@ -86,8 +86,12 @@ pop ds          ; DS = DGROUP: Open Watcom lets DS float, globals are read via D
 pop ds
 ```
 
-Not applied to interrupt handlers (`Lire_scan`): their prologue already loads
-DS with DGROUP, and SS is the interrupted program's stack there.
+This `push ss; pop ds` trick works in ordinary functions because the stack is
+in DGROUP. It is NOT valid in interrupt handlers: an interrupt fires with an
+arbitrary DS *and* an arbitrary SS (a DOS/BIOS call may have switched
+stacks), so neither register can be trusted. The INT 9 handler `Lire_scan`
+had the same DS bug and is fixed differently, with immediate `seg`/`offset`
+addressing that needs no segment register (see §4, item 7, and §6b).
 
 ### 3.3 Symbol binding inside `_asm`
 
