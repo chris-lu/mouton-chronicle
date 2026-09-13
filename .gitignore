@@ -1,0 +1,39 @@
+# Borland C++ / DOS build output
+*.obj
+*.OBJ
+*.map
+*.MAP
+*.csm
+*.CSM
+*.obr
+*.OBR
+*.cba
+*.CBA
+*.tds
+*.TDS
+*.bak
+*.BAK
+*.~*
+*.dsw
+*.DSW
+
+# Windows shortcuts
+*.pif
+*.PIF
+*.lnk
+
+# Executables are never tracked
+*.exe
+*.EXE
+
+# Local run / build folders (DOSBox mounts, CD images, output)
+/run/
+/build/dos/out/
+
+# Binary, optional material kept on disk only (not versioned):
+# historical CD/build packages and the unused WDOSX extender
+/release/
+/third_party/
+*.cue
+*.bin
+*.iso

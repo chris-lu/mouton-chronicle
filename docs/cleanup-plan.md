@@ -3,6 +3,11 @@
 Reviewed on 2026-09-13. 806 files, ~110 MB. Original development 1998-11 → 2001-08 (Bac 1999/2000
 computer-science project by Christophe Dri / GnoMaster, Jonathan Jolivalt / dJo, Aymeric Baudin / Bart57).
 
+> **Status (2026-09-13):** executed. The history import (section 2d) and the cleanup steps 1 to 3 of
+> section 6 are done; see `HISTORY.md` and `README.md`. Paths below refer to the folder *before*
+> the reorganization. Steps 4 to 6 (reproducible DOS build, split of the unity build, platform layer)
+> remain to do.
+
 ---
 
 ## 1. What the program actually is

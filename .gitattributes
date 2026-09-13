@@ -1,0 +1,28 @@
+# Never convert line endings: the DOS sources are CRLF with CP850 accents and
+# the data/config files are read byte by byte by the game.
+* -text
+
+# Binary formats (no diff, no merge)
+*.pcx binary
+*.PCX binary
+*.bmp binary
+*.BMP binary
+*.psp binary
+*.psd binary
+*.gif binary
+*.jpg binary
+*.png binary
+*.avi binary
+*.wav binary
+*.mp3 binary
+*.xm  binary
+*.XM  binary
+*.rar binary
+*.zip binary
+*.exe binary
+*.EXE binary
+*.ide binary
+*.iwz binary
+*.ico binary
+*.wdl binary
+*.WDL binary
