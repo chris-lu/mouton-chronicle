@@ -42,3 +42,6 @@
 
 # Open Watcom compiler error listings
 *.err
+
+# Local settings for the scripts (copy of .env.example)
+.env

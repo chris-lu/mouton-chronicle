@@ -1,11 +1,10 @@
 # Mouton Chronicles - Open Watcom build (16-bit DOS, large model)
 #
-#   cd build\watcom
-#   wmake            -> out\mouton.exe and the tools
-#   wmake run        -> copies data\ next to the exe as Mouton\ and starts DOSBox-X
-#   wmake clean
-#
-# Requires WATCOM, PATH and INCLUDE set for Open Watcom (see setenv.cmd).
+# Normally driven by the scripts at the repository root:
+#   scripts\build.cmd          -> out\mouton.exe and the tools
+#   scripts\run.cmd            -> copies data\ next to the exe as Mouton\ and starts DOSBox-X
+#   scripts\build.cmd clean
+# Direct use: call scripts\env.cmd, cd build\watcom, wmake [target]
 
 CC     = wcc
 LINK   = wlink
@@ -78,13 +77,6 @@ $(OUT)\rotpal.exe : $(OUT)\rotpal.obj
 
 $(OUT)\lignecnt.exe : $(OUT)\lignecnt.obj
 	$(LINK) $(LFLAGS) name $^@ file $[@
-
-# run folder: exe + data folder named Mouton\ (the name the game opens)
-run : $(OUT)\mouton.exe .SYMBOLIC
-	if not exist run mkdir run
-	copy /y $(OUT)\mouton.exe run\MOUTON.EXE >nul
-	xcopy /e /i /y /q ..\..\data run\Mouton >nul
-	dosbox.cmd
 
 clean : .SYMBOLIC
 	if exist $(OUT) rmdir /s /q $(OUT)

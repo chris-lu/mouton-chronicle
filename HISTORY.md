@@ -28,6 +28,7 @@ then the working folder was cleaned up and reorganized.
 | 2004-05-08 | working folder | MP3 renders, 2004 config edits, CD cover PSD |
 | 2021-12-03 | working folder | Two PNG screenshots |
 | 2026-09-13 | cleanup | Five commits: remove artifacts, remove superseded sources, reorganize, fix tool includes, add this documentation |
+| 2026-09-13 | port | Open Watcom 2.0 build (`build/watcom`, `scripts/`, `src/compat.h`), the fixes it required and the documentation of them (`docs/porting-notes.md`) |
 
 ## How the dates were chosen
 
