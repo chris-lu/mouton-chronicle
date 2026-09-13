@@ -81,12 +81,23 @@ $lines += @('', '[autoexec]', ('mount c "' + $run + '"'), 'c:', "$($Program.ToUp
 $lines | Set-Content $conf -Encoding ASCII
 
 $log = Join-Path $shots 'dosbox-log.txt'
-# array form with the path quoted by hand: PowerShell 5 does not quote array elements itself,
-# and a single string with an embedded quoted path fails when the path contains spaces
-$p = Start-Process -FilePath $dosbox -ArgumentList @('-nomenu', '-fastlaunch', '-conf', ('"' + $conf + '"')) -PassThru `
-       -RedirectStandardError $log -RedirectStandardOutput (Join-Path $shots 'dosbox-out.txt')
-
 function Get-Win { $w = Get-Process -Name 'dosbox-x' -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1; if ($w) { $w.MainWindowHandle } else { [IntPtr]::Zero } }
+# The emulator's output is redirected by a small batch launcher (OS-level file
+# redirection). Redirecting through Start-Process pipes stalls DOSBox-X before it
+# opens its window. If no window appears within 20 s, the launch is retried once.
+$launcher = Join-Path $shots 'launch.cmd'
+@('@echo off',
+  ('"' + $dosbox + '" -nomenu -fastlaunch -conf "' + $conf + '" 2> "' + $log + '" > "' + (Join-Path $shots 'dosbox-out.txt') + '"')
+) | Set-Content $launcher -Encoding ASCII
+$started = $false
+for ($attempt = 1; $attempt -le 2 -and -not $started; $attempt++) {
+  Get-Process -Name 'dosbox-x' -ErrorAction SilentlyContinue | Stop-Process -Force
+  Start-Process -FilePath $launcher -WindowStyle Hidden | Out-Null
+  for ($w = 0; $w -lt 20; $w++) { Start-Sleep -Seconds 1; if ((Get-Win) -ne [IntPtr]::Zero) { $started = $true; break } }
+  if (-not $started) { Write-Host "  attempt $attempt : no emulator window after 20 s" }
+}
+if (-not $started) { Get-Process -Name 'dosbox-x' -ErrorAction SilentlyContinue | Stop-Process -Force; Write-Host 'FAIL: DOSBox-X did not start'; exit 1 }
+
 function Save-Shot($name) {
   $h = Get-Win; if ($h -eq [IntPtr]::Zero) { Write-Host "  $name : no window (emulator gone?)"; return $false }
   $r = New-Object MCWin+RECT; [MCWin]::GetWindowRect($h, [ref]$r) | Out-Null
@@ -108,7 +119,7 @@ function Click-Guest($gx, $gy) {   # 320x200 guest coordinates; the window shows
 
 # --- scenario -----------------------------------------------------------------
 Write-Host "smoke test: $Program for $Seconds s, screenshots in $shots"
-Start-Sleep -Seconds 6
+Start-Sleep -Seconds 3
 Save-Shot '00-banner' | Out-Null
 Send-Key '{ENTER}'                       # leaves the text banner (getch)
 $alive = $true; $t = 0; $n = 1
@@ -116,10 +127,10 @@ while ($t -lt $Seconds) {
   Start-Sleep -Seconds $Every; $t += $Every
   if (-not (Save-Shot ('{0:00}-t{1}s' -f $n, $t))) { $alive = $false; break }
   $n++
-  if ($ClickMenu -and $t -eq 30) {       # the intro is over by then; menu items: Options, OK, Equipes
-    Click-Guest 170 87;  Start-Sleep -Seconds 3; Save-Shot ('{0:00}-options' -f $n) | Out-Null; $n++
-    Click-Guest 175 162; Start-Sleep -Seconds 3; Save-Shot ('{0:00}-back' -f $n)    | Out-Null; $n++
-    Click-Guest 170 107; Start-Sleep -Seconds 3; Save-Shot ('{0:00}-equipes' -f $n) | Out-Null; $n++
+  if ($ClickMenu -and $t -eq 35) {       # the intro (about 28 s) is over by then; menu items: Options, OK, Equipes
+    Click-Guest 170 87;  Start-Sleep -Seconds 5; Save-Shot ('{0:00}-options' -f $n) | Out-Null; $n++
+    Click-Guest 175 162; Start-Sleep -Seconds 5; Save-Shot ('{0:00}-back' -f $n)    | Out-Null; $n++
+    Click-Guest 170 107; Start-Sleep -Seconds 5; Save-Shot ('{0:00}-equipes' -f $n) | Out-Null; $n++
   }
 }
 Get-Process -Name 'dosbox-x' -ErrorAction SilentlyContinue | Stop-Process -Force
