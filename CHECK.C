@@ -1,5 +1,0 @@
-void Check(short CheckPoint)
-{
-gotoxy(1,1);
-printf("Point :%d OK!",CheckPoint);
-}
