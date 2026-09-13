@@ -9,6 +9,7 @@
 #ifndef vga_head
 #define vga_head
 
+#include "compat.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>

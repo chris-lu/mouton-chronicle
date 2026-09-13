@@ -1,3 +1,4 @@
+#include "../src/compat.h"
 #include <conio.h>
 #include <dos.h>
 
@@ -9,8 +10,10 @@ void far interrupt (*Vide)(void);
 unsigned char Txt[]={"**********************Mutant\r\r\r\r\routon Chronicles Version 0.12 \r\r\r13 Beta**********************\n\n -Genre : Simulation de combats de moutons\n -Createurs :\n    Dri C.      (GnoMaster)  :  Code /Gfx\n    Jolivalt J.       (dJo)  :  Gfx / Sfx\n    Baudin A.      (Bart57)  :  Gfx/Misc.\n -Date de creation : Dimanche 9 Janvier 1999\r\r\r\r2000 20:54:42      \r\r\r\r\r\r\r\r43      \r\r\r\r\r\r\r\r44\n\n......................................\n\n  Pour plus d'informations, vous pouvez consultez la page web officielle du jeu:    www.mchronicles.fr.fm\n\n.         \n.         \n.         \n.\n Tous nos remerciements a ceux (et celles) qui nous on aide dans l'aboutissement de ce projet....."};
 void Draw8025(unsigned char far *Pg)
 {
-asm{
+_asm {
   push ds
+  push ss
+  pop ds			//DS=DGROUP : Open Watcom laisse DS flotter, les globales (Video) sont lues via DS
   les di,Video
   lds si,Pg
   mov cx,999
@@ -22,8 +25,10 @@ db 66h
 
 void Put_Char(char c,unsigned char BgCoul,unsigned char TxtCoul,unsigned char far* Pg)
 {
-asm{
+_asm {
 push ds
+push ss
+pop ds			//DS=DGROUP : Open Watcom laisse DS flotter ; globales lues via DS : Cur_Pos
 les di,Pg
 mov ax,Cur_Pos
 shl ax,1
@@ -40,7 +45,7 @@ pop ds
 
 void Dec_Scr(unsigned char far * Pg)
 {
-asm{
+_asm {
 push ds
 lds si,Pg
 les di,Pg
@@ -65,7 +70,7 @@ pop ds
 
 void Mk_Norm(unsigned char far * Pg)
 {
-asm{
+_asm {
 push ds
 lds si,Pg
 les di,Pg

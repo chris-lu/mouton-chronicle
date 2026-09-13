@@ -1,3 +1,4 @@
+#include "../src/compat.h"
 #include <conio.h>
 #include <dos.h>
 
@@ -10,7 +11,7 @@ unsigned char Txt[]={"\nInitializing ±&±&±&±&±&±&±&±&±&±&±&   Done. |\n\nEnterri
 
 void ModeVGA(void)
 {
-  asm{
+  _asm {
   push ds
   mov ax,13h
   int 10h
@@ -19,14 +20,14 @@ void ModeVGA(void)
 }
 
 
-void Move(unsigned char X,unsigned char Y)
+void Move(unsigned char col,unsigned char row)
 {
-  asm{
+  _asm {
   push ds
   mov ah,02h
   mov bh,0
-  mov dh,Y
-  mov dl,X
+  mov dh,row
+  mov dl,col
   int 10h
   pop ds
   }
@@ -35,7 +36,7 @@ void Move(unsigned char X,unsigned char Y)
 
 void Mode(void)
 {
-  asm{
+  _asm {
   push ds
   mov ax,1112h
   mov bl,0
@@ -47,8 +48,10 @@ void Mode(void)
 
 void Draw8025(unsigned char far *Pg)
 {
-asm{
+_asm {
   push ds
+  push ss
+  pop ds			//DS=DGROUP : Open Watcom laisse DS flotter, les globales (Video) sont lues via DS
   les di,Video
   lds si,Pg
   mov cx,1998
@@ -60,7 +63,7 @@ db 66h
 
 /*void Wait(unsigned long TIME)
 {
-asm{
+_asm {
 push ds
 mov ah,86h
 mov cx,0
@@ -73,8 +76,10 @@ pop ds
 
 void Put_Char(char c,unsigned char BgCoul,unsigned char TxtCoul,unsigned char far* Pg,unsigned short TIME)
 {
-asm{
+_asm {
 push ds
+push ss
+pop ds			//DS=DGROUP : Open Watcom laisse DS flotter ; globales lues via DS : Cur_Pos
 les di,Pg
 mov ax,Cur_Pos
 shl ax,1
@@ -92,7 +97,7 @@ delay(TIME);
 
 void Dec_Scr(unsigned char far * Pg)
 {
-asm{
+_asm {
 push ds
 lds si,Pg
 les di,Pg
@@ -117,7 +122,7 @@ pop ds
 
 void Mk_Norm(unsigned char far * Pg)
 {
-asm{
+_asm {
 push ds
 lds si,Pg
 les di,Pg

@@ -3,12 +3,12 @@
 // FICHIER : MOUSE.C
 /*************************************************************/
 
+#include "compat.h"
 #include "mouse.h"
 
 void InitMouse(void)
 {
-	asm
-	{
+	_asm {
 	push ds
 	mov ax,0
 	int 33h
@@ -18,8 +18,7 @@ void InitMouse(void)
 
 void ReInitMouse(void)
 {
-	asm
-	{
+	_asm {
 	push ds
 	mov ax,21h
 	int 33h
@@ -29,8 +28,7 @@ void ReInitMouse(void)
 
 void ActiveMouse(void)
 {
-	asm
-	{
+	_asm {
 	push ds
 	mov ax,20h
 	int 33h
@@ -40,8 +38,7 @@ void ActiveMouse(void)
 
 void MouseON(void)
 {
-	asm
-	{
+	_asm {
 	mov ax,1
 	int 33h
 	}
@@ -49,8 +46,7 @@ void MouseON(void)
 
 void MouseOFF(void)
 {
-	asm
-	{
+	_asm {
 	push ds
 	mov ax,2
 	int 33h
@@ -60,24 +56,22 @@ void MouseOFF(void)
 
 /*void MouseBout(void)
 {
-	asm
-	{
+	_asm {
 	mov bx,0
 	int 33h
 	}
 }       */
-unsigned short GetMouse(unsigned short *x,unsigned short *y)
+unsigned short GetMouse(unsigned short *px,unsigned short *py)
 {
   //	register short tmp;
-	asm
-	{
+	_asm {
 	push ds
 	mov ax,3
 	int 33h
 	shr cx,1
-	les di,x
+	les di,px
 	mov es:[di],cx
-	les di,y
+	les di,py
 	mov es:[di],dx
 	pop ds
 	mov ax,bx              //renvoi toujour le registre AX
@@ -85,29 +79,29 @@ unsigned short GetMouse(unsigned short *x,unsigned short *y)
   //	return(tmp);
 }
 
-void SetMouse(unsigned short x,unsigned short y)
+void SetMouse(unsigned short mx,unsigned short my)
 {
-  asm{
+  _asm {
   push ds
   mov ax,4
-  mov cx,x
+  mov cx,mx
   shl cx,1
-  mov dx,y
+  mov dx,my
   int 33h
   pop ds
   }
   /*	union REGS regs;
 
-	regs.x.ax=4;
-	regs.x.cx=x<<1;
-	regs.x.dx=y;
+	regs.mx.ax=4;
+	regs.mx.cx=mx<<1;
+	regs.mx.dx=my;
 
 	int86(0x33,&regs,&regs);  */
 }
 
 void ZoneMouse(unsigned short x1,unsigned short y1,unsigned short x2,unsigned short y2)
 {
-	asm{
+	_asm {
 	push ds
 	mov ax,7
 	mov cx,x1

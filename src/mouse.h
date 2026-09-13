@@ -3,6 +3,7 @@
 // FICHIER : MOUSE.H
 /****************************************************************************/
 
+#include "compat.h"
 #include <dos.h>
 
 void InitMouse(void);

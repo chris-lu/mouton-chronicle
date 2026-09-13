@@ -13,51 +13,70 @@
 
 
 
-#include <mem.h>
+#include "compat.h"
+#include <string.h>
 //#pragma option -w- // Prevent "Function should return a value" warning
 #include "xms.h"
 void far *xms_driver = NULL;                /* Pointer to XMS driver */
 void hma_on(void)
 {
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ah, 0x03
 		call [xms_driver]
+	pop ds
 		}
 }
 
 void hma_off(void)
 {
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ah, 0x04
 		call [xms_driver]
+	pop ds
 		}
 }
 
 void hma_free(void)
 {
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ah, 0x02
 		call [xms_driver]
+	pop ds
 		}
 }
 
 
 void hma_alloc(void)
 {
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ah, 0x01
 		mov dx,0xffff
 		call [xms_driver]
+	pop ds
 		}
 }
 
 char xms_installed(void)  //verifie 'installation de la mémoire
   {
-	 asm {
+	 unsigned char al;
+	 _asm {
 		mov  ax, 0x4300
 		int  0x2F
+		mov  al,al
 	 }
-	 if (_AL == 0x80)
+	 if (al == 0x80)
 		return 1;
 	 else
 		return 0;
@@ -66,12 +85,16 @@ char xms_installed(void)  //verifie 'installation de la mémoire
 void xms_version( int *v, int *rev, int *hma)
   {
 	int ve,r,h;
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ax, 0x0000
 		call [xms_driver]
 		mov ve,ax
 		mov r,bx
 		mov h,dx
+	pop ds
 	 }
 	 (*v)=ve;
 	 *rev=r;
@@ -81,20 +104,28 @@ void xms_version( int *v, int *rev, int *hma)
 
 void xms_init(void)
   {
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ax, 0x4310
 		int  0x2F
 		mov  word ptr [xms_driver], bx
 		mov  word ptr [xms_driver+2], es
+	pop ds
 	 }
   }
 
 
 /*unsigned int xms_getversion()
   {
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ah, 0x00
 		call [xms_driver]
+	pop ds
 	 }
   }  */
 
@@ -102,11 +133,15 @@ void xms_init(void)
   void xms_mem_info( int *maxblk,long *frem)
   {
 	 unsigned int fre=0,block=0;
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ah, 0x08
 		call [xms_driver]
 		mov  fre, dx
 		mov  block, ax
+	pop ds
 
 	 }
   *frem=fre;
@@ -115,10 +150,14 @@ void xms_init(void)
 
 /*unsigned int xms_getfreemem()
   {
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ah, 0x08
 		call [xms_driver]
 		mov  ax, dx
+	pop ds
 	 }
   }   */
 
@@ -127,7 +166,10 @@ char xms_allocate(int far *handle,  int size)
   {
 	char error=0;
 	unsigned short h;
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ax, 0x0900
 		mov  dx, size
 		call [xms_driver]
@@ -138,6 +180,7 @@ char xms_allocate(int far *handle,  int size)
 		err:
 		mov error,bl
 		fin:
+	pop ds
 	 }
   if(!error)
   {
@@ -150,31 +193,41 @@ char xms_allocate(int far *handle,  int size)
 
 void xms_reallocate(int handle,  int newsize)
   {
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ah, 0x0F
 		mov  bx, newsize
 		mov  dx, handle
 		call [xms_driver]
+	pop ds
 	 }
   }
 
 
 void xms_free(int far *handle)
   {
-	 asm {
+	 _asm {
+	push ds
+	push ss
+	pop ds			//DS=DGROUP (Open Watcom laisse DS flotter)
 		mov  ah, 0x0A
 		les  di, [handle]
 		mov  dx, es:[di]
 		call [xms_driver]
 		mov  word ptr es:[di], 0
+	pop ds
 	 }
   }
 
 
 void xms_move(MOVEPARAMS far *params)
   {
-	 asm {
+	 _asm {
 		push ds
+		push ss
+		pop ds			//DS=DGROUP : Open Watcom laisse DS flotter, les globales (xms_driver) sont lues via DS
 		push es
 		mov  ax, ds
 		mov  es, ax

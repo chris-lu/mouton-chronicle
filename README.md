@@ -54,14 +54,31 @@ in this revival yet.
 
 ## Building
 
-Target: Borland C++ (3.1 DOS IDE or 4.x/5.x) producing a 16-bit DOS EXE. The
-compiler settings live in `build/dos/mouton.ide`. Everything is compiled as one
-unit: compile `src/mouton.c` only. Tools are compiled the same way, one file
-each, from the `tools/` folder.
+Two toolchains are possible.
 
-A reproducible build (makefile + DOSBox configuration) is the next step; see
-`docs/cleanup-plan.md`, section 6, for the planned order of work, and
-`HISTORY.md` for how this repository was reconstructed.
+**Open Watcom 2.0 (free, works today).** Install Open Watcom v2
+(https://github.com/open-watcom/open-watcom-v2/releases, `open-watcom-2_0-c-win-x64.exe`,
+which is a plain zip: extract `binnt64`, `h`, `lib286` to `C:\WATCOM`), then:
+
+```
+cd build\watcom
+setenv.cmd
+wmake            (game and tools into out\)
+wmake run        (copies the EXE and data\ as Mouton\ into run\, starts DOSBox-X)
+```
+
+The makefile builds a 16-bit DOS, large-model, 386 executable in one translation
+unit (`src/mouton.c` includes the other modules). `src/compat.h` provides the
+Borland-only functions (`farmalloc`, `setvect`, `random`, `outportb`, ...).
+Three Borland assumptions had to be reproduced: `char` is signed (`-j`), the
+inline asm reads globals through DS while Open Watcom lets DS float (each asm
+block now loads DS from SS), and floats used as array indexes are cast.
+`tools/editpal.c` is an unfinished work file and is not built by default.
+
+**Borland C++ 4.5 (original).** The IDE project is `build/dos/mouton.ide`;
+compile `src/mouton.c` alone, large model. Not tested in this revival.
+
+Both builds run in DOSBox-X (`build/watcom/dosbox.conf` has the settings used).
 
 ## Licence
 

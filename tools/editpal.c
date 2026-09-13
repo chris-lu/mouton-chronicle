@@ -1,3 +1,4 @@
+#include "../src/compat.h"
 #include <stdio.h>
 #include <conio.h>
 #include "../src/vga.c"

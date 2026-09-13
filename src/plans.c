@@ -26,14 +26,14 @@ Put(270,20,24,24,Page,Lune);
 //Put(258,25,24,24,Page,Trou);
 }
 
-void Draw_Deg(unsigned char * Page,unsigned char coul)
+void Draw_Deg(unsigned char * pg,unsigned char coul)
 {
 unsigned char cont;
-asm{
+_asm {
 push es
 push ds
 
-les di,Page
+les di,pg
 mov ah,coul
 mov bx,14h
 loop1:
@@ -49,17 +49,17 @@ dec bx
 or bx,bx
 jnz loop1
 
-pop es
 pop ds
+pop es
 }
 Put(270,20,24,24,Page,Lune);
 }
 
-void Draw_White(unsigned char * Page)
+void Draw_White(unsigned char * pg)
 {
-asm{
+_asm {
   push ds
-  les di,Page
+  les di,pg
   mov ax,-1
   mov cx,32000
   rep stosw
@@ -114,32 +114,34 @@ CurBomb&=3;
 
 void Look_Obj(short sx,short sy,unsigned short *dx,unsigned short *dy)
 {
-asm{
+_asm {
 push ds
+push ss
+pop ds			//DS=DGROUP : Open Watcom laisse DS flotter ; globales lues via DS : TX
 mov ax,sx
 mov bx,TX
 sub bx,160
 cmp bx,ax
-jl ch1
+jl lo_ch1
 mov bx,160
 cmp ax,bx
-jl ch1
-jmp suite
-ch1:
+jl lo_ch1
+jmp lo_suite
+lo_ch1:
 mov ax,bx
-suite:
+lo_suite:
 mov sx,ax
 mov ax, sy
 mov bx,250
 cmp bx,ax
-jl ch2
+jl lo_ch2
 mov bx,100
 cmp ax,bx
-jl ch2
-jmp fin
-ch2:
+jl lo_ch2
+jmp lo_fin
+lo_ch2:
 mov ax,bx
-fin:
+lo_fin:
 mov sy,ax
 pop ds
 }

@@ -60,7 +60,7 @@ void far *Point;
 void Nb_CD(void)
 {
 int temp,temp2;
-asm{
+_asm {
 push ds
 xor bx,bx
 mov ah,15h
@@ -81,7 +81,7 @@ int temp;
 //temp2=(void far*)(Info[0].SubUnit);
 temp=(int)Info;
 temp2=(unsigned char far *)Info;
-asm{
+_asm {
 push ds
 xor bx,bx
 les di,temp2
@@ -99,7 +99,7 @@ void Requete(unsigned char nb,void far* buf)
 unsigned short temp,temp1;
 temp=FP_SEG(buf);
 temp1=FP_OFF(buf);
-asm{
+_asm {
 push ds
 xor ch,ch
 mov cl,nb
@@ -134,6 +134,8 @@ Block1.Taille=sizeof(CDInf);
 Block1.buffer=&CDInf;
 CDInf.sf=0x0A;
 Requete(Cur_Lect,&Block1);
+if(CD.Nombre==0||CDInf.deb==0||CDInf.fin<CDInf.deb)	//pas de lecteur ou pas de CD audio :
+	return;							//sinon la boucle ecrivait Tracks[-1]
 
 Block1.Fonc=3;
 Block1.Taille=sizeof(STrack);

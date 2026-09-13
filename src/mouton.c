@@ -1,3 +1,4 @@
+#include "compat.h"
 #include "mouton.h"			//Header du jeu...
 #include "cd.c"				//Gestion du lecteur cd
 #include "start.c"			//ecrans de demarrages
@@ -466,7 +467,7 @@ Scan_Code[1]=0;
 
 /*void Clry(bytef *dst)
 {
-asm	{
+_asm {
 	push ds
 	les di,dst
 	xor ax,ax
@@ -479,7 +480,7 @@ asm	{
 
 /*void FlamesAsm2(bytef *src,bytef* dst)   //brule l'ecran(assembleur) anciene procedure ne traitant que le bas de l'ecran...
 {
-asm	{
+_asm {
 	push ds                              //sauvegarde ds
 	les di,dst                           //|mémorise les adresses des pages
 	lds si,src                           //|
@@ -686,8 +687,10 @@ Obj[15].Ht=14;
 
 void Drawy(bytef *src)	//affiche la page d'ecran s*mis a part les deux derniere ligne (ça fait plus beau : elimine les deffauts..)...
 {
-asm	{
+_asm {
 	push ds
+	push ss
+	pop ds			//DS=DGROUP : Open Watcom laisse DS flotter ; globales lues via DS : Video
 	les di,Video	//charge l'addresse video
 	lds si,src	//...de la page...
 	mov cx,15840	//compteur
@@ -717,7 +720,7 @@ ZoneMouse(1,1,317,196);
 
 void FlamesAsm(bytef *src,bytef* dst)   //brule l'ecran(assembleur)
 {
-asm	{
+_asm {
 	push ds                              //sauvegarde ds
 	les di,dst                           //|mémorise les adresses des pages
 	lds si,src                           //|

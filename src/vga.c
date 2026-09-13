@@ -4,6 +4,8 @@
 // FICHIER : VGA.C
 /*************************************************************/
 
+#include "vga.h"
+
 #define BUF_PCX 100     //Taille du tampon (en octet)
 byte _buf_pcx[BUF_PCX]; //Tampon pour LoadPCX() et SavePCX()
 char _fch_pcx[45];      //Chemin des fichier PCX
@@ -41,11 +43,11 @@ byte LoadPCX(char *path,bytef *scr,byte *pal)
 
       if(octet>191) // -> Compteur
       {
-		  rep=octet-192; //Nombre de r‚p‚tition de l'encre
-		  octet=_buf_pcx[cpt_buf++]; //Lecure du tampon : encre … r‚p‚ter
+		  rep=octet-192; //Nombre de rï¿½pï¿½tition de l'encre
+		  octet=_buf_pcx[cpt_buf++]; //Lecure du tampon : encre ï¿½ rï¿½pï¿½ter
 		  read_buf_pcx(canal,_buf_pcx,&cpt_buf); //Remplit le tampon
 
-		  for(i=0;i<rep;i++) //R‚p‚tition de l'encre
+		  for(i=0;i<rep;i++) //Rï¿½pï¿½tition de l'encre
 		  {
 			 *(scr++)=octet; //Ecriture de l'encre
 			 dim--;
@@ -98,11 +100,11 @@ void write_buf_pcx(int handle,byte *tampon,word *comp)
 }         */
 
 
-void SetAllPala(byte *pal)
+void SetAllPala(byte *palette)
 {
-asm{
+_asm {
 push ds
-lds si,pal
+lds si,palette
 xor cl,cl
 
 boucle:

@@ -4,6 +4,7 @@
 //#define GRAV  0.049    // 9.81/200
 #define VERSION "0.13 Beta"
 
+#include "compat.h"
 #include <stdio.h>
 #include <conio.h>
 #include <math.h>
@@ -119,7 +120,7 @@ struct{					//Structure NIveau
 
 char Eq_Name[12][17];			//nom des equipes
 
-Stock[12][6];
+int Stock[12][6];
 
 struct{					//structure pour les decors 
 	unsigned short X;	

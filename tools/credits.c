@@ -1,7 +1,7 @@
+#include "../src/compat.h"
 #include <stdio.h>
 #include <conio.h>
 #include <math.h>
-#include <alloc.h>
 #include <time.h>
 //#include "rtime.c"
 #include <string.h>
@@ -82,13 +82,13 @@ for (cont=-Rayon;cont<Rayon;cont++)
 	}
 }
 
-void Loupe(short x,short y,byte *scr,byte *blk2)
+void Loupe(short px,short py,byte *scr,byte *blk2)
 {
 register i,j;
 float a,b,c;
 long pos;
 short b2;
-pos=YP[y]+x;
+pos=YP[py]+px;
 
 for(j=0;j<Diametre;j++)
 	for (i=CercleDeb[j];i<CercleFin[j];i++)
@@ -109,7 +109,7 @@ for(j=0;j<Diametre;j++)
 	 a+=Rayon;
 	 b+=Rayon;
 
-	 blk2[(j*Diametre)+i]=scr[pos+((int)b)*320+a];
+	 blk2[(j*Diametre)+i]=scr[(long)(pos+((int)b)*320+a)];
 	}
  }
 
@@ -117,18 +117,18 @@ for(j=0;j<Diametre;j++)
 
 
 
-void Print_Let(unsigned short x,byte y,byte lg,byte ht,byte *scr,byte Nb)
+void Print_Let(unsigned short px,byte py,byte lg,byte ht,byte *scr,byte Nb)
 {
 unsigned int t;
 void *Poit;
 Poit=Lettre[Nb];
-t=(y<<8)+(y<<6);
-asm{
+t=(py<<8)+(py<<6);
+_asm {
   push ds
   les di,scr
   lds si,Poit
   mov cx,t
-  add cx,x
+  add cx,px
   add di,cx
   mov ax,di
   mov cl,ht
@@ -139,7 +139,7 @@ lbl2:
   xor bx,bx
   mov dl,ds:[si]
   or dl,dl
-  jz lbl3*/
+  jz lbl3
   mov bl,es:[di]
   add dx,bx
   cmp dx,255
@@ -226,7 +226,7 @@ Exp/=10;
  /*
 void Blur(bytef *src,bytef* dst)   //brule l'ecran(assembleur)
 {
-asm	{
+_asm {
 	push ds                              //sauvegarde ds
 	les di,dst                           //|mémorise les adresses des pages
 	lds si,src
@@ -261,7 +261,7 @@ suite:
 
 void GotoAB(unsigned char *src,unsigned char *dst)
 {
-asm{
+_asm {
 push ds
 les di,dst
 lds si,src

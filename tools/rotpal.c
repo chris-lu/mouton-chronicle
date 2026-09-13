@@ -1,3 +1,4 @@
+#include "../src/compat.h"
 #include <stdio.h>
 #include <conio.h>
 #include "../src/vga_c.c"
@@ -10,7 +11,7 @@ void Rot_Pal(unsigned short deb,unsigned short nb, unsigned char *Pal1,unsigned 
 char r,v,b;
 nb*=3;
 deb*=3;
-asm{
+_asm {
 push ds
 mov dx,nb
 lds si,Pal1

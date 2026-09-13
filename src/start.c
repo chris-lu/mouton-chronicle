@@ -17,7 +17,7 @@ void cpyh(unsigned short haut,short pos,bytef *page1,bytef *page2)
 {
 if (pos>=0)
 {
-asm{
+_asm {
 push ds
 lds si,page1
 les di,page2
@@ -43,7 +43,7 @@ pop ds
 else
 {
 pos=-pos;
-asm{
+_asm {
 push ds
 lds si,page1
 les di,page2
@@ -73,7 +73,7 @@ void cpyv(unsigned short col,short pos,bytef *page1,bytef *page2)
 {
 if (pos>=0)
 {
-asm{
+_asm {
 push ds
 lds si,page1
 les di,page2
@@ -100,7 +100,7 @@ pop ds
 else
 {
 pos=-pos;
-asm{
+_asm {
 push ds
 lds si,page1
 les di,page2
@@ -201,10 +201,13 @@ if(phase==0)
 			Play(3);
 		screen++;
 		phase=0;
+		if(screen==3)		//fin des 3 ecrans : ne pas lire Fich[3] (hors du tableau)
+			{
+			delay(1350);
+			break;
+			}
 		LoadPCX(Fich[screen],Plan_2[1],Pal[1]);
 		delay(1350);
-		if(screen==3)
-				break;
 		}
 
 Clr(Plan_2[0]);

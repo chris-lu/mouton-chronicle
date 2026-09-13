@@ -29,6 +29,8 @@
 # Local run / build folders (DOSBox mounts, CD images, output)
 /run/
 /build/dos/out/
+/build/watcom/out/
+/build/watcom/run/
 
 # Binary, optional material kept on disk only (not versioned):
 # historical CD/build packages and the unused WDOSX extender
@@ -37,3 +39,6 @@
 *.cue
 *.bin
 *.iso
+
+# Open Watcom compiler error listings
+*.err

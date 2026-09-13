@@ -24,7 +24,7 @@ void Lire_Jeu_Cfg(void)
 {
 register cont;
 char temp[256];
-unsigned char ch;
+int ch;
 if ((Fichier_Cfg=fopen("Mouton/Mouton.cfg","r"))!=NULL)
 	{
 	while (strcmp(temp,"END"))
@@ -82,7 +82,7 @@ void Lire_Level_Cfg(char lev)
 {
 register cont;
 char temp[256];
-unsigned char ch;
+int ch,v;
 
 sprintf(temp,"Mouton/%s/%s.cfg",Niveau.Level[lev],Niveau.Level[lev]);
 if ((Fichier_Cfg=fopen(temp,"r"))!=NULL)
@@ -103,9 +103,9 @@ if ((Fichier_Cfg=fopen(temp,"r"))!=NULL)
 			if(Options.Ciel)
 				{
 				while(fgetc(Fichier_Cfg)!='#');
-				fscanf(Fichier_Cfg,"%d ",&Ciel_Coul.R_Start);
-				fscanf(Fichier_Cfg,"%d ",&Ciel_Coul.V_Start);
-				fscanf(Fichier_Cfg,"%d ",&Ciel_Coul.B_Start);
+				fscanf(Fichier_Cfg,"%d ",&v); Ciel_Coul.R_Start=v;
+				fscanf(Fichier_Cfg,"%d ",&v); Ciel_Coul.V_Start=v;
+				fscanf(Fichier_Cfg,"%d ",&v); Ciel_Coul.B_Start=v;
 				fscanf(Fichier_Cfg,"%f ",&Ciel_Coul.R);
 				fscanf(Fichier_Cfg,"%f ",&Ciel_Coul.V);
 				fscanf(Fichier_Cfg,"%f ",&Ciel_Coul.B);
@@ -123,9 +123,9 @@ if ((Fichier_Cfg=fopen(temp,"r"))!=NULL)
 			for (cont=0;cont<ch;cont++)
 				{
 				while(fgetc(Fichier_Cfg)!='#');
-				fscanf(Fichier_Cfg,"%d",&PalTemp[cont*3]);
-				fscanf(Fichier_Cfg,"%d",&PalTemp[cont*3+1]);
-				fscanf(Fichier_Cfg,"%d",&PalTemp[cont*3+2]);
+				fscanf(Fichier_Cfg,"%d",&v); PalTemp[cont*3]=v;
+				fscanf(Fichier_Cfg,"%d",&v); PalTemp[cont*3+1]=v;
+				fscanf(Fichier_Cfg,"%d",&v); PalTemp[cont*3+2]=v;
 				}
 		else if (!strcmp(temp,"DECORE"))
 			{
@@ -153,8 +153,8 @@ if ((Fichier_Cfg=fopen(temp,"r"))!=NULL)
 			for (cont=0;cont<NbRot;cont++)
 				{
 				while(fgetc(Fichier_Cfg)!='#');
-				fscanf(Fichier_Cfg,"%d",&Rotation[cont].Deb);
-				fscanf(Fichier_Cfg,"%d",&Rotation[cont].Longueur);
+				fscanf(Fichier_Cfg,"%d",&v); Rotation[cont].Deb=v;
+				fscanf(Fichier_Cfg,"%d",&v); Rotation[cont].Longueur=v;
 				}
 		}
 //	printf("\n%s.cfg charge\n",Niveau.Level[lev]);
@@ -189,7 +189,7 @@ void Lire_Joueur_Cfg(void)
 {
 register cont,cont2,cont3;
 char temp[256];
-unsigned char ch,ch2;
+int ch;
 char cha;
 sprintf(temp,"Mouton/Equipes.cfg");
 if ((Fichier_Cfg=fopen(temp,"r"))!=NULL)
@@ -225,9 +225,9 @@ if ((Fichier_Cfg=fopen(temp,"r"))!=NULL)
 					Mouton[cont*8+cont2].Nom[cont3]='\0';
 					Mouton[cont*8+cont2].Equipe=cont;
 					}
-				fscanf(Fichier_Cfg,"%d",&Team_Coul[cont*3]);
-				fscanf(Fichier_Cfg,"%d",&Team_Coul[cont*3+1]);
-				fscanf(Fichier_Cfg,"%d",&Team_Coul[cont*3+2]);
+				fscanf(Fichier_Cfg,"%d",&ch); Team_Coul[cont*3]=ch;
+				fscanf(Fichier_Cfg,"%d",&ch); Team_Coul[cont*3+1]=ch;
+				fscanf(Fichier_Cfg,"%d",&ch); Team_Coul[cont*3+2]=ch;
 				}
 			}
 		}
@@ -243,7 +243,8 @@ void Lire_Lang(void)
 {
 register cont,cont2;
 char var[255];
-char cha1,cha2;
+char cha1;
+int cha2;
 sprintf(var,"Mouton/Lang.%s",lang);
 if ((Fichier_Cfg=fopen(var,"r"))!=NULL)
 	{

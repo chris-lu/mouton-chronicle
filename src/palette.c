@@ -122,7 +122,7 @@ void Rot_Pal(unsigned short deb,unsigned short nb, unsigned char *Pal1,unsigned 
 char r,v,b;
 nb*=3;
 deb*=3;
-asm{
+_asm {
 	push ds
 	mov dx,nb
 	lds si,Pal1
@@ -161,7 +161,7 @@ boucle:
 //***********************************************************************************
 void CpyPal(unsigned char *Pal1,unsigned char *Pal2)
 {
-asm{
+_asm {
 	push ds
 	lds si,Pal1
 	les di,Pal2
@@ -175,12 +175,12 @@ asm{
 //***********************************************************************************
 //Incremente la pallette des couleur (vire au blanc)
 //***********************************************************************************
-void Inc_Pal(unsigned char * Pal)
+void Inc_Pal(unsigned char * pal_)
 {
-asm{
+_asm {
 	push ds
-	lds si,Pal
-	les di,Pal
+	lds si,pal_
+	les di,pal_
 	mov cx,768
 	xor ax,ax
 deb:
@@ -202,12 +202,12 @@ suite:
 //***********************************************************************************
 //decremente la pallette des couleurs (vire au noir)
 //***********************************************************************************
-void Dec_Pal(unsigned char * Pal)
+void Dec_Pal(unsigned char * pal_)
 {
-asm{
+_asm {
 	push ds
-	lds si,Pal
-	les di,Pal
+	lds si,pal_
+	les di,pal_
 	mov cx,768
 	xor ax,ax
 deb:
@@ -231,7 +231,7 @@ suite:
 //***********************************************************************************
 void Goto_Pal(unsigned char *Pal2,unsigned char *Pal1)
 {
-asm{
+_asm {
 	push ds
 	lds si,Pal1
 	les di,Pal2

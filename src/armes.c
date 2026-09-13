@@ -36,7 +36,7 @@ if(Signe!=0)
 	temp=(float)Bombe.DirY/Bombe.DirX*Signe;
 	for(cont=0;cont<Bombe.DirX*Signe;cont++)   //Teste pixel par pixel...
 		{
-		if(Plan_1[(Bombe.PosX+cont*Signe)/320][Y[200-(Bombe.PosY+cont*temp)]+(int)(Bombe.PosX+cont*Signe)%320])
+		if(Plan_1[(int)((Bombe.PosX+cont*Signe)/320)][Y[(int)(200-(Bombe.PosY+cont*temp))]+(int)(Bombe.PosX+cont*Signe)%320])
 			{
 			Bombe.PosX+=cont*Signe;
 			Bombe.PosY+=temp*cont;
@@ -93,7 +93,7 @@ else
 	Bombe.PosY+=Bombe.DirY;
 	}
 if((Bombe.PosX>x)&&(Bombe.PosX<(x+320))&&(Bombe.PosY>200-y)&&(Bombe.PosY<400-y))  //si la bombe est dans l'ecran,...
-	Page[(Y[400-y-Bombe.PosY]+(Bombe.PosX-x))]=255;                                //la dessiner
+	Page[(unsigned)(Y[(int)(400-y-Bombe.PosY)]+(Bombe.PosX-x))]=255;                                //la dessiner
 }
 		 */
 
@@ -148,7 +148,7 @@ else                                                         //Si la bombe est a
 	Bombe.PosY+=Bombe.DirY;
 	}
 if((Bombe.PosX>x)&&(Bombe.PosX<(x+320))&&(Bombe.PosY>200-y)&&(Bombe.PosY<400-y))  //si la bombe est dans l'ecran,...
-	Page[(Y[400-y-Bombe.PosY]+(Bombe.PosX-x))]=255;                                //la dessiner
+	Page[(unsigned)(Y[(int)(400-y-Bombe.PosY)]+(Bombe.PosX-x))]=255;                                //la dessiner
 }
 
 

@@ -4,6 +4,7 @@
 // FICHIER : VGA_C.C
 /*************************************************************/
 
+#include "compat.h"
 #include "vga.h"
 unsigned char *Video=(unsigned char*)0xA0000000;     // Adresse Video
 /*
@@ -35,7 +36,7 @@ textcolor(7);
 				  */
 void Bal(void)                    //retour de balayage
 {
-asm{
+_asm {
 mov dx,0x3DA;
 wait1:
 in al,dx;
@@ -47,7 +48,7 @@ jz wait1;
 
 void ModeVGA(void)
 {
-  asm{
+  _asm {
   push ds
   mov ax,13h
   int 10h
@@ -61,7 +62,7 @@ void ModeVGA(void)
 
 void ModeTxt(void)
 {
-  asm{
+  _asm {
   push ds
   mov ax,3
   int 10h
@@ -86,8 +87,11 @@ void ModeTxt(void)
 void Draw(bytef *src,short Mod)                     // ATTENTION! MODIFIE!!
 {
 if (Mod)
-asm{
+{
+_asm {
   push ds
+  push ss
+  pop ds			//DS=DGROUP : Open Watcom laisse DS flotter ; globales lues via DS : Video
   les di,Video
   lds si,src
   mov cx,16000
@@ -104,9 +108,13 @@ db 66h
   rep stosw
   pop ds
 }
+}
 else
-asm{
+{
+_asm {
   push ds
+  push ss
+  pop ds			//DS=DGROUP : Open Watcom laisse DS flotter ; globales lues via DS : Video
   les di,Video
   lds si,src
   mov cx,16000
@@ -114,12 +122,13 @@ db 66h
   rep movsw
   pop ds
 }
+}
 
 }
 
 void Cpy(bytef *src,bytef *dst)
 {
-asm{
+_asm {
   push ds
   les di,dst
   lds si,src
@@ -132,7 +141,7 @@ db 66h
 
 void Clr(bytef *dst)
 {
-asm{
+_asm {
   push ds
   les di,dst
   xor ax,ax
@@ -143,18 +152,18 @@ asm{
 }
 
 
-void Put(unsigned short x,byte y,unsigned short l,byte h,byte *scr,byte *spr)
+void Put(unsigned short px,byte py,unsigned short l,byte h,byte *scr,byte *spr)
 {
 unsigned int t,h2,l2;
 h2=(int)h;
 l2=(int)l;
-t=(y<<8)+(y<<6);
-asm{
+t=(py<<8)+(py<<6);
+_asm {
   push ds
   les di,scr
   lds si,spr
   mov cx,t
-  add cx,x
+  add cx,px
   add di,cx
   mov ax,di
   mov bx,h2
@@ -329,7 +338,7 @@ void GetBlk1(short x,short y,word l,word h,bytef *scr,bytef *buf)
 					*/
 void Blka(unsigned short xs,unsigned short ys,unsigned short l,unsigned char h,unsigned short xd,unsigned short yd,bytef *src,bytef *dst)
 {
-asm{
+_asm {
   push ds
 
   les di,dst

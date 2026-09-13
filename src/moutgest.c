@@ -137,9 +137,9 @@ void Move_U(char nb)
 {
 register unsigned short cont=0;
 Mouton[nb].Bloque=0;
-if ((Plan_1[(Mouton[nb].PosX+4)/320][Y[201-Mouton[nb].PosY]+(int)(Mouton[nb].PosX+4)%320])&&(Mouton[nb].PosY<200))
+if ((Plan_1[(int)((Mouton[nb].PosX+4)/320)][Y[(int)(201-Mouton[nb].PosY)]+(int)(Mouton[nb].PosX+4)%320])&&(Mouton[nb].PosY<200))
 	{
-	while(((Plan_1[(Mouton[nb].PosX+4)/320][Y[201-Mouton[nb].PosY-cont]+(int)(Mouton[nb].PosX+4)%320]))&&cont<5)
+	while(((Plan_1[(int)((Mouton[nb].PosX+4)/320)][Y[(int)(201-Mouton[nb].PosY-cont)]+(int)(Mouton[nb].PosX+4)%320]))&&cont<5)
 		cont++;
 	if (cont<4)
 		Mouton[nb].PosY+=cont;

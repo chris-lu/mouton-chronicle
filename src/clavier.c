@@ -15,8 +15,7 @@ void far interrupt Lire_scan(void)
 //register char c;
 //char *poin;
 //c=inportb(0x60);
-asm
-{
+_asm {
 push ds
 les di,Pointeur
 mov dx,60h

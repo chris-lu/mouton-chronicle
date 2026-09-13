@@ -15,19 +15,19 @@ register cont;
 	}
 }
 
-void Print_Let(unsigned short x,byte y,byte lg,byte ht,byte *scr,byte Nb,byte Coul)
+void Print_Let(unsigned short px,byte py,byte lg,byte ht,byte *scr,byte Nb,byte Coul)
 {
 unsigned int t;
 void *Poit;
 Poit=Lettre[Nb];
-t=(y<<8)+(y<<6);
+t=(py<<8)+(py<<6);
 
-asm{
+_asm {
   push ds
   les di,scr
   lds si,Poit
   mov cx,t
-  add cx,x
+  add cx,px
   add di,cx
   mov ax,di
   mov bh,ht
