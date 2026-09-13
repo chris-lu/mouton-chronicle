@@ -22,7 +22,7 @@ Bombe.PosX=Mouton[CURJ].PosX+4;
 unsigned char Test_Line(void)
 {
 float temp;
-unsigned char cont;
+int cont;	/* etait unsigned char : debordait si |DirX|>=256 -> boucle infinie */
 char Signe;
 
 if(Bombe.DirX>0)

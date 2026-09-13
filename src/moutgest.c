@@ -159,7 +159,7 @@ x+=4;
 temp=x/320;
 x%=320;
 cont=1;
-while(!(Plan_1[temp][Y[cont]+x]))
+while(cont<199 && !(Plan_1[temp][Y[cont]+x]))	/* borne : Y[] n'a que 200 entrees, cont est un char (evite une boucle infinie sur une colonne sans sol) */
 	cont++;
 Mouton[nb].Bouge=0;
 Mouton[nb].PosY=204-cont;
