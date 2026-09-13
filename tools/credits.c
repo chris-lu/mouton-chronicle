@@ -5,10 +5,10 @@
 #include <time.h>
 //#include "rtime.c"
 #include <string.h>
-#include "vga_c.c"
-#include "vga.c"
-#include "mouse.c"
-#include "cd.c"
+#include "../src/vga_c.c"
+#include "../src/vga.c"
+#include "../src/mouse.c"
+#include "../src/cd.c"
 
 #define NB 97
 

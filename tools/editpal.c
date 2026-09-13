@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <conio.h>
-#include "vga.c"
-#include "vga_c.c"
-#include "mouse.c"
+#include "../src/vga.c"
+#include "../src/vga_c.c"
+#include "../src/mouse.c"
 
 bytef *pal;
 unsigned char Page[64000];

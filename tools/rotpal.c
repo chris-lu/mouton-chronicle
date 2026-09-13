@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <conio.h>
-#include "vga_c.c"
-#include "vga.c"
+#include "../src/vga_c.c"
+#include "../src/vga.c"
 
 unsigned char Page[64000];
 unsigned char Pal[768];
