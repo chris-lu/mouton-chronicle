@@ -154,6 +154,14 @@ These are bugs of the 2001 code that Borland's memory layout hid:
    two registers on exit (used in play, for the sky gradient).
 5. Parameters shadowing globals in asm functions (§3.3).
 6. The `*/` in `credits.c` (§3.7).
+7. `Lire_scan` (INT 9 keyboard handler, `clavier.c`) stored scancodes into
+   `Scan_Code[]` through the global `Pointeur` read as `les di,Pointeur`, which
+   needs DS=DGROUP. With DS floating, an interrupt during play loaded a garbage
+   pointer and wrote scancodes to random memory. It corrupted live data in
+   proportion to how much the player moved (more key events), so the game
+   "crashed while just moving". Fixed by addressing `Scan_Code` with immediate
+   `seg`/`offset` (DS/SS-independent). This is the same DS-floating family as
+   §3.2 but in an interrupt, where DS is truly arbitrary.
 
 ## 5. Rules for the inline assembly in this code base
 
@@ -167,8 +175,14 @@ These are bugs of the 2001 code that Borland's memory layout hid:
 5. Registers may be clobbered freely: Open Watcom saves what it needs around
    `_asm` blocks (verified with a test that kept register variables live
    across a block clobbering SI, DI, BX, DX).
-6. Interrupt handlers (`__interrupt __far`): DS is set by the prologue; do not
-   use SS to reach globals there.
+6. Interrupt handlers (`__interrupt __far`): Open Watcom does NOT load DS in
+   the prologue, and an interrupt fires with an arbitrary DS. A handler that
+   touches a global must not read it through DS. Load the global's far
+   address as linker-relocated immediates instead
+   (`mov di,offset V / mov ax,seg V / mov es,ax`), which needs no segment
+   register set up. `push ss; pop ds` is NOT safe here: SS is the interrupted
+   code's stack and may not be DGROUP if the interrupt lands during a DOS or
+   BIOS call. See `Lire_scan` in `src/clavier.c`.
 7. `db 66h` before `rep movsw` is still accepted with `-3`; `rep movsd` would
    be the clean spelling.
 
@@ -222,4 +236,8 @@ Kept here because the same approach will serve the refactoring.
   weapons and the end-of-round screens.
 * CD audio through a mounted `.cue` image (docs/build-and-run.md §6).
 * Repair or drop `tools/editpal.c`.
+* The tool timer handlers `Coul` in `tools/greeting.c` and `tools/credits2.c`
+  call `Dec_Scr(Page)` from an interrupt and read the global `Page` with a
+  floating DS: same latent bug as `Lire_scan`, not yet fixed (the game does not
+  use them).
 * Optional: replace the `db 66h` prefixes by `rep movsd`/`rep stosd`.
