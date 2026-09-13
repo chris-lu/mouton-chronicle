@@ -1,0 +1,18 @@
+Les controles se limitent au touches suivantes :
+
+[Gauche] et [Droite] : Deplacer le petit animal sans defenses.
+
+[Haut] et [Bas] : Ajuster le tir a l'aide du viseur.
+
+[Entree] : Faire sauter le pitit mouton..
+
+[Espace] : Tirer. Plus vous appuyer logtemps sur cette touche plus le tir sera puissant.
+
+[+] : Arme Suivante.
+
+[-] : Arme precedente.
+
+[F1] : Affiche le nom de tous les joueurs.
+
+[F2] : Centre sur le mouton qui joue.
+
